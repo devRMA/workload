@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { GoogleAnalytics } from "@next/third-parties/google";
+import { CookieConsent } from "@/components/molecules/cookie-consent";
 import { AdManager } from "@/components/organisms/ad-manager";
+import { AnalyticsWrapper } from "@/components/organisms/analytics-wrapper";
 import { ThemeProvider } from "@/components/theme-provider";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -73,10 +74,9 @@ export default function RootLayout({
 				>
 					{children}
 					<AdManager />
+					<CookieConsent />
 				</ThemeProvider>
-				{process.env.NEXT_PUBLIC_GA_ID && (
-					<GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
-				)}
+				<AnalyticsWrapper />
 			</body>
 		</html>
 	);
