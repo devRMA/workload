@@ -1,7 +1,7 @@
 "use client";
 
-import { motion, AnimatePresence } from "motion/react";
-import { X, ShieldAlert, Heart, PlayCircle } from "lucide-react";
+import { Heart, ShieldAlert, X } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import { Button } from "@/components/atoms/button";
 
 interface AdBlockModalProps {
@@ -10,7 +10,11 @@ interface AdBlockModalProps {
 	onConfirm: () => void;
 }
 
-export function AdBlockModal({ isOpen, onClose, onConfirm }: AdBlockModalProps) {
+export function AdBlockModal({
+	isOpen,
+	onClose,
+	onConfirm,
+}: AdBlockModalProps) {
 	return (
 		<AnimatePresence>
 			{isOpen && (
@@ -29,6 +33,7 @@ export function AdBlockModal({ isOpen, onClose, onConfirm }: AdBlockModalProps) 
 						className="relative w-full max-w-lg overflow-hidden rounded-2xl border bg-white dark:bg-neutral-900 p-6 shadow-2xl md:p-8"
 					>
 						<button
+							type="button"
 							onClick={onClose}
 							className="absolute right-4 top-4 text-muted-foreground transition-colors hover:text-foreground"
 						>
@@ -44,9 +49,16 @@ export function AdBlockModal({ isOpen, onClose, onConfirm }: AdBlockModalProps) 
 							</div>
 
 							<div className="space-y-3">
-								<h2 className="text-3xl font-black tracking-tight">Opa! Uma ajudinha?</h2>
+								<h2 className="text-3xl font-black tracking-tight">
+									Opa! Uma ajudinha?
+								</h2>
 								<p className="text-muted-foreground leading-relaxed">
-									Este projeto é gratuito e mantido com carinho. Exibimos apenas <span className="font-bold text-foreground">um único anúncio por semana</span> para cobrir os custos do servidor.
+									Este projeto é gratuito e mantido com carinho. Exibimos apenas{" "}
+									<span className="font-bold text-foreground">
+										um único anúncio por semana
+									</span>{" "}
+									— o suficiente para me ajudar a pagar um café e continuar
+									codando! ☕
 								</p>
 							</div>
 
@@ -56,20 +68,27 @@ export function AdBlockModal({ isOpen, onClose, onConfirm }: AdBlockModalProps) 
 										<ShieldAlert size={20} className="text-primary" />
 									</div>
 									<div className="space-y-1">
-										<p className="text-sm font-bold">Prometemos não ser chatos</p>
+										<p className="text-sm font-bold">
+											Prometemos não ser chatos
+										</p>
 										<p className="text-xs text-muted-foreground leading-relaxed">
-											Sua visualização semanal garante que o WorkLoad continue online e evoluindo para todos.
+											Sua visualização semanal garante que o WorkLoad continue
+											online e evoluindo para todos.
 										</p>
 									</div>
 								</div>
 							</div>
 
 							<div className="flex flex-col gap-4 pt-2">
-								<Button onClick={onConfirm} className="h-12 text-base font-bold shadow-lg shadow-primary/20 gap-2">
+								<Button
+									onClick={onConfirm}
+									className="h-12 text-base font-bold shadow-lg shadow-primary/20 gap-2"
+								>
 									Já desativei, pode contar comigo!
 								</Button>
-								<button 
-									onClick={onClose} 
+								<button
+									type="button"
+									onClick={onClose}
 									className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors py-2"
 								>
 									Continuar com AdBlock ativo

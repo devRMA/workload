@@ -1,5 +1,6 @@
 "use client";
 
+import { sendGAEvent } from "@next/third-parties/google";
 import {
 	Calculator,
 	ChevronDown,
@@ -22,7 +23,6 @@ import {
 import { Button } from "./atoms/button";
 import { FormField } from "./molecules/form-field";
 import { StatBox } from "./molecules/stat-box";
-import { sendGAEvent } from "@next/third-parties/google";
 
 export default function SalaryCalculator() {
 	const {

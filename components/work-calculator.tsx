@@ -1,5 +1,6 @@
 "use client";
 
+import { sendGAEvent } from "@next/third-parties/google";
 import { format } from "date-fns";
 import {
 	Check,
@@ -19,7 +20,6 @@ import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useMemo, useState } from "react";
 import { useWorkCalculator } from "@/hooks/use-work-calculator";
 import { DateTimeInput } from "./molecules/date-time-input";
-import { sendGAEvent } from "@next/third-parties/google";
 
 const safeFormat = (dateStr: string, formatStr: string) => {
 	try {
@@ -83,7 +83,10 @@ export default function WorkCalculator() {
 			setExitOverride(`${datePart}T${timePart}`);
 		}
 		setIsManualExit(manual);
-		sendGAEvent({ event: "toggle_manual_mode", value: manual ? "manual" : "auto" });
+		sendGAEvent({
+			event: "toggle_manual_mode",
+			value: manual ? "manual" : "auto",
+		});
 	};
 
 	const timerData = useMemo(() => {
