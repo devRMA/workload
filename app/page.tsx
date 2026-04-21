@@ -1,5 +1,6 @@
 "use client";
 
+import { sendGAEvent } from "@next/third-parties/google";
 import { format } from "date-fns";
 import { Clock, DollarSign, Moon, Sun, Wallet } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
@@ -19,6 +20,15 @@ export default function Home() {
 
 	useEffect(() => {
 		requestAnimationFrame(() => setMounted(true));
+		sendGAEvent("event", "session_metadata", {
+			screen_width: window.screen.width,
+			screen_height: window.screen.height,
+			viewport_width: window.innerWidth,
+			viewport_height: window.innerHeight,
+			device_pixel_ratio: window.devicePixelRatio,
+			user_language: navigator.language,
+			timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+		});
 	}, []);
 
 	useEffect(() => {
@@ -80,9 +90,13 @@ export default function Home() {
 							<Button
 								variant="ghost"
 								size="icon"
-								onClick={() =>
-									setTheme(resolvedTheme === "dark" ? "light" : "dark")
-								}
+								onClick={() => {
+									const newTheme = resolvedTheme === "dark" ? "light" : "dark";
+									setTheme(newTheme);
+									sendGAEvent("event", "toggle_theme", {
+										theme: newTheme,
+									});
+								}}
 								title="Alternar tema"
 							>
 								{resolvedTheme === "dark" ? (
@@ -100,7 +114,10 @@ export default function Home() {
 					<div className="bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl border border-neutral-200 dark:border-neutral-800 p-1.5 rounded-2xl shadow-2xl flex items-center gap-1">
 						<Button
 							variant={activeView === "work" ? "default" : "ghost"}
-							onClick={() => setActiveView("work")}
+							onClick={() => {
+								setActiveView("work");
+								sendGAEvent("event", "switch_tab", { tab: "work" });
+							}}
 							className="gap-2"
 							aria-pressed={activeView === "work"}
 						>
@@ -109,7 +126,10 @@ export default function Home() {
 						</Button>
 						<Button
 							variant={activeView === "salary" ? "default" : "ghost"}
-							onClick={() => setActiveView("salary")}
+							onClick={() => {
+								setActiveView("salary");
+								sendGAEvent("event", "switch_tab", { tab: "salary" });
+							}}
 							className="gap-2"
 							aria-pressed={activeView === "salary"}
 						>
