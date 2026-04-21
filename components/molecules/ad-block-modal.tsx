@@ -26,7 +26,7 @@ export function AdBlockModal({ isOpen, onClose, onConfirm }: AdBlockModalProps) 
 						initial={{ opacity: 0, scale: 0.95, y: 20 }}
 						animate={{ opacity: 1, scale: 1, y: 0 }}
 						exit={{ opacity: 0, scale: 0.95, y: 20 }}
-						className="relative w-full max-w-lg overflow-hidden rounded-2xl border bg-card p-6 shadow-2xl md:p-8"
+						className="relative w-full max-w-lg overflow-hidden rounded-2xl border bg-white dark:bg-neutral-900 p-6 shadow-2xl md:p-8"
 					>
 						<button
 							onClick={onClose}
