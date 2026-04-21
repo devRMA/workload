@@ -1,5 +1,5 @@
 {
-  "name": "WorkLoad",
-  "description": "Calculadora inteligente de jornada e valor de trabalho.",
-  "requestFramePermissions": []
+	"name": "WorkLoad",
+	"description": "Calculadora inteligente de jornada e valor de trabalho.",
+	"requestFramePermissions": []
 }

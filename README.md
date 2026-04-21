@@ -1,20 +1,99 @@
 <div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+
+# WorkLoad 🚀
+
+**A modern, lightning-fast calculator for Work Hours, Overtime, and Salary Deductions.**
+
+[![CI/CD](https://github.com/devRMA/workload/actions/workflows/ci.yml/badge.svg)](https://github.com/devRMA/workload/actions/workflows/ci.yml)
+[![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)]()
+[![TypeScript](https://img.shields.io/badge/TypeScript-Strict-blue.svg)]()
+[![Biome](https://img.shields.io/badge/Biome-Formatter_%26_Linter-F19953.svg)]()
+[![Playwright](https://img.shields.io/badge/Playwright-E2E_Tested-2EAD33.svg)]()
+
 </div>
 
-# Run and deploy your AI Studio app
+---
 
-This contains everything you need to run your app locally.
+## 🤖 Built with AI
+This project was heavily driven and refactored from scratch to production level using **Google AI Studio** and **Antigravity** (from Google DeepMind's Advanced Agentic Coding team). 
 
-View your app in AI Studio: https://ai.studio/apps/d38c909d-cb98-43dd-8193-6c731bfbe836
+---
 
-## Run Locally
+## ⚡ Features
+- **Workday Tracking**: Precise control of entry, lunch, and exit times, with real-time calculation of overtime (75% and 100%) and night shift bonus.
+- **Salary Calculator**: Exact calculation of INSS, IRRF, deductions, and extra gains (compatible with 2026 CLT rules).
+- **Mobile-First & Premium UI**: An amazing interface developed from scratch to provide the best experience, with native support for Dark/Light Mode.
+- **Offline First**: Automatically saves all user preferences in `localStorage`.
 
-**Prerequisites:**  Node.js
+---
 
+## 🏗️ Architecture & Best Practices
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+WorkLoad is a clear example of cutting-edge frontend engineering:
+
+*   **[Atomic Design](https://bradfrost.com/blog/post/atomic-web-design/)**: Highly scalable UI, broken down into `Atoms` (Buttons, Inputs), `Molecules` (FormFields, StatBoxes), and `Organisms` (Calculators). Everything designed for maximum reuse.
+*   **Decoupled Logic**: No business rules are tied to visual components. All complex logic and heavy calculations live in isolated **Custom Hooks** (`use-work-calculator` and `use-salary-calculator`).
+*   **Clean Code & KISS**: Strictly readable code focused on the essential. Zero comments to explain confusing logic (the code speaks for itself) and strong naming conventions.
+*   **Strict TypeScript**: 100% typed. No `any` or `unknown`.
+*   **BiomeJS**: We replaced the classic ESLint/Prettier setup with the Rust-powered [BiomeJS](https://biomejs.dev/), ensuring linting and formatting in less than 50ms.
+
+---
+
+## 🧪 Quality Assurance & CI/CD
+
+We don't ship broken code to production. The project features:
+
+- **100% Unit Test Coverage**: All business scenarios, CLT rules, and tax calculations are unit tested using **Vitest**.
+- **End-to-End (E2E) Testing**: We use **Playwright** to simulate user behavior on both Desktop screens and real simulated iPhones and Androids. Everything must work.
+- **Continuous Integration (GitHub Actions)**: For every PR/Push to `main`, the GitHub pipeline rigorously executes:
+  1. Clean installation (`npm ci`)
+  2. Code standard verification (`npx @biomejs/biome ci .`)
+  3. Type checking (`npx tsc --noEmit`)
+  4. Unit Test suite (`npx vitest run`)
+  5. Next.js Production Build
+  6. Full E2E Test suite
+
+---
+
+## 🛠️ Stack
+
+- **Framework:** Next.js 15 (App Router) + React 19
+- **Styling:** Tailwind CSS + Framer Motion + Lucide Icons
+- **Language:** TypeScript
+- **Tooling:** BiomeJS, Vitest, Playwright, Date-fns
+
+---
+
+## 🚀 Quick Start
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/devRMA/workload.git
+
+# Enter the folder
+cd workload
+
+# Install dependencies (Node 20+)
+npm i
+```
+
+### Useful Commands
+
+| Command | Description |
+|---------|-----------|
+| `npm run dev` | Starts the development server on port 3000 |
+| `npm run build` | Runs the optimized Next.js production build |
+| `npx @biomejs/biome check --write .` | Automatically formats code and fixes linter issues |
+| `npx vitest run` | Runs all unit tests |
+| `npx vitest run --coverage` | Runs unit tests showing code coverage |
+| `npx playwright test` | Runs the full user flow E2E tests (Headless) |
+| `npx playwright test --ui` | Opens the Playwright UI for interactive testing and debugging |
+| `npx playwright test --headed` | Runs E2E tests with the browser visible |
+| `npx playwright show-report` | Shows detailed E2E test results in the browser |
+| `npx tsc --noEmit` | Manually validates if there are typing errors in the project |
+
+---
+
+> Made with ❤️ by [Rafael](https://devrma.com)
