@@ -30,7 +30,7 @@ export function AdBlockModal({
 						initial={{ opacity: 0, scale: 0.95, y: 20 }}
 						animate={{ opacity: 1, scale: 1, y: 0 }}
 						exit={{ opacity: 0, scale: 0.95, y: 20 }}
-						className="relative w-full max-w-lg overflow-hidden rounded-2xl border bg-white dark:bg-neutral-900 p-6 shadow-2xl md:p-8"
+						className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 p-6 shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] md:p-8"
 					>
 						<button
 							type="button"

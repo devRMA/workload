@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 
 interface GoogleAdProps {
 	slot?: string;
-	format?: "auto" | "fluid";
+	format?: "auto" | "fluid" | "vertical";
 	responsive?: "true" | "false";
 	className?: string;
 }
@@ -38,26 +38,30 @@ export function GoogleAd({
 
 	if (!adClient) {
 		return (
-			<div className="flex aspect-video w-full items-center justify-center rounded-xl border-2 border-dashed border-muted bg-muted/50 p-6 text-center text-muted-foreground">
-				<div className="space-y-2">
-					<p className="font-semibold">Espaço para Anúncio</p>
-					<p className="text-sm">
-						Configure NEXT_PUBLIC_ADSENSE_ID para ativar
-					</p>
+			<div className="flex h-full w-full items-center justify-center rounded-xl border-2 border-dashed border-muted bg-muted/50 p-4 text-center text-muted-foreground min-h-[100px]">
+				<div className="space-y-1">
+					<p className="text-xs font-semibold">Anúncio</p>
+					<p className="text-[10px] opacity-70">Aguardando ID</p>
 				</div>
 			</div>
 		);
 	}
 
 	return (
-		<div className={`overflow-hidden rounded-xl bg-muted/30 ${className}`}>
+		<div
+			className={`overflow-hidden rounded-xl bg-muted/30 ${className}`}
+			style={{ minWidth: format === "vertical" ? "160px" : "auto" }}
+		>
 			<ins
 				ref={adRef}
 				className="adsbygoogle"
-				style={{ display: "block" }}
+				style={{
+					display: "block",
+					minHeight: format === "vertical" ? "600px" : "auto",
+				}}
 				data-ad-client={adClient}
 				data-ad-slot={slot}
-				data-ad-format={format}
+				data-ad-format={format === "vertical" ? "vertical" : format}
 				data-full-width-responsive={responsive}
 			/>
 		</div>

@@ -1,6 +1,5 @@
 "use client";
 
-import { sendGAEvent } from "@next/third-parties/google";
 import {
 	Calculator,
 	ChevronDown,
@@ -15,6 +14,7 @@ import {
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { useSalaryCalculator } from "@/hooks/use-salary-calculator";
+import { safeGAEvent } from "@/lib/analytics";
 import {
 	formatCurrency,
 	formatCurrencySimple,
@@ -176,7 +176,7 @@ export default function SalaryCalculator() {
 														size="sm"
 														onClick={() => {
 															addExtra("deduction");
-															sendGAEvent("event", "add_deduction");
+															safeGAEvent("add_deduction");
 														}}
 														className="gap-2"
 													>
@@ -245,7 +245,7 @@ export default function SalaryCalculator() {
 														size="sm"
 														onClick={() => {
 															addExtra("gain");
-															sendGAEvent("event", "add_gain");
+															safeGAEvent("add_gain");
 														}}
 														className="gap-2 text-emerald-600 border-emerald-200 hover:bg-emerald-50"
 													>

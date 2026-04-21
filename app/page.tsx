@@ -1,6 +1,5 @@
 "use client";
 
-import { sendGAEvent } from "@next/third-parties/google";
 import { format } from "date-fns";
 import { Clock, DollarSign, Moon, Sun, Wallet } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
@@ -9,6 +8,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/atoms/button";
 import SalaryCalculator from "@/components/salary-calculator";
 import WorkCalculator from "@/components/work-calculator";
+import { safeGAEvent } from "@/lib/analytics";
 
 type View = "work" | "salary";
 
@@ -20,7 +20,7 @@ export default function Home() {
 
 	useEffect(() => {
 		requestAnimationFrame(() => setMounted(true));
-		sendGAEvent("event", "session_metadata", {
+		safeGAEvent("session_metadata", {
 			screen_width: window.screen.width,
 			screen_height: window.screen.height,
 			viewport_width: window.innerWidth,
@@ -92,7 +92,7 @@ export default function Home() {
 								onClick={() => {
 									const newTheme = resolvedTheme === "dark" ? "light" : "dark";
 									setTheme(newTheme);
-									sendGAEvent("event", "toggle_theme", {
+									safeGAEvent("toggle_theme", {
 										theme: newTheme,
 									});
 								}}
@@ -114,7 +114,7 @@ export default function Home() {
 							variant={activeView === "work" ? "default" : "ghost"}
 							onClick={() => {
 								setActiveView("work");
-								sendGAEvent("event", "switch_tab", { tab: "work" });
+								safeGAEvent("switch_tab", { tab: "work" });
 							}}
 							className="gap-2"
 							aria-pressed={activeView === "work"}
@@ -126,7 +126,7 @@ export default function Home() {
 							variant={activeView === "salary" ? "default" : "ghost"}
 							onClick={() => {
 								setActiveView("salary");
-								sendGAEvent("event", "switch_tab", { tab: "salary" });
+								safeGAEvent("switch_tab", { tab: "salary" });
 							}}
 							className="gap-2"
 							aria-pressed={activeView === "salary"}
