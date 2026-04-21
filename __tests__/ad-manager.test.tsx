@@ -53,7 +53,7 @@ describe("AdManager", () => {
 		expect(screen.queryByText("Vídeo da Semana")).toBeNull();
 
 		act(() => {
-			vi.advanceTimersByTime(30000);
+			vi.advanceTimersByTime(120000);
 		});
 
 		expect(screen.getByText("Vídeo da Semana")).toBeDefined();
@@ -65,7 +65,7 @@ describe("AdManager", () => {
 		render(<AdManager />);
 
 		act(() => {
-			vi.advanceTimersByTime(30000);
+			vi.advanceTimersByTime(120000);
 		});
 
 		expect(screen.queryByText("Vídeo da Semana")).toBeNull();

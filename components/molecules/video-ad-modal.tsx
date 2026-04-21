@@ -46,7 +46,7 @@ export function VideoAdModal({
 						initial={{ opacity: 0, scale: 0.9, y: 20 }}
 						animate={{ opacity: 1, scale: 1, y: 0 }}
 						exit={{ opacity: 0, scale: 0.9, y: 20 }}
-						className="relative w-full max-w-2xl overflow-hidden rounded-3xl border bg-card p-0 shadow-2xl"
+						className="relative w-full max-w-2xl overflow-hidden rounded-3xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 p-0 shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)]"
 					>
 						{step === "alert" ? (
 							<div className="p-8 text-center space-y-8">

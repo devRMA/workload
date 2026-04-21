@@ -56,7 +56,7 @@ export function AdManager() {
 		if (canShowVideoAd && !isAdBlockActive) {
 			const timer = setTimeout(() => {
 				setShowVideoModal(true);
-			}, 30000);
+			}, 120000);
 			return () => clearTimeout(timer);
 		}
 	}, [canShowVideoAd, isAdBlockActive]);
