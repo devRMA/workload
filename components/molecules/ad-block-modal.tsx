@@ -35,40 +35,45 @@ export function AdBlockModal({ isOpen, onClose, onConfirm }: AdBlockModalProps) 
 							<X size={20} />
 						</button>
 
-						<div className="space-y-6 text-center">
-							<div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
-								<ShieldAlert size={32} />
+						<div className="space-y-8 text-center">
+							<div className="relative mx-auto flex h-20 w-20 items-center justify-center">
+								<div className="absolute inset-0 animate-pulse rounded-full bg-primary/20" />
+								<div className="relative flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
+									<Heart size={32} className="fill-primary/20" />
+								</div>
 							</div>
 
-							<div className="space-y-2">
-								<h2 className="text-2xl font-bold tracking-tight">Detectamos AdBlock!</h2>
-								<p className="text-muted-foreground">
-									Os anúncios nos ajudam a manter este projeto gratuito e em constante evolução.
+							<div className="space-y-3">
+								<h2 className="text-3xl font-black tracking-tight">Opa! Uma ajudinha?</h2>
+								<p className="text-muted-foreground leading-relaxed">
+									Este projeto é gratuito e mantido com carinho. Exibimos apenas <span className="font-bold text-foreground">um único anúncio por semana</span> para cobrir os custos do servidor.
 								</p>
 							</div>
 
-							<div className="rounded-xl bg-muted/50 p-4 text-left">
-								<div className="flex items-start gap-3">
-									<div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-background">
-										<PlayCircle size={18} className="text-primary" />
+							<div className="rounded-2xl bg-muted/50 p-6 text-left border border-primary/10">
+								<div className="flex items-start gap-4">
+									<div className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-background shadow-sm">
+										<ShieldAlert size={20} className="text-primary" />
 									</div>
 									<div className="space-y-1">
-										<p className="text-sm font-semibold">Exibimos apenas 1 ad por semana!</p>
-										<p className="text-xs text-muted-foreground">
-											Prometemos não ser chatos. Um vídeo curto uma vez por semana garante que continuemos online.
+										<p className="text-sm font-bold">Prometemos não ser chatos</p>
+										<p className="text-xs text-muted-foreground leading-relaxed">
+											Sua visualização semanal garante que o WorkLoad continue online e evoluindo para todos.
 										</p>
 									</div>
 								</div>
 							</div>
 
-							<div className="flex flex-col gap-3 sm:flex-row">
-								<Button onClick={onConfirm} className="flex-1 gap-2">
-									<Heart size={18} />
-									Já desativei o AdBlock
+							<div className="flex flex-col gap-4 pt-2">
+								<Button onClick={onConfirm} className="h-12 text-base font-bold shadow-lg shadow-primary/20 gap-2">
+									Já desativei, pode contar comigo!
 								</Button>
-								<Button variant="outline" onClick={onClose} className="flex-1">
-									Continuar com AdBlock
-								</Button>
+								<button 
+									onClick={onClose} 
+									className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors py-2"
+								>
+									Continuar com AdBlock ativo
+								</button>
 							</div>
 						</div>
 					</motion.div>
