@@ -55,7 +55,6 @@ export default function SalaryCalculator() {
 		<div className="w-full selection:bg-blue-500/30">
 			<div className="max-w-7xl 2xl:max-w-[1600px] 4k:max-w-[2400px] mx-auto">
 				<div className="grid grid-cols-1 lg:grid-cols-12 gap-8 4k:gap-24 items-start">
-					{/* Main Form Area */}
 					<motion.div
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
@@ -164,7 +163,6 @@ export default function SalaryCalculator() {
 												/>
 											</div>
 
-											{/* Extra Deductions */}
 											<div>
 												<div className="flex items-center justify-between mb-4">
 													<label
@@ -234,7 +232,6 @@ export default function SalaryCalculator() {
 												</div>
 											</div>
 
-											{/* Extra Gains */}
 											<div>
 												<div className="flex items-center justify-between mb-4">
 													<label
@@ -307,7 +304,6 @@ export default function SalaryCalculator() {
 							</AnimatePresence>
 						</div>
 
-						{/* Results */}
 						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 4k:gap-8">
 							<StatBox
 								label="Salário Líquido"
@@ -334,7 +330,6 @@ export default function SalaryCalculator() {
 						</div>
 					</motion.div>
 
-					{/* Highlight Card */}
 					<motion.div
 						initial={{ opacity: 0, x: 20 }}
 						animate={{ opacity: 1, x: 0 }}

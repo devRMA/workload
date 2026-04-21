@@ -68,7 +68,6 @@ export default function Home() {
 				Pular para o conteúdo principal
 			</a>
 			<main className="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 transition-colors duration-500">
-				{/* Global Header */}
 				<header className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl border-b border-neutral-200 dark:border-neutral-800">
 					<div className="max-w-7xl 2xl:max-w-[1600px] 4k:max-w-[2400px] mx-auto px-6 h-20 4k:h-32 flex items-center justify-between">
 						<div className="flex items-center gap-3 4k:gap-6">
@@ -109,7 +108,6 @@ export default function Home() {
 					</div>
 				</header>
 
-				{/* Navigation Bar */}
 				<nav className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
 					<div className="bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl border border-neutral-200 dark:border-neutral-800 p-1.5 rounded-2xl shadow-2xl flex items-center gap-1">
 						<Button
@@ -139,7 +137,6 @@ export default function Home() {
 					</div>
 				</nav>
 
-				{/* Content Area */}
 				<div
 					id="main-content"
 					tabIndex={-1}
@@ -170,7 +167,6 @@ export default function Home() {
 					</AnimatePresence>
 				</div>
 
-				{/* Background Accents */}
 				<div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
 					<div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-indigo-500/5 blur-[120px] rounded-full" />
 					<div className="absolute top-[20%] -right-[10%] w-[30%] h-[30%] bg-emerald-500/5 blur-[120px] rounded-full" />

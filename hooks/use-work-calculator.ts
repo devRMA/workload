@@ -36,7 +36,6 @@ export function calculateWorkStats(
 		const afternoonMinutes = differenceInMinutes(exitDate, lunchEndDate);
 		const totalWorked = morningMinutes + afternoonMinutes;
 
-		// Adicional Noturno (22:00 - 05:00)
 		let nightMinutesReal = 0;
 		const currentDay = new Date(entryDate);
 		currentDay.setHours(0, 0, 0, 0);
@@ -163,7 +162,6 @@ export function useWorkCalculator() {
 	const [exitOverride, setExitOverride] = useState("");
 	const [isManualExit, setIsManualExit] = useState(false);
 
-	// Load from localStorage
 	useEffect(() => {
 		const savedWorkMinutes = localStorage.getItem("workMinutes");
 		const savedEntry = localStorage.getItem("entry");
@@ -184,7 +182,6 @@ export function useWorkCalculator() {
 		if (savedLunchEnd && isValidISO(savedLunchEnd)) setLunchEnd(savedLunchEnd);
 	}, []);
 
-	// Save to localStorage
 	useEffect(() => {
 		localStorage.setItem("workMinutes", workMinutes.toString());
 		localStorage.setItem("entry", entry);

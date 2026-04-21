@@ -55,7 +55,6 @@ export function useSalaryCalculator(initialSalary = 5000, initialHours = 220) {
 	const [extraDeductions, setExtraDeductions] = useState<ExtraItem[]>([]);
 	const [extraGains, setExtraGains] = useState<ExtraItem[]>([]);
 
-	// Load from localStorage
 	useEffect(() => {
 		const savedSalary = localStorage.getItem("grossSalary");
 		const savedHours = localStorage.getItem("monthlyHours");
@@ -68,7 +67,6 @@ export function useSalaryCalculator(initialSalary = 5000, initialHours = 220) {
 		if (savedGains) setExtraGains(JSON.parse(savedGains));
 	}, []);
 
-	// Save to localStorage
 	useEffect(() => {
 		localStorage.setItem("grossSalary", grossSalary.toString());
 		localStorage.setItem("monthlyHours", monthlyHours.toString());

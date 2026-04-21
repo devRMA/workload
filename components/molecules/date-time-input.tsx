@@ -2,7 +2,6 @@ import { format, isValid, parse } from "date-fns";
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-// Helper functions for Brazilian date format
 const toBRDate = (isoDate: string) => {
 	if (!isoDate) return "";
 	const [y, m, d] = isoDate.split("-");
