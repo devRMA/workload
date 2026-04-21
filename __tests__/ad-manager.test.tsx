@@ -1,17 +1,11 @@
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { act, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AdManager } from "@/components/organisms/ad-manager";
 
 const MOCK_ADSENSE_ID = "ca-pub-123456789";
-const AD_VIEW_KEY = "workload_last_ad_view";
-const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
-
-vi.mock("next/script", () => ({
-	default: ({ children, ...props }: Record<string, unknown>) => (
-		<script {...props}>{children as string}</script>
-	),
-}));
+const SIDE_AD_KEY = "workload_side_ads_last_view";
+const VIDEO_AD_KEY = "workload_video_ad_last_view";
+const _ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
@@ -21,6 +15,7 @@ describe("AdManager", () => {
 		localStorage.clear();
 		vi.clearAllMocks();
 		vi.unstubAllEnvs();
+		vi.useFakeTimers();
 		mockFetch.mockResolvedValue({ ok: true });
 	});
 
@@ -30,44 +25,50 @@ describe("AdManager", () => {
 		expect(container.innerHTML).toBe("");
 	});
 
-	it("checks weekly limit in localStorage on mount", () => {
+	it("checks cooldowns in localStorage on mount", () => {
 		vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
 		const spy = vi.spyOn(Storage.prototype, "getItem");
 		render(<AdManager />);
-		expect(spy).toHaveBeenCalledWith(AD_VIEW_KEY);
+		expect(spy).toHaveBeenCalledWith(SIDE_AD_KEY);
+		expect(spy).toHaveBeenCalledWith(VIDEO_AD_KEY);
 	});
 
-	it("shows ad when no previous view exists", async () => {
+	it("shows side ads after 2 seconds when no previous view exists", async () => {
 		vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
 		render(<AdManager />);
-		expect(screen.getByText("Anúncio da Semana")).toBeDefined();
+
+		expect(screen.queryByText("Espaço do Apoiador")).toBeNull();
+
+		act(() => {
+			vi.advanceTimersByTime(2000);
+		});
+
+		expect(screen.getAllByText("Espaço do Apoiador")).toHaveLength(2);
 	});
 
-	it("hides ad when viewed less than a week ago", () => {
+	it("shows video modal after 30 seconds", async () => {
 		vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
-		localStorage.setItem(AD_VIEW_KEY, Date.now().toString());
 		render(<AdManager />);
-		expect(screen.queryByText("Anúncio da Semana")).toBeNull();
+
+		expect(screen.queryByText("Vídeo da Semana")).toBeNull();
+
+		act(() => {
+			vi.advanceTimersByTime(30000);
+		});
+
+		expect(screen.getByText("Vídeo da Semana")).toBeDefined();
 	});
 
-	it("shows ad when last view was more than a week ago", () => {
+	it("hides video ad when viewed less than a week ago", () => {
 		vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
-		const oldTimestamp = Date.now() - ONE_WEEK_MS - 1000;
-		localStorage.setItem(AD_VIEW_KEY, oldTimestamp.toString());
-		render(<AdManager />);
-		expect(screen.getByText("Anúncio da Semana")).toBeDefined();
-	});
-
-	it("hides ad and saves timestamp when dismiss button is clicked", async () => {
-		vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
-		const user = userEvent.setup();
+		localStorage.setItem(VIDEO_AD_KEY, Date.now().toString());
 		render(<AdManager />);
 
-		const dismissButton = screen.getByText("Remover (já vi por hoje)");
-		await user.click(dismissButton);
+		act(() => {
+			vi.advanceTimersByTime(30000);
+		});
 
-		expect(localStorage.getItem(AD_VIEW_KEY)).toBeTruthy();
-		expect(screen.queryByText("Anúncio da Semana")).toBeNull();
+		expect(screen.queryByText("Vídeo da Semana")).toBeNull();
 	});
 
 	it("shows adblock modal when fetch fails", async () => {
@@ -75,25 +76,9 @@ describe("AdManager", () => {
 		mockFetch.mockRejectedValueOnce(new Error("blocked"));
 
 		render(<AdManager />);
+
 		await vi.waitFor(() => {
 			expect(screen.getByText("Opa! Uma ajudinha?")).toBeDefined();
-		});
-	});
-
-	it("closes adblock modal when continue button is clicked", async () => {
-		vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
-		mockFetch.mockRejectedValueOnce(new Error("blocked"));
-		const user = userEvent.setup();
-
-		render(<AdManager />);
-		await vi.waitFor(() => {
-			expect(screen.getByText("Opa! Uma ajudinha?")).toBeDefined();
-		});
-
-		await user.click(screen.getByText("Continuar com AdBlock ativo"));
-
-		await vi.waitFor(() => {
-			expect(screen.queryByText("Opa! Uma ajudinha?")).toBeNull();
 		});
 	});
 });

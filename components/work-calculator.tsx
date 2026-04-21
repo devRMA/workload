@@ -1,6 +1,5 @@
 "use client";
 
-import { sendGAEvent } from "@next/third-parties/google";
 import { format } from "date-fns";
 import {
 	Check,
@@ -19,6 +18,7 @@ import {
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useMemo, useState } from "react";
 import { useWorkCalculator } from "@/hooks/use-work-calculator";
+import { safeGAEvent } from "@/lib/analytics";
 import { DateTimeInput } from "./molecules/date-time-input";
 
 const safeFormat = (dateStr: string, formatStr: string) => {
@@ -72,7 +72,7 @@ export default function WorkCalculator() {
 		const timeOnly = safeFormat(displayExit, "HH:mm");
 		navigator.clipboard.writeText(timeOnly);
 		setCopied(true);
-		sendGAEvent("event", "copy_to_clipboard", { value: timeOnly });
+		safeGAEvent("copy_to_clipboard", { value: timeOnly });
 		setTimeout(() => setCopied(false), 2000);
 	};
 
@@ -83,7 +83,7 @@ export default function WorkCalculator() {
 			setExitOverride(`${datePart}T${timePart}`);
 		}
 		setIsManualExit(manual);
-		sendGAEvent("event", "toggle_manual_mode", {
+		safeGAEvent("toggle_manual_mode", {
 			value: manual ? "manual" : "auto",
 		});
 	};
@@ -325,7 +325,7 @@ export default function WorkCalculator() {
 									aria-label="Resetar Horários"
 									onClick={() => {
 										resetDefaults();
-										sendGAEvent("event", "reset_defaults");
+										safeGAEvent("reset_defaults");
 									}}
 									className="flex items-center gap-2 text-sm font-medium text-neutral-400 hover:text-emerald-500 transition-colors 4k:text-2xl 4k:gap-4"
 								>
