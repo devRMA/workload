@@ -19,6 +19,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useMemo, useState } from "react";
 import { useWorkCalculator } from "@/hooks/use-work-calculator";
 import { DateTimeInput } from "./molecules/date-time-input";
+import { sendGAEvent } from "@next/third-parties/google";
 
 const safeFormat = (dateStr: string, formatStr: string) => {
 	try {
@@ -71,6 +72,7 @@ export default function WorkCalculator() {
 		const timeOnly = safeFormat(displayExit, "HH:mm");
 		navigator.clipboard.writeText(timeOnly);
 		setCopied(true);
+		sendGAEvent({ event: "copy_to_clipboard", value: timeOnly });
 		setTimeout(() => setCopied(false), 2000);
 	};
 
@@ -81,6 +83,7 @@ export default function WorkCalculator() {
 			setExitOverride(`${datePart}T${timePart}`);
 		}
 		setIsManualExit(manual);
+		sendGAEvent({ event: "toggle_manual_mode", value: manual ? "manual" : "auto" });
 	};
 
 	const timerData = useMemo(() => {
@@ -318,7 +321,10 @@ export default function WorkCalculator() {
 								<button
 									type="button"
 									aria-label="Resetar Horários"
-									onClick={resetDefaults}
+									onClick={() => {
+										resetDefaults();
+										sendGAEvent({ event: "reset_defaults" });
+									}}
 									className="flex items-center gap-2 text-sm font-medium text-neutral-400 hover:text-emerald-500 transition-colors 4k:text-2xl 4k:gap-4"
 								>
 									<RotateCcw

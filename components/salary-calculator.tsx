@@ -22,6 +22,7 @@ import {
 import { Button } from "./atoms/button";
 import { FormField } from "./molecules/form-field";
 import { StatBox } from "./molecules/stat-box";
+import { sendGAEvent } from "@next/third-parties/google";
 
 export default function SalaryCalculator() {
 	const {
@@ -175,7 +176,10 @@ export default function SalaryCalculator() {
 													<Button
 														variant="outline"
 														size="sm"
-														onClick={() => addExtra("deduction")}
+														onClick={() => {
+															addExtra("deduction");
+															sendGAEvent({ event: "add_deduction" });
+														}}
 														className="gap-2"
 													>
 														<PlusCircle className="w-4 h-4" /> Adicionar
@@ -242,7 +246,10 @@ export default function SalaryCalculator() {
 													<Button
 														variant="outline"
 														size="sm"
-														onClick={() => addExtra("gain")}
+														onClick={() => {
+															addExtra("gain");
+															sendGAEvent({ event: "add_gain" });
+														}}
 														className="gap-2 text-emerald-600 border-emerald-200 hover:bg-emerald-50"
 													>
 														<PlusCircle className="w-4 h-4" /> Adicionar
