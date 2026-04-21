@@ -72,7 +72,7 @@ export default function WorkCalculator() {
 		const timeOnly = safeFormat(displayExit, "HH:mm");
 		navigator.clipboard.writeText(timeOnly);
 		setCopied(true);
-		sendGAEvent({ event: "copy_to_clipboard", value: timeOnly });
+		sendGAEvent("event", "copy_to_clipboard", { value: timeOnly });
 		setTimeout(() => setCopied(false), 2000);
 	};
 
@@ -83,8 +83,7 @@ export default function WorkCalculator() {
 			setExitOverride(`${datePart}T${timePart}`);
 		}
 		setIsManualExit(manual);
-		sendGAEvent({
-			event: "toggle_manual_mode",
+		sendGAEvent("event", "toggle_manual_mode", {
 			value: manual ? "manual" : "auto",
 		});
 	};
@@ -326,7 +325,7 @@ export default function WorkCalculator() {
 									aria-label="Resetar Horários"
 									onClick={() => {
 										resetDefaults();
-										sendGAEvent({ event: "reset_defaults" });
+										sendGAEvent("event", "reset_defaults");
 									}}
 									className="flex items-center gap-2 text-sm font-medium text-neutral-400 hover:text-emerald-500 transition-colors 4k:text-2xl 4k:gap-4"
 								>

@@ -178,7 +178,7 @@ export default function SalaryCalculator() {
 														size="sm"
 														onClick={() => {
 															addExtra("deduction");
-															sendGAEvent({ event: "add_deduction" });
+															sendGAEvent("event", "add_deduction");
 														}}
 														className="gap-2"
 													>
@@ -248,7 +248,7 @@ export default function SalaryCalculator() {
 														size="sm"
 														onClick={() => {
 															addExtra("gain");
-															sendGAEvent({ event: "add_gain" });
+															sendGAEvent("event", "add_gain");
 														}}
 														className="gap-2 text-emerald-600 border-emerald-200 hover:bg-emerald-50"
 													>
