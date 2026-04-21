@@ -1,8 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
 
-/**
- * See https://playwright.dev/docs/test-configuration.
- */
 export default defineConfig({
 	testDir: "./tests/e2e",
 	fullyParallel: true,
@@ -29,7 +26,7 @@ export default defineConfig({
 		},
 	],
 	webServer: {
-		command: "npm run dev",
+		command: process.env.CI ? "npm run start" : "npm run dev",
 		url: "http://localhost:3000",
 		reuseExistingServer: !process.env.CI,
 	},
