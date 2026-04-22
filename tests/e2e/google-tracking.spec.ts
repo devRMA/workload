@@ -28,8 +28,8 @@ test.describe("Google Tracking & Ads", () => {
 	});
 
 	test("should show side ads on desktop after delay", async ({ page }) => {
-		const isDesktop =
-			page.viewportSize()?.width && page.viewportSize()?.width >= 1536;
+		const viewport = page.viewportSize();
+		const isDesktop = viewport && viewport.width >= 1536;
 		if (!isDesktop) return;
 
 		await page.click('button:has-text("Aceitar Tudo")');
