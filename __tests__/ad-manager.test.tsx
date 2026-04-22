@@ -27,6 +27,7 @@ describe("AdManager", () => {
 
 	it("checks cooldowns in localStorage on mount", () => {
 		vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
+		vi.stubEnv("NEXT_PUBLIC_ENABLE_ADS", "true");
 		const spy = vi.spyOn(Storage.prototype, "getItem");
 		render(<AdManager />);
 		expect(spy).toHaveBeenCalledWith(SIDE_AD_KEY);
