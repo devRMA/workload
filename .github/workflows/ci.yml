@@ -87,7 +87,7 @@ jobs:
         with:
           name: Unit Tests Report
           path: coverage/junit.xml
-          reporter: jest-junit
+          reporter: java-junit
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
@@ -162,7 +162,6 @@ jobs:
         run: npx @lhci/cli@0.13.0 autorun
         env:
           PLAYWRIGHT_TEST_BASE_URL: ${{ steps.waitForVercel.outputs.url }}
-          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
 
       - name: E2E Tests Report
         uses: dorny/test-reporter@v1
