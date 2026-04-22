@@ -10,6 +10,9 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
 	metadataBase: new URL("https://workload.devrma.com"),
+	verification: {
+		google: "iUxNyN-K3GLaqGNs8tq2mnFfiKc9X0USiTnQP9nqOpg",
+	},
 	title: {
 		default: "WorkLoad | Calculadora Inteligente de Horas e Salário",
 		template: "%s | WorkLoad",
