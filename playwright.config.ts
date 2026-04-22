@@ -20,7 +20,8 @@ export default defineConfig({
 			cookies: [],
 			origins: [
 				{
-					origin: "http://localhost:3000",
+					origin:
+						process.env.PLAYWRIGHT_TEST_BASE_URL || "http://localhost:3000",
 					localStorage: [
 						{
 							name: "workload_cookie_consent",
