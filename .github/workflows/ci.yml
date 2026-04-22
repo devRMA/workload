@@ -76,6 +76,21 @@ jobs:
           path: coverage/
           retention-days: 14
 
+      - name: Unit Tests Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: Unit Tests Report
+          path: coverage/junit.xml
+          reporter: jest-junit
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
+          fail_ci_if_error: false
+
   e2e-tests:
     name: E2E Tests
     runs-on: ubuntu-latest
@@ -121,11 +136,36 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
 
+      - name: Wait for Vercel Preview
+        if: github.event_name == 'pull_request'
+        uses: patrickedqvist/wait-for-vercel-preview@v1.3.2
+        id: waitForVercel
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          max_timeout: 300
+
       - name: Build Next.js
+        if: github.event_name != 'pull_request'
         run: npm run build
 
       - name: Run Playwright
         run: npx playwright test
+        env:
+          PLAYWRIGHT_TEST_BASE_URL: ${{ steps.waitForVercel.outputs.url }}
+
+      - name: Run Lighthouse CI
+        run: npx @lhci/cli@0.13.0 autorun
+        env:
+          PLAYWRIGHT_TEST_BASE_URL: ${{ steps.waitForVercel.outputs.url }}
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+
+      - name: E2E Tests Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: E2E Tests Report
+          path: playwright-report/results.xml
+          reporter: java-junit
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
