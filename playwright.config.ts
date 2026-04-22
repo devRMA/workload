@@ -13,13 +13,26 @@ export default defineConfig({
 	],
 	timeout: 60000,
 	use: {
-		baseURL: process.env.PLAYWRIGHT_TEST_BASE_URL || "http://localhost:3000",
+		baseURL: "http://localhost:3000",
 		trace: "on-first-retry",
 		actionTimeout: 15000,
+		storageState: {
+			cookies: [],
+			origins: [
+				{
+					origin: "http://localhost:3000",
+					localStorage: [
+						{
+							name: "workload_cookie_consent",
+							value: JSON.stringify({ telemetry: true, timestamp: Date.now() }),
+						},
+					],
+				},
+			],
+		},
 	},
 	testIgnore: [],
 	testMatch: "**/*.spec.ts",
-	globalSetup: undefined,
 	projects: [
 		{
 			name: "chromium",
@@ -34,11 +47,9 @@ export default defineConfig({
 			use: { ...devices["iPhone 12"] },
 		},
 	],
-	webServer: process.env.PLAYWRIGHT_TEST_BASE_URL
-		? undefined
-		: {
-				command: process.env.CI ? "npm run start" : "npm run dev",
-				url: "http://localhost:3000",
-				reuseExistingServer: !process.env.CI,
-			},
+	webServer: {
+		command: process.env.CI ? "npm run start" : "npm run dev",
+		url: "http://localhost:3000",
+		reuseExistingServer: !process.env.CI,
+	},
 });
