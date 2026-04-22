@@ -16,11 +16,10 @@ export default defineConfig({
 		baseURL: process.env.PLAYWRIGHT_TEST_BASE_URL || "http://localhost:3000",
 		trace: "on-first-retry",
 		actionTimeout: 15000,
-		storageState: "state.json",
 	},
 	testIgnore: [],
 	testMatch: "**/*.spec.ts",
-	globalSetup: "./tests/e2e/global-setup.ts",
+	globalSetup: undefined,
 	projects: [
 		{
 			name: "chromium",
