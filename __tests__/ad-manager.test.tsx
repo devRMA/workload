@@ -35,6 +35,7 @@ describe("AdManager", () => {
 
 	it("shows side ads after 2 seconds when no previous view exists", async () => {
 		vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
+		vi.stubEnv("NEXT_PUBLIC_ENABLE_ADS", "true");
 		render(<AdManager />);
 
 		expect(screen.queryByText("Espaço do Apoiador")).toBeNull();
@@ -48,6 +49,7 @@ describe("AdManager", () => {
 
 	it("shows video modal after 30 seconds", async () => {
 		vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
+		vi.stubEnv("NEXT_PUBLIC_ENABLE_ADS", "true");
 		render(<AdManager />);
 
 		expect(screen.queryByText("Vídeo da Semana")).toBeNull();
@@ -61,6 +63,7 @@ describe("AdManager", () => {
 
 	it("hides video ad when viewed less than a week ago", () => {
 		vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
+		vi.stubEnv("NEXT_PUBLIC_ENABLE_ADS", "true");
 		localStorage.setItem(VIDEO_AD_KEY, Date.now().toString());
 		render(<AdManager />);
 
