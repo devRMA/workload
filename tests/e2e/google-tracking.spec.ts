@@ -40,6 +40,8 @@ test.describe("Google Tracking & Ads", () => {
 
 	test("should hide consent banner after choice", async ({ page }) => {
 		await page.click('button:has-text("Aceitar Tudo")');
-		await expect(page.locator('button:has-text("Aceitar Tudo")')).toHaveCount(0);
+		await expect(page.locator('button:has-text("Aceitar Tudo")')).toHaveCount(
+			0,
+		);
 	});
 });
