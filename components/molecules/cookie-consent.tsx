@@ -173,7 +173,6 @@ export function CookieConsent() {
 				)}
 			</AnimatePresence>
 
-			{/* Botão flutuante discreto para reabrir configurações se já aceito */}
 			{!isVisible && (
 				<button
 					type="button"

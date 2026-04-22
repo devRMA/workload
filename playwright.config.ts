@@ -7,10 +7,29 @@ export default defineConfig({
 	retries: process.env.CI ? 2 : 0,
 	workers: process.env.CI ? 1 : undefined,
 	reporter: [["html", { open: "never" }], ["list"]],
+	timeout: 60000,
 	use: {
 		baseURL: "http://localhost:3000",
 		trace: "on-first-retry",
+		actionTimeout: 15000,
+		storageState: {
+			cookies: [],
+			origins: [
+				{
+					origin: "http://localhost:3000",
+					localStorage: [
+						{
+							name: "workload_cookie_consent",
+							value: JSON.stringify({ telemetry: true, timestamp: Date.now() }),
+						},
+					],
+				},
+			],
+		},
 	},
+	testIgnore: [],
+	testMatch: "**/*.spec.ts",
+	globalSetup: undefined,
 	projects: [
 		{
 			name: "chromium",
