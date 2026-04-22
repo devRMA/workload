@@ -16,25 +16,11 @@ export default defineConfig({
 		baseURL: process.env.PLAYWRIGHT_TEST_BASE_URL || "http://localhost:3000",
 		trace: "on-first-retry",
 		actionTimeout: 15000,
-		storageState: {
-			cookies: [],
-			origins: [
-				{
-					origin:
-						process.env.PLAYWRIGHT_TEST_BASE_URL || "http://localhost:3000",
-					localStorage: [
-						{
-							name: "workload_cookie_consent",
-							value: JSON.stringify({ telemetry: true, timestamp: Date.now() }),
-						},
-					],
-				},
-			],
-		},
+		storageState: "state.json",
 	},
 	testIgnore: [],
 	testMatch: "**/*.spec.ts",
-	globalSetup: undefined,
+	globalSetup: "./tests/e2e/global-setup.ts",
 	projects: [
 		{
 			name: "chromium",
