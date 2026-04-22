@@ -43,7 +43,7 @@ export default function Home() {
 		<>
 			<script
 				type="application/ld+json"
-				// biome-ignore lint/security/noDangerouslySetInnerHtml: required for schema.org
+				// biome-ignore lint/security/noDangerouslySetInnerHtml: SEO
 				dangerouslySetInnerHTML={{
 					__html: JSON.stringify({
 						"@context": "https://schema.org",

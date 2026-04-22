@@ -16,6 +16,7 @@ export function AdManager() {
 	const [canShowVideoAd, setCanShowVideoAd] = useState(false);
 	const [isAdBlockActive, setIsAdBlockActive] = useState(false);
 	const adClient = process.env.NEXT_PUBLIC_ADSENSE_ID;
+	const enableAds = process.env.NEXT_PUBLIC_ENABLE_ADS === "true";
 
 	const checkAdBlock = useCallback(async () => {
 		try {
@@ -34,6 +35,7 @@ export function AdManager() {
 	}, []);
 
 	const checkCooldowns = useCallback(() => {
+		if (!enableAds) return;
 		const now = Date.now();
 
 		const lastSideView = localStorage.getItem(SIDE_AD_KEY);
@@ -45,7 +47,7 @@ export function AdManager() {
 		if (!lastVideoView || now - Number(lastVideoView) > ONE_WEEK_MS) {
 			setCanShowVideoAd(true);
 		}
-	}, []);
+	}, [enableAds]);
 
 	useEffect(() => {
 		checkAdBlock();
@@ -53,16 +55,16 @@ export function AdManager() {
 	}, [checkAdBlock, checkCooldowns]);
 
 	useEffect(() => {
-		if (canShowVideoAd && !isAdBlockActive) {
+		if (enableAds && canShowVideoAd && !isAdBlockActive) {
 			const timer = setTimeout(() => {
 				setShowVideoModal(true);
 			}, 120000);
 			return () => clearTimeout(timer);
 		}
-	}, [canShowVideoAd, isAdBlockActive]);
+	}, [canShowVideoAd, isAdBlockActive, enableAds]);
 
 	useEffect(() => {
-		if (!adClient) return;
+		if (!adClient || !enableAds) return;
 		const existingScript = document.querySelector(
 			`script[src*="pagead2.googlesyndication.com"]`,
 		);
@@ -73,7 +75,7 @@ export function AdManager() {
 		script.async = true;
 		script.crossOrigin = "anonymous";
 		document.head.appendChild(script);
-	}, [adClient]);
+	}, [adClient, enableAds]);
 
 	const handleVideoComplete = () => {
 		localStorage.setItem(VIDEO_AD_KEY, Date.now().toString());

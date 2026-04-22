@@ -1,57 +1,47 @@
 import { expect, test } from "@playwright/test";
 
+test.use({ storageState: { cookies: [], origins: [] } });
+
 test.describe("Google Tracking & Ads", () => {
-	test("should load the page without errors", async ({ page }) => {
+	test.beforeEach(async ({ page }) => {
 		await page.goto("/");
-		await expect(page.locator("body")).toBeVisible();
 	});
 
-	test("should have AdSense script tag in the DOM", async ({ page }) => {
-		await page.goto("/");
-		const adsenseScript = page.locator(
-			'script[src*="pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"]',
-		);
-		const count = await adsenseScript.count();
-		expect(count).toBeGreaterThanOrEqual(0);
+	test("should show cookie consent banner on first visit", async ({ page }) => {
+		await expect(page.locator("text=Respeitamos sua privacidade")).toBeVisible({
+			timeout: 10000,
+		});
 	});
 
-	test("should have Google Analytics script tag in the DOM", async ({
+	test("should allow accepting cookies and load GA script", async ({
 		page,
 	}) => {
-		await page.goto("/");
+		await page.click('button:has-text("Aceitar Tudo")');
+		await expect(
+			page.locator("text=Respeitamos sua privacidade"),
+		).not.toBeVisible();
+
 		const gaScript = page.locator(
 			'script[src*="googletagmanager.com/gtag/js"]',
 		);
-		const count = await gaScript.count();
-		expect(count).toBeGreaterThanOrEqual(0);
+		await expect(gaScript).toHaveCount(1);
 	});
 
-	test("should show weekly ad section when no previous view exists", async ({
-		page,
-	}) => {
-		await page.goto("/");
-		await page.evaluate(() => localStorage.removeItem("workload_last_ad_view"));
-		await page.reload();
+	test("should show side ads on desktop after delay", async ({ page }) => {
+		const viewport = page.viewportSize();
+		const isDesktop = viewport && viewport.width >= 1536;
+		if (!isDesktop) return;
 
-		const adSection = page.locator("text=Anúncio da Semana");
-		const isVisible = await adSection.isVisible().catch(() => false);
+		await page.click('button:has-text("Aceitar Tudo")');
 
-		if (isVisible) {
-			await expect(adSection).toBeVisible();
-		}
+		const sideAd = page.locator("text=Espaço do Apoiador").first();
+		await expect(sideAd).toBeVisible({ timeout: 10000 });
 	});
 
-	test("should hide ad after clicking dismiss button", async ({ page }) => {
-		await page.goto("/");
-		await page.evaluate(() => localStorage.removeItem("workload_last_ad_view"));
-		await page.reload();
-
-		const dismissButton = page.locator("text=Remover (já vi por hoje)");
-		const isVisible = await dismissButton.isVisible().catch(() => false);
-
-		if (isVisible) {
-			await dismissButton.click();
-			await expect(page.locator("text=Anúncio da Semana")).not.toBeVisible();
-		}
+	test("should hide consent banner after choice", async ({ page }) => {
+		await page.click('button:has-text("Aceitar Tudo")');
+		await expect(page.locator('button:has-text("Aceitar Tudo")')).toHaveCount(
+			0,
+		);
 	});
 });
