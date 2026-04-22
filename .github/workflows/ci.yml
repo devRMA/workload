@@ -23,10 +23,10 @@ jobs:
     name: Lint & Format
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: "24"
           cache: "npm"
@@ -41,10 +41,10 @@ jobs:
     name: Type Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: "24"
           cache: "npm"
@@ -59,10 +59,10 @@ jobs:
     name: Unit Tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: "24"
           cache: "npm"
@@ -74,7 +74,7 @@ jobs:
         run: npx vitest run --coverage
 
       - name: Upload coverage
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: coverage-report
@@ -82,7 +82,7 @@ jobs:
           retention-days: 14
 
       - name: Unit Tests Report
-        uses: dorny/test-reporter@v1
+        uses: dorny/test-reporter@v3
         if: success() || failure()
         with:
           name: Unit Tests Report
@@ -90,7 +90,7 @@ jobs:
           reporter: java-junit
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
@@ -104,10 +104,10 @@ jobs:
       NEXT_PUBLIC_GA_ID: "G-TEST12345"
       NEXT_PUBLIC_ENABLE_ADS: "true"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: "24"
           cache: "npm"
@@ -116,7 +116,7 @@ jobs:
         run: npm ci
 
       - name: Cache Playwright browsers
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
@@ -133,7 +133,7 @@ jobs:
         run: npx playwright install-deps
 
       - name: Cache Next.js
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ${{ github.workspace }}/.next/cache
@@ -143,7 +143,7 @@ jobs:
 
       - name: Wait for Vercel Preview
         if: github.event_name == 'pull_request'
-        uses: patrickedqvist/wait-for-vercel-preview@v1.3.2
+        uses: patrickedqvist/wait-for-vercel-preview@v1.3.3
         id: waitForVercel
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -164,7 +164,7 @@ jobs:
           PLAYWRIGHT_TEST_BASE_URL: ${{ steps.waitForVercel.outputs.url }}
 
       - name: E2E Tests Report
-        uses: dorny/test-reporter@v1
+        uses: dorny/test-reporter@v3
         if: success() || failure()
         with:
           name: E2E Tests Report
@@ -172,7 +172,7 @@ jobs:
           reporter: java-junit
 
       - name: Upload Playwright report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: playwright-report
