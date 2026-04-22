@@ -34,17 +34,12 @@ test.describe("Google Tracking & Ads", () => {
 
 		await page.click('button:has-text("Aceitar Tudo")');
 
-		await page.click('button:has-text("Aceitar Tudo")');
 		const sideAd = page.locator("text=Espaço do Apoiador").first();
 		await expect(sideAd).toBeVisible({ timeout: 10000 });
 	});
 
-	test("should show video ad modal after delay", async ({ page }) => {
+	test("should hide consent banner after choice", async ({ page }) => {
 		await page.click('button:has-text("Aceitar Tudo")');
-
-		await page.click('button:has-text("Aceitar Tudo")');
-		await expect(page.locator('button:has-text("Aceitar Tudo")')).toHaveCount(
-			0,
-		);
+		await expect(page.locator('button:has-text("Aceitar Tudo")')).toHaveCount(0);
 	});
 });
