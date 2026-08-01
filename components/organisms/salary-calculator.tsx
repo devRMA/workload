@@ -88,7 +88,7 @@ export function SalaryCalculator() {
 								id="salario-bruto"
 								label="Salário Bruto (R$)"
 								type="text"
-								inputMode="numeric"
+								inputMode="decimal"
 								icon={<span className="font-bold text-blue-500">R$</span>}
 								placeholder="0,00"
 								value={formatCurrencySimple(grossSalary)}
@@ -109,7 +109,7 @@ export function SalaryCalculator() {
 								label="Carga Horária Mensal"
 								type="number"
 								min={0}
-								icon={<Clock className="w-5 h-5" />}
+								icon={<Clock className="w-5 h-5" aria-hidden="true" />}
 								placeholder="220"
 								value={monthlyHours || ""}
 								onChange={(event) =>
@@ -121,7 +121,7 @@ export function SalaryCalculator() {
 								label="Jornada Diária (horas)"
 								type="number"
 								min={0}
-								icon={<Sun className="w-5 h-5" />}
+								icon={<Sun className="w-5 h-5" aria-hidden="true" />}
 								placeholder="8"
 								value={dailyHours || ""}
 								onChange={(event) => setDailyHours(Number(event.target.value))}
@@ -200,21 +200,17 @@ export function SalaryCalculator() {
 					tone="blue"
 					footer={
 						<>
-							<p className="text-sm opacity-80 mb-2">Resumo Financeiro</p>
+							<p className="text-sm mb-2">Resumo Financeiro</p>
 							<div className="grid grid-cols-2 gap-4">
 								<div>
-									<p className="text-xs opacity-60 uppercase font-bold">
-										Bruto
-									</p>
-									<p className="text-xl font-bold">
+									<p className="text-xs uppercase font-bold">Bruto</p>
+									<p className="text-xl font-bold tabular-nums">
 										{formatCurrency(grossSalary)}
 									</p>
 								</div>
 								<div>
-									<p className="text-xs opacity-60 uppercase font-bold">
-										Ganhos Extras
-									</p>
-									<p className="text-xl font-bold">
+									<p className="text-xs uppercase font-bold">Ganhos Extras</p>
+									<p className="text-xl font-bold tabular-nums">
 										+{formatCurrency(stats.totalExtraGains)}
 									</p>
 								</div>
@@ -222,7 +218,7 @@ export function SalaryCalculator() {
 						</>
 					}
 				>
-					<p className="mt-4 text-xl opacity-80 font-medium">
+					<p className="mt-4 text-xl font-medium">
 						{formatCurrency(stats.hourlyRate)} por hora ·{" "}
 						{formatCurrency(stats.minuteRate)} por minuto
 					</p>

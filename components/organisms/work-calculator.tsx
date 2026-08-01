@@ -246,7 +246,7 @@ export function WorkCalculator() {
 					footer={
 						<div className="flex items-center justify-between gap-4">
 							<div>
-								<div className="flex items-center gap-2 opacity-80 mb-1">
+								<div className="flex items-center gap-2 mb-1">
 									<LogOut
 										className="w-4 h-4 lg:w-5 lg:h-5"
 										aria-hidden="true"
@@ -279,7 +279,7 @@ export function WorkCalculator() {
 								className="h-full bg-white"
 							/>
 						</div>
-						<div className="flex justify-between text-[10px] lg:text-xs font-bold opacity-60">
+						<div className="flex justify-between text-xs font-bold">
 							<span>ENTRADA {timerData.entryLabel}</span>
 							<span>SAÍDA {timerData.exitLabel}</span>
 						</div>

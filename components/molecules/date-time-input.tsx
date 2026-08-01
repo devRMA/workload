@@ -10,7 +10,7 @@ const TIME_GROUPS = [2, 2] as const;
 const BR_DATE_FORMAT = "dd/MM/yyyy";
 const ISO_DATE_FORMAT = "yyyy-MM-dd";
 const FIELD_CLASSES =
-	"h-14 focus-visible:ring-indigo-500 placeholder:text-neutral-500";
+	"h-14 focus-visible:ring-indigo-500 placeholder:text-neutral-500 dark:placeholder:text-neutral-400";
 
 const toBRDate = (isoDate: string) => {
 	if (!isoDate) return "";
@@ -67,7 +67,7 @@ export function DateTimeInput({
 		<div className={cn("space-y-3", className)}>
 			<label
 				htmlFor={inputId}
-				className="flex items-center gap-2 text-sm font-medium text-neutral-500"
+				className="flex items-center gap-2 text-sm font-medium text-neutral-500 dark:text-neutral-400"
 			>
 				<Icon className="w-4 h-4" aria-hidden="true" />
 				{label}

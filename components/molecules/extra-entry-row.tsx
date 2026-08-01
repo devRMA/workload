@@ -45,7 +45,7 @@ export function ExtraEntryRow({
 			<div className="w-24 sm:w-32 shrink-0">
 				<Input
 					type="text"
-					inputMode="numeric"
+					inputMode="decimal"
 					aria-label={valueLabel}
 					placeholder="Valor"
 					value={formatCurrencySimple(value)}

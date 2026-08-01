@@ -45,7 +45,7 @@ export function StatBox({
 				</span>
 			</div>
 			<div
-				className={cn("text-2xl font-bold tracking-tight", {
+				className={cn("text-2xl font-bold tracking-tight tabular-nums", {
 					"text-blue-600 dark:text-blue-400": variant === "default",
 					"text-emerald-600 dark:text-emerald-400": variant === "success",
 					"text-amber-600 dark:text-amber-400": variant === "warning",

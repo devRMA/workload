@@ -65,7 +65,7 @@ export default function Home() {
 					<div className="max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 h-20 flex items-center justify-between">
 						<div className="flex items-center gap-3">
 							<div className="w-10 h-10 rounded-xl bg-indigo-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-								<Wallet className="text-white w-6 h-6" />
+								<Wallet className="text-white w-6 h-6" aria-hidden="true" />
 							</div>
 							<h1 className="text-xl font-bold tracking-tight md:text-2xl">
 								WorkLoad
@@ -74,7 +74,7 @@ export default function Home() {
 
 						<div className="flex items-center gap-4">
 							<div className="hidden md:flex items-center gap-2 px-4 py-2 bg-neutral-100 dark:bg-neutral-800 rounded-xl text-sm font-bold">
-								<Clock className="w-4 h-4 text-indigo-500" />
+								<Clock className="w-4 h-4 text-indigo-500" aria-hidden="true" />
 								<span className="tabular-nums">
 									{currentTime === null
 										? PLACEHOLDER_CLOCK
@@ -92,11 +92,12 @@ export default function Home() {
 									});
 								}}
 								title="Alternar tema"
+								aria-label="Alternar tema"
 							>
 								{resolvedTheme === "dark" ? (
-									<Sun className="w-5 h-5" />
+									<Sun className="w-5 h-5" aria-hidden="true" />
 								) : (
-									<Moon className="w-5 h-5" />
+									<Moon className="w-5 h-5" aria-hidden="true" />
 								)}
 							</Button>
 						</div>
@@ -135,7 +136,7 @@ export default function Home() {
 				<div
 					id="main-content"
 					tabIndex={-1}
-					className="pt-32 pb-32 px-4 sm:px-6 lg:px-8 outline-none"
+					className="pt-32 pb-32 px-4 sm:px-6 lg:px-8 outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
 				>
 					<AnimatePresence mode="wait">
 						{activeView === "work" ? (

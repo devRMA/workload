@@ -38,7 +38,7 @@ describe("viewport", () => {
 		expect(viewport.width).toBe("device-width");
 		expect(viewport.initialScale).toBe(1);
 		expect(viewport.themeColor).toEqual([
-			{ media: "(prefers-color-scheme: light)", color: "#ffffff" },
+			{ media: "(prefers-color-scheme: light)", color: "#fafafa" },
 			{ media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
 		]);
 	});

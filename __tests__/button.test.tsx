@@ -33,7 +33,7 @@ describe("Button", () => {
 	it("renders with sm size", () => {
 		const { container } = render(<Button size="sm">Small</Button>);
 		const button = container.querySelector("button");
-		expect(button?.className).toContain("h-9");
+		expect(button?.className).toContain("h-11");
 	});
 
 	it("renders with lg size", () => {
@@ -45,8 +45,8 @@ describe("Button", () => {
 	it("renders with icon size", () => {
 		const { container } = render(<Button size="icon">X</Button>);
 		const button = container.querySelector("button");
-		expect(button?.className).toContain("h-10");
-		expect(button?.className).toContain("w-10");
+		expect(button?.className).toContain("h-11");
+		expect(button?.className).toContain("w-11");
 	});
 
 	it("respects explicit type prop", () => {

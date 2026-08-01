@@ -96,7 +96,7 @@ export function JourneyForm({
 						aria-label="Configurações da Jornada"
 						aria-expanded={showSettings}
 						aria-controls={SETTINGS_PANEL_ID}
-						className={`p-2 rounded-xl transition-colors ${showSettings ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400" : "hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-400"}`}
+						className={`p-3 rounded-xl transition-colors ${showSettings ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400" : "hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-600"}`}
 					>
 						<Settings
 							className={`w-5 h-5 transition-transform duration-500 ${showSettings ? "rotate-90" : ""}`}
@@ -109,7 +109,7 @@ export function JourneyForm({
 						type="button"
 						aria-pressed={!isManualExit}
 						onClick={() => onManualExitChange(false)}
-						className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all ${!isManualExit ? "bg-white dark:bg-neutral-700 shadow-md text-emerald-500" : "text-neutral-400 hover:text-neutral-600"}`}
+						className={`px-6 py-3.5 rounded-xl text-xs font-bold transition-colors ${!isManualExit ? "bg-white dark:bg-neutral-700 shadow-md text-emerald-700 dark:text-emerald-400" : "text-neutral-600 hover:text-neutral-600"}`}
 					>
 						AUTO
 					</button>
@@ -117,7 +117,7 @@ export function JourneyForm({
 						type="button"
 						aria-pressed={isManualExit}
 						onClick={() => onManualExitChange(true)}
-						className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all ${isManualExit ? "bg-white dark:bg-neutral-700 shadow-md text-emerald-500" : "text-neutral-400 hover:text-neutral-600"}`}
+						className={`px-6 py-3.5 rounded-xl text-xs font-bold transition-colors ${isManualExit ? "bg-white dark:bg-neutral-700 shadow-md text-emerald-700 dark:text-emerald-400" : "text-neutral-600 hover:text-neutral-600"}`}
 					>
 						MANUAL
 					</button>
@@ -136,7 +136,7 @@ export function JourneyForm({
 								<Zap className="w-4 h-4 text-emerald-500" aria-hidden="true" />
 								Tempo de Trabalho Diário
 							</Label>
-							<p className="text-xs text-neutral-400 mb-4">
+							<p className="text-xs text-neutral-600 mb-4">
 								Define o tempo total de trabalho esperado por dia para o cálculo
 								de banco de horas.
 							</p>
@@ -226,14 +226,11 @@ export function JourneyForm({
 					type="button"
 					aria-label="Resetar Horários"
 					onClick={onReset}
-					className="flex items-center gap-2 text-sm font-medium text-neutral-400 hover:text-emerald-500 transition-colors"
+					className="flex items-center gap-2 -mx-2 px-2 py-3 text-sm font-medium text-neutral-600 hover:text-emerald-500 transition-colors"
 				>
 					<RotateCcw className="w-4 h-4" aria-hidden="true" />
 					Resetar Horários
 				</button>
-				<div className="text-[10px] text-neutral-300 uppercase tracking-widest font-bold">
-					WorkLoad
-				</div>
 			</div>
 		</div>
 	);

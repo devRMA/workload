@@ -24,11 +24,13 @@ export function DurationRow({
 }: DurationRowProps) {
 	return (
 		<div className="flex items-center justify-between">
-			<div className="flex items-center gap-2 text-sm text-neutral-500">
+			<div className="flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400">
 				<Icon className={cn("w-4 h-4", iconClassName)} aria-hidden="true" />
 				{label}
 			</div>
-			<span className="font-bold">{formatHoursAndMinutes(minutes)}</span>
+			<span className="font-bold tabular-nums">
+				{formatHoursAndMinutes(minutes)}
+			</span>
 		</div>
 	);
 }

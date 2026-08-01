@@ -67,7 +67,7 @@ export function TaxDetailsPanel({
 					id="inss-manual"
 					label="INSS (R$)"
 					type="text"
-					inputMode="numeric"
+					inputMode="decimal"
 					icon={<span className="font-bold text-red-500">R$</span>}
 					placeholder={formatCurrencySimple(autoInss)}
 					value={manualInss !== null ? formatCurrencySimple(manualInss) : ""}
@@ -79,7 +79,7 @@ export function TaxDetailsPanel({
 					id="irrf-manual"
 					label="IRRF (R$)"
 					type="text"
-					inputMode="numeric"
+					inputMode="decimal"
 					icon={<span className="font-bold text-red-500">R$</span>}
 					placeholder={formatCurrencySimple(autoIrrf)}
 					value={manualIrrf !== null ? formatCurrencySimple(manualIrrf) : ""}

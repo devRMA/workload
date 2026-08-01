@@ -49,11 +49,11 @@ export function WorkSummary({
 					</div>
 					<div className="space-y-1">
 						<p
-							className={`text-4xl font-black tracking-tight ${isPositiveBalance ? "text-emerald-500" : "text-rose-500"}`}
+							className={`text-4xl font-black tracking-tight tabular-nums ${isPositiveBalance ? "text-emerald-700 dark:text-emerald-400" : "text-rose-500"}`}
 						>
 							{formatBalance(balanceMinutes)}
 						</p>
-						<p className="text-sm text-neutral-500">
+						<p className="text-sm text-neutral-500 dark:text-neutral-400">
 							{isPositiveBalance
 								? "Horas extras acumuladas"
 								: "Horas em débito hoje"}

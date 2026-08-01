@@ -2,8 +2,8 @@ import type { ElementType, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 const TONE_CLASSES = {
-	emerald: "bg-emerald-500 shadow-emerald-500/20 lg:shadow-emerald-500/30",
-	rose: "bg-rose-500 shadow-rose-500/20 lg:shadow-rose-500/30",
+	emerald: "bg-emerald-700 shadow-emerald-500/20 lg:shadow-emerald-500/30",
+	rose: "bg-rose-700 shadow-rose-500/20 lg:shadow-rose-500/30",
 	blue: "bg-blue-600 shadow-blue-500/30",
 } as const;
 
@@ -37,7 +37,7 @@ export function HeroPanel({
 			<div className="absolute -bottom-10 -left-10 w-40 h-40 bg-black/10 rounded-full blur-3xl" />
 			<div className="relative z-10 space-y-6 lg:space-y-8">
 				<div className="flex items-center justify-between gap-4">
-					<div className="flex items-center gap-2 lg:gap-3 opacity-80">
+					<div className="flex items-center gap-2 lg:gap-3">
 						<Icon className="w-5 h-5 lg:w-6 lg:h-6" aria-hidden="true" />
 						<span className="text-sm lg:text-lg font-bold lg:font-medium tracking-wider lg:tracking-wide uppercase">
 							{label}
