@@ -1,4 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
+import {
+	calculateIncomeTax,
+	calculateSocialSecurity,
+	sanitizeAmount,
+} from "@/lib/payroll";
+import { readStoredList, readStoredNumber } from "@/lib/storage";
 
 export interface ExtraItem {
 	id: string;
@@ -6,97 +12,89 @@ export interface ExtraItem {
 	value: number;
 }
 
-export function calculateInss(salary: number): number {
-	const brackets = [
-		{ limit: 1518.0, rate: 0.075 },
-		{ limit: 2793.88, rate: 0.09 },
-		{ limit: 4190.83, rate: 0.12 },
-		{ limit: 8157.41, rate: 0.14 },
-	];
+export type ExtraKind = "gain" | "deduction";
 
-	let inss = 0;
-	const remaining = Math.min(salary, 8157.41);
-	let lastLimit = 0;
+const DEFAULT_GROSS_SALARY = 5000;
+const DEFAULT_MONTHLY_HOURS = 220;
 
-	for (const bracket of brackets) {
-		if (remaining > lastLimit) {
-			const amountInBracket = Math.min(remaining, bracket.limit) - lastLimit;
-			inss += amountInBracket * bracket.rate;
-			lastLimit = bracket.limit;
-		} else {
-			break;
-		}
-	}
+const STORAGE_KEYS = {
+	grossSalary: "grossSalary",
+	monthlyHours: "monthlyHours",
+	extraDeductions: "extraDeductions",
+	extraGains: "extraGains",
+} as const;
 
-	return Number(inss.toFixed(2));
+function isExtraItem(candidate: unknown): candidate is ExtraItem {
+	if (typeof candidate !== "object" || candidate === null) return false;
+
+	const { id, name, value } = candidate as Partial<ExtraItem>;
+	return (
+		typeof id === "string" &&
+		typeof name === "string" &&
+		typeof value === "number" &&
+		Number.isFinite(value)
+	);
 }
 
-export function calculateIrrf(salary: number, inssAmount: number): number {
-	const base = salary - inssAmount;
-	const brackets = [
-		{ limit: 2259.2, rate: 0, deduction: 0 },
-		{ limit: 2826.65, rate: 0.075, deduction: 169.44 },
-		{ limit: 3751.05, rate: 0.15, deduction: 381.44 },
-		{ limit: 4664.68, rate: 0.225, deduction: 662.77 },
-		{ limit: Infinity, rate: 0.275, deduction: 896.0 },
-	];
-
-	const bracket =
-		brackets.find((b) => base <= b.limit) || brackets[brackets.length - 1];
-	const irrf = base * bracket.rate - bracket.deduction;
-	return Math.max(0, Number(irrf.toFixed(2)));
+function sumValues(items: readonly ExtraItem[]): number {
+	return items.reduce((total, item) => total + item.value, 0);
 }
 
-export function useSalaryCalculator(initialSalary = 5000, initialHours = 220) {
-	const [grossSalary, setGrossSalary] = useState<number>(initialSalary);
-	const [monthlyHours, setMonthlyHours] = useState<number>(initialHours);
+export function useSalaryCalculator(
+	initialSalary = DEFAULT_GROSS_SALARY,
+	initialHours = DEFAULT_MONTHLY_HOURS,
+) {
+	const [grossSalary, setGrossSalary] = useState(initialSalary);
+	const [monthlyHours, setMonthlyHours] = useState(initialHours);
 	const [manualInss, setManualInss] = useState<number | null>(null);
 	const [manualIrrf, setManualIrrf] = useState<number | null>(null);
 	const [extraDeductions, setExtraDeductions] = useState<ExtraItem[]>([]);
 	const [extraGains, setExtraGains] = useState<ExtraItem[]>([]);
+	const [isRestored, setIsRestored] = useState(false);
 
 	useEffect(() => {
-		const savedSalary = localStorage.getItem("grossSalary");
-		const savedHours = localStorage.getItem("monthlyHours");
-		const savedDeductions = localStorage.getItem("extraDeductions");
-		const savedGains = localStorage.getItem("extraGains");
-
-		if (savedSalary) setGrossSalary(Number.parseFloat(savedSalary));
-		if (savedHours) setMonthlyHours(Number.parseInt(savedHours, 10));
-		if (savedDeductions) setExtraDeductions(JSON.parse(savedDeductions));
-		if (savedGains) setExtraGains(JSON.parse(savedGains));
-	}, []);
+		setGrossSalary(readStoredNumber(STORAGE_KEYS.grossSalary, initialSalary));
+		setMonthlyHours(readStoredNumber(STORAGE_KEYS.monthlyHours, initialHours));
+		setExtraDeductions(
+			readStoredList(STORAGE_KEYS.extraDeductions, isExtraItem),
+		);
+		setExtraGains(readStoredList(STORAGE_KEYS.extraGains, isExtraItem));
+		setIsRestored(true);
+	}, [initialSalary, initialHours]);
 
 	useEffect(() => {
-		localStorage.setItem("grossSalary", grossSalary.toString());
-		localStorage.setItem("monthlyHours", monthlyHours.toString());
-		localStorage.setItem("extraDeductions", JSON.stringify(extraDeductions));
-		localStorage.setItem("extraGains", JSON.stringify(extraGains));
-	}, [grossSalary, monthlyHours, extraDeductions, extraGains]);
+		if (!isRestored) return;
 
-	const autoInss = useMemo(() => calculateInss(grossSalary), [grossSalary]);
+		localStorage.setItem(STORAGE_KEYS.grossSalary, grossSalary.toString());
+		localStorage.setItem(STORAGE_KEYS.monthlyHours, monthlyHours.toString());
+		localStorage.setItem(
+			STORAGE_KEYS.extraDeductions,
+			JSON.stringify(extraDeductions),
+		);
+		localStorage.setItem(STORAGE_KEYS.extraGains, JSON.stringify(extraGains));
+	}, [isRestored, grossSalary, monthlyHours, extraDeductions, extraGains]);
+
+	const autoInss = useMemo(
+		() => calculateSocialSecurity(grossSalary),
+		[grossSalary],
+	);
 	const autoIrrf = useMemo(
-		() => calculateIrrf(grossSalary, manualInss ?? autoInss),
+		() => calculateIncomeTax(grossSalary, manualInss ?? autoInss),
 		[grossSalary, manualInss, autoInss],
 	);
 
 	const stats = useMemo(() => {
-		const inss = manualInss ?? autoInss;
-		const irrf = manualIrrf ?? autoIrrf;
-		const totalExtraDeductions = extraDeductions.reduce(
-			(acc, item) => acc + item.value,
-			0,
-		);
-		const totalExtraGains = extraGains.reduce(
-			(acc, item) => acc + item.value,
-			0,
-		);
+		const inss = sanitizeAmount(manualInss ?? autoInss);
+		const irrf = sanitizeAmount(manualIrrf ?? autoIrrf);
+		const totalExtraDeductions = sumValues(extraDeductions);
+		const totalExtraGains = sumValues(extraGains);
 
-		const netSalary = grossSalary - inss - irrf - totalExtraDeductions;
+		const netSalary =
+			sanitizeAmount(grossSalary) - inss - irrf - totalExtraDeductions;
 		const totalValue = netSalary + totalExtraGains;
 
-		const hourlyRate = totalValue / (monthlyHours || 1);
-		const minuteRate = hourlyRate / 60;
+		const billableHours = monthlyHours > 0 ? monthlyHours : 1;
+		const hourlyRate = totalValue / billableHours;
 
 		return {
 			inss,
@@ -106,7 +104,7 @@ export function useSalaryCalculator(initialSalary = 5000, initialHours = 220) {
 			netSalary,
 			totalValue,
 			hourlyRate,
-			minuteRate,
+			minuteRate: hourlyRate / 60,
 		};
 	}, [
 		grossSalary,
@@ -119,43 +117,41 @@ export function useSalaryCalculator(initialSalary = 5000, initialHours = 220) {
 		extraGains,
 	]);
 
-	const addExtra = (type: "gain" | "deduction") => {
-		const newItem = {
+	const addExtra = (kind: ExtraKind) => {
+		const newItem: ExtraItem = {
 			id: crypto.randomUUID(),
 			name: "",
 			value: 0,
 		};
-		if (type === "gain") setExtraGains([...extraGains, newItem]);
-		else setExtraDeductions([...extraDeductions, newItem]);
+		const setItems = kind === "gain" ? setExtraGains : setExtraDeductions;
+		setItems((items) => [...items, newItem]);
 	};
 
 	const updateExtra = (
 		id: string,
-		type: "gain" | "deduction",
+		kind: ExtraKind,
 		field: "name" | "value",
-		val: string | number,
+		nextValue: string | number,
 	) => {
-		const list = type === "gain" ? [...extraGains] : [...extraDeductions];
-		const index = list.findIndex((item) => item.id === id);
-		if (index > -1) {
-			list[index] = {
-				...list[index],
-				[field]:
-					field === "value"
-						? Number.isNaN(Number(val))
-							? 0
-							: Number(val)
-						: val,
-			};
-			if (type === "gain") setExtraGains(list);
-			else setExtraDeductions(list);
-		}
+		const setItems = kind === "gain" ? setExtraGains : setExtraDeductions;
+		setItems((items) =>
+			items.map((item) =>
+				item.id === id
+					? {
+							...item,
+							[field]:
+								field === "value"
+									? sanitizeAmount(Number(nextValue))
+									: nextValue,
+						}
+					: item,
+			),
+		);
 	};
 
-	const removeExtra = (id: string, type: "gain" | "deduction") => {
-		if (type === "gain")
-			setExtraGains(extraGains.filter((item) => item.id !== id));
-		else setExtraDeductions(extraDeductions.filter((item) => item.id !== id));
+	const removeExtra = (id: string, kind: ExtraKind) => {
+		const setItems = kind === "gain" ? setExtraGains : setExtraDeductions;
+		setItems((items) => items.filter((item) => item.id !== id));
 	};
 
 	return {
