@@ -35,10 +35,11 @@ This project was heavily driven and refactored from scratch to production level 
 
 WorkLoad is a clear example of cutting-edge frontend engineering:
 
-*   **[Atomic Design](https://bradfrost.com/blog/post/atomic-web-design/)**: Highly scalable UI, broken down into `Atoms` (Buttons, Inputs), `Molecules` (FormFields, StatBoxes), and `Organisms` (Calculators). Everything designed for maximum reuse.
-*   **Decoupled Logic**: No business rules are tied to visual components. All complex logic and heavy calculations live in isolated **Custom Hooks** (`use-work-calculator` and `use-salary-calculator`).
+*   **[Atomic Design](https://bradfrost.com/blog/post/atomic-web-design/)**: Highly scalable UI, broken down into `Atoms` (Buttons, Inputs, MaskedInput), `Molecules` (FormFields, StatBoxes, HeroPanel), `Organisms` (the calculators) and `Templates` (the shared layout). Everything designed for maximum reuse.
+*   **Decoupled Logic**: No business rules are tied to visual components. Tax and time rules live in `lib/` (`payroll`, `salary-period`), and the stateful glue lives in isolated **Custom Hooks** (`use-work-calculator`, `use-salary-calculator`, `use-current-time`).
 *   **Clean Code & KISS**: Strictly readable code focused on the essential. Zero comments to explain confusing logic (the code speaks for itself) and strong naming conventions.
-*   **Strict TypeScript**: 100% typed. No `any` or `unknown`.
+*   **Strict TypeScript**: 100% typed. No `any`, and `unknown` only where an external value has to be validated before it can be trusted.
+*   **Accessibility**: WCAG AA contrast in both themes, 44px touch targets, `prefers-reduced-motion` honoured, and dialogs built on the native `<dialog>` element so focus trapping and Escape come from the platform.
 *   **BiomeJS**: We replaced the classic ESLint/Prettier setup with the Rust-powered [BiomeJS](https://biomejs.dev/), ensuring linting and formatting in less than 50ms.
 
 ---
@@ -47,8 +48,8 @@ WorkLoad is a clear example of cutting-edge frontend engineering:
 
 We don't ship broken code to production. The project features:
 
-- **100% Unit Test Coverage**: All business scenarios, CLT rules, and tax calculations are unit tested using **Vitest**.
-- **End-to-End (E2E) Testing**: We use **Playwright** to simulate user behavior on both Desktop screens and real simulated iPhones and Androids. Everything must work.
+- **100% Unit Test Coverage**: Enforced, not claimed — `vitest.config.ts` fails the run below 100% statements, branches, functions and lines across `app/`, `components/`, `hooks/` and `lib/`.
+- **End-to-End (E2E) Testing**: We use **Playwright** across five viewports — desktop, QHD (2560×1440), 4K (3840×2160), and simulated iPhone and Android — asserting no horizontal overflow and no control outside the viewport at any of them.
 - **Continuous Integration (GitHub Actions)**: For every PR/Push to `main`, the GitHub pipeline rigorously executes:
   1. Clean installation (`npm ci`)
   2. Code standard verification (`npx @biomejs/biome ci .`)
@@ -63,7 +64,7 @@ We don't ship broken code to production. The project features:
 ## 🛠️ Stack
 
 - **Framework:** Next.js 15 (App Router) + React 19
-- **Styling:** Tailwind CSS + Framer Motion + Lucide Icons
+- **Styling:** Tailwind CSS 4 + Motion + Lucide Icons
 - **Language:** TypeScript
 - **Tooling:** BiomeJS, Vitest, Playwright, Date-fns
 
