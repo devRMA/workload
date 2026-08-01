@@ -16,7 +16,9 @@ test.describe("Responsive layout", () => {
 		expect(overflow).toBeLessThanOrEqual(0);
 	});
 
-	test("keeps every control reachable inside the viewport", async ({ page }) => {
+	test("keeps every control reachable inside the viewport", async ({
+		page,
+	}) => {
 		const unreachableControls = await page.evaluate(() =>
 			[...document.querySelectorAll("main button, main input, main a")]
 				.filter((control) => {
