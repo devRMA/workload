@@ -79,6 +79,7 @@ jobs:
     env:
       NEXT_PUBLIC_GA_ID: "G-TEST12345"
       NEXT_PUBLIC_ENABLE_ADS: "true"
+      NEXT_PUBLIC_ADSENSE_ID: "ca-pub-0000000000000000"
     steps:
       - uses: actions/checkout@v6
 

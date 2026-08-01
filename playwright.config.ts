@@ -39,6 +39,20 @@ export default defineConfig({
 			use: { ...devices["Desktop Chrome"] },
 		},
 		{
+			name: "desktop-qhd",
+			use: {
+				...devices["Desktop Chrome"],
+				viewport: { width: 2560, height: 1440 },
+			},
+		},
+		{
+			name: "desktop-4k",
+			use: {
+				...devices["Desktop Chrome"],
+				viewport: { width: 3840, height: 2160 },
+			},
+		},
+		{
 			name: "Mobile Chrome",
 			use: { ...devices["Pixel 5"] },
 		},
