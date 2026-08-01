@@ -31,10 +31,6 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# AI Agents & Skills
-# Managed skills and agent state should not be versioned
-.agents/
-
 # IDE & System
 .vscode/
 .idea/
