@@ -1,6 +1,6 @@
 export function readStoredNumber(key: string, fallback: number): number {
 	const raw = localStorage.getItem(key);
-	if (raw === null) return fallback;
+	if (raw === null || raw.trim() === "") return fallback;
 
 	const parsed = Number(raw);
 	return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;

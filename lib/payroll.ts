@@ -3,8 +3,13 @@ interface ProgressiveBracket {
 	readonly rate: number;
 }
 
-interface IncomeTaxBracket extends ProgressiveBracket {
+interface IncomeTaxRate {
+	readonly rate: number;
 	readonly deduction: number;
+}
+
+interface IncomeTaxBracket extends IncomeTaxRate {
+	readonly ceiling: number;
 }
 
 const SOCIAL_SECURITY_BRACKETS: readonly ProgressiveBracket[] = [
@@ -19,8 +24,9 @@ const INCOME_TAX_BRACKETS: readonly IncomeTaxBracket[] = [
 	{ ceiling: 2826.65, rate: 0.075, deduction: 182.16 },
 	{ ceiling: 3751.05, rate: 0.15, deduction: 394.16 },
 	{ ceiling: 4664.68, rate: 0.225, deduction: 675.49 },
-	{ ceiling: Number.POSITIVE_INFINITY, rate: 0.275, deduction: 908.73 },
 ];
+
+const TOP_INCOME_TAX_RATE: IncomeTaxRate = { rate: 0.275, deduction: 908.73 };
 
 const SIMPLIFIED_DEDUCTION = 607.2;
 const EXEMPTION_CEILING = 5000;
@@ -60,10 +66,10 @@ export function calculateSocialSecurity(grossSalary: number): number {
 	);
 }
 
-function findIncomeTaxBracket(base: number): IncomeTaxBracket {
+function findIncomeTaxRate(base: number): IncomeTaxRate {
 	return (
 		INCOME_TAX_BRACKETS.find(({ ceiling }) => base <= ceiling) ??
-		INCOME_TAX_BRACKETS[INCOME_TAX_BRACKETS.length - 1]
+		TOP_INCOME_TAX_RATE
 	);
 }
 
@@ -84,7 +90,7 @@ export function calculateIncomeTax(
 		SIMPLIFIED_DEDUCTION,
 	);
 	const base = sanitizeAmount(gross - deductible);
-	const { rate, deduction } = findIncomeTaxBracket(base);
+	const { rate, deduction } = findIncomeTaxRate(base);
 	const tax = base * rate - deduction - taxReductionFor(gross);
 
 	return roundToCents(sanitizeAmount(tax));

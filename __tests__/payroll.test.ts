@@ -69,7 +69,9 @@ describe("calculateIncomeTax", () => {
 	});
 
 	it("stops reducing once the phase-out ceiling is reached", () => {
-		expect(calculateIncomeTax(7350, calculateSocialSecurity(7350))).toBe(884.13);
+		expect(calculateIncomeTax(7350, calculateSocialSecurity(7350))).toBe(
+			884.13,
+		);
 	});
 
 	it("applies the top bracket above the phase-out ceiling", () => {
