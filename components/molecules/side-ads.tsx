@@ -45,11 +45,11 @@ export function SideAds({ onClose }: SideAdsProps) {
 									setIsVisible(false);
 									onClose();
 								}}
-								className="absolute -top-3 -right-3 z-50 bg-background border rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+								className="absolute -top-3 -right-3 z-50 bg-white dark:bg-neutral-950 border rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
 							>
 								<X size={14} />
 							</button>
-							<div className="text-[10px] text-center text-muted-foreground mb-1 uppercase tracking-tighter">
+							<div className="text-[10px] text-center text-neutral-500 dark:text-neutral-400 mb-1 uppercase tracking-tighter">
 								Espaço do Apoiador
 							</div>
 							<GoogleAd slot="left_side_slot" format="vertical" />
@@ -69,11 +69,11 @@ export function SideAds({ onClose }: SideAdsProps) {
 									setIsVisible(false);
 									onClose();
 								}}
-								className="absolute -top-3 -left-3 z-50 bg-background border rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+								className="absolute -top-3 -left-3 z-50 bg-white dark:bg-neutral-950 border rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
 							>
 								<X size={14} />
 							</button>
-							<div className="text-[10px] text-center text-muted-foreground mb-1 uppercase tracking-tighter">
+							<div className="text-[10px] text-center text-neutral-500 dark:text-neutral-400 mb-1 uppercase tracking-tighter">
 								Espaço do Apoiador
 							</div>
 							<GoogleAd slot="right_side_slot" format="vertical" />

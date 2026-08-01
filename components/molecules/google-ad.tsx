@@ -38,7 +38,7 @@ export function GoogleAd({
 
 	if (!adClient) {
 		return (
-			<div className="flex h-full w-full items-center justify-center rounded-xl border-2 border-dashed border-muted bg-muted/50 p-4 text-center text-muted-foreground min-h-[100px]">
+			<div className="flex h-full w-full items-center justify-center rounded-xl border-2 border-dashed border-muted bg-neutral-100 dark:bg-neutral-800/50 p-4 text-center text-neutral-500 dark:text-neutral-400 min-h-[100px]">
 				<div className="space-y-1">
 					<p className="text-xs font-semibold">Anúncio</p>
 					<p className="text-[10px] opacity-70">Aguardando ID</p>
@@ -49,7 +49,7 @@ export function GoogleAd({
 
 	return (
 		<div
-			className={`overflow-hidden rounded-xl bg-muted/30 ${className}`}
+			className={`overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-800/30 ${className}`}
 			style={{ minWidth: format === "vertical" ? "160px" : "auto" }}
 		>
 			<ins
