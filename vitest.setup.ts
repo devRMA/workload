@@ -6,6 +6,10 @@ afterEach(() => {
 	cleanup();
 });
 
+vi.mock("next/font/google", () => ({
+	Inter: () => ({ className: "font-inter" }),
+}));
+
 Object.defineProperty(window, "matchMedia", {
 	writable: true,
 	value: vi.fn().mockImplementation((query) => ({

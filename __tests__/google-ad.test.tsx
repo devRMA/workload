@@ -50,4 +50,15 @@ describe("GoogleAd", () => {
 		const { container } = render(<GoogleAd className="my-custom-class" />);
 		expect(container.querySelector(".my-custom-class")).toBeTruthy();
 	});
+
+	it("swallows the error when pushing to adsbygoogle throws", () => {
+		vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
+		(window as Record<string, unknown>).adsbygoogle = {
+			push: () => {
+				throw new Error("blocked");
+			},
+		};
+		expect(() => render(<GoogleAd />)).not.toThrow();
+		(window as Record<string, unknown>).adsbygoogle = undefined;
+	});
 });

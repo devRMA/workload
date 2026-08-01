@@ -167,7 +167,9 @@ describe("useSalaryCalculator", () => {
 		});
 
 		expect(result.current.extraGains[0].value).toBe(0);
-		expect(result.current.stats.totalValue).toBe(result.current.stats.netSalary);
+		expect(result.current.stats.totalValue).toBe(
+			result.current.stats.netSalary,
+		);
 	});
 
 	it("leaves the list untouched when updating an unknown id", () => {
@@ -220,7 +222,9 @@ describe("useSalaryCalculator", () => {
 			result.current.setMonthlyHours(0);
 		});
 
-		expect(result.current.stats.hourlyRate).toBe(result.current.stats.totalValue);
+		expect(result.current.stats.hourlyRate).toBe(
+			result.current.stats.totalValue,
+		);
 		expect(Number.isFinite(result.current.stats.hourlyRate)).toBe(true);
 	});
 });

@@ -92,6 +92,21 @@ describe("AdManager", () => {
 		});
 	});
 
+	it("closes the adblock modal without reloading when dismissed", async () => {
+		vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
+		mockFetch.mockRejectedValueOnce(new Error("blocked"));
+
+		render(<AdManager />);
+
+		await vi.waitFor(() => {
+			expect(screen.getByText("Opa! Uma ajudinha?")).toBeDefined();
+		});
+
+		fireEvent.click(screen.getByText("Continuar com AdBlock ativo"));
+
+		expect(mockReload).not.toHaveBeenCalled();
+	});
+
 	it("reloads the page and closes the modal when confirming adblock is disabled", async () => {
 		vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
 		mockFetch.mockRejectedValueOnce(new Error("blocked"));
