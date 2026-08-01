@@ -1,4 +1,5 @@
 import { render } from "@testing-library/react";
+import { StrictMode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { GoogleAd } from "@/components/molecules/google-ad";
 
@@ -59,6 +60,19 @@ describe("GoogleAd", () => {
 			},
 		};
 		expect(() => render(<GoogleAd />)).not.toThrow();
+		(window as Record<string, unknown>).adsbygoogle = undefined;
+	});
+
+	it("pushes the ad only once when StrictMode re-invokes the mount effect", () => {
+		vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
+		render(
+			<StrictMode>
+				<GoogleAd />
+			</StrictMode>,
+		);
+		const adsbygoogle = (window as Record<string, unknown>)
+			.adsbygoogle as Array<Record<string, unknown>>;
+		expect(adsbygoogle).toHaveLength(1);
 		(window as Record<string, unknown>).adsbygoogle = undefined;
 	});
 });
