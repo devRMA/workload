@@ -4,6 +4,12 @@ test.describe("Work Calculator (Jornada)", () => {
 	test.beforeEach(async ({ page }) => {
 		await page.goto("/");
 
+		const consentBanner = page.getByText("Respeitamos sua privacidade");
+		if (await consentBanner.isVisible()) {
+			await page.click('button:has-text("Aceitar Tudo")');
+			await expect(consentBanner).not.toBeVisible();
+		}
+
 		await page.click('button:has-text("Jornada")');
 	});
 

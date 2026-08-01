@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AdManager } from "@/components/organisms/ad-manager";
 
@@ -9,6 +9,12 @@ const _ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
+
+const mockReload = vi.fn();
+Object.defineProperty(window, "location", {
+	configurable: true,
+	value: { ...window.location, reload: mockReload },
+});
 
 describe("AdManager", () => {
 	beforeEach(() => {
@@ -84,5 +90,58 @@ describe("AdManager", () => {
 		await vi.waitFor(() => {
 			expect(screen.getByText("Opa! Uma ajudinha?")).toBeDefined();
 		});
+	});
+
+	it("reloads the page and closes the modal when confirming adblock is disabled", async () => {
+		vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
+		mockFetch.mockRejectedValueOnce(new Error("blocked"));
+
+		render(<AdManager />);
+
+		await vi.waitFor(() => {
+			expect(screen.getByText("Opa! Uma ajudinha?")).toBeDefined();
+		});
+
+		fireEvent.click(screen.getByText("Já desativei, pode contar comigo!"));
+
+		expect(mockReload).toHaveBeenCalledOnce();
+	});
+
+	it("persists the side ads cooldown and hides them when closed early", () => {
+		vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
+		vi.stubEnv("NEXT_PUBLIC_ENABLE_ADS", "true");
+		render(<AdManager />);
+
+		act(() => {
+			vi.advanceTimersByTime(2000);
+		});
+		expect(screen.getAllByText("Espaço do Apoiador")).toHaveLength(2);
+
+		const closeButtons = screen.getAllByRole("button");
+		fireEvent.click(closeButtons[0]);
+
+		expect(localStorage.getItem(SIDE_AD_KEY)).not.toBeNull();
+		expect(screen.queryByText("Espaço do Apoiador")).toBeNull();
+	});
+
+	it("marks the video ad as watched and closes it once playback completes", () => {
+		vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
+		vi.stubEnv("NEXT_PUBLIC_ENABLE_ADS", "true");
+		render(<AdManager />);
+
+		act(() => {
+			vi.advanceTimersByTime(120000);
+		});
+		expect(screen.getByText("Vídeo da Semana")).toBeDefined();
+
+		fireEvent.click(screen.getByText("Ver vídeo e apoiar o projeto"));
+		act(() => {
+			vi.advanceTimersByTime(15000);
+		});
+
+		fireEvent.click(screen.getByRole("button"));
+
+		expect(localStorage.getItem(VIDEO_AD_KEY)).not.toBeNull();
+		expect(screen.queryByText("Vídeo da Semana")).toBeNull();
 	});
 });
