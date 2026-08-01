@@ -9,11 +9,23 @@ export default defineConfig({
 		globals: true,
 		setupFiles: ["./vitest.setup.ts"],
 		exclude: ["**/node_modules/**", "**/tests/e2e/**"],
-		reporters: ["default", "junit"],
+		reporters: process.env.CI ? ["default", "junit"] : ["default"],
 		outputFile: "./coverage/junit.xml",
 		coverage: {
 			provider: "v8",
 			reporter: ["text", "html", "lcov"],
+			thresholds: {
+				statements: 100,
+				branches: 100,
+				functions: 100,
+				lines: 100,
+			},
+			include: [
+				"app/**/*.{ts,tsx}",
+				"components/**/*.{ts,tsx}",
+				"hooks/**/*.ts",
+				"lib/**/*.ts",
+			],
 			exclude: [
 				"node_modules/**",
 				"tests/e2e/**",

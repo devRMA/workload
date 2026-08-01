@@ -2,21 +2,14 @@
 
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { useEffect, useState } from "react";
-
-const CONSENT_KEY = "workload_cookie_consent";
+import { readTelemetryConsent } from "@/lib/consent";
 
 export function AnalyticsWrapper() {
 	const [shouldLoad, setShouldLoad] = useState(false);
 	const gaId = process.env.NEXT_PUBLIC_GA_ID;
 
 	useEffect(() => {
-		const consent = localStorage.getItem(CONSENT_KEY);
-		if (consent) {
-			const { telemetry } = JSON.parse(consent);
-			if (telemetry) {
-				setShouldLoad(true);
-			}
-		}
+		setShouldLoad(readTelemetryConsent() === true);
 	}, []);
 
 	if (!gaId || !shouldLoad) return null;

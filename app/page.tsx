@@ -6,20 +6,21 @@ import { AnimatePresence, motion } from "motion/react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/atoms/button";
-import SalaryCalculator from "@/components/salary-calculator";
-import WorkCalculator from "@/components/work-calculator";
+import { SalaryCalculator } from "@/components/organisms/salary-calculator";
+import { WorkCalculator } from "@/components/organisms/work-calculator";
+import { useCurrentTime } from "@/hooks/use-current-time";
 import { safeGAEvent } from "@/lib/analytics";
 
 type View = "work" | "salary";
 
+const PLACEHOLDER_CLOCK = "--:--:--";
+
 export default function Home() {
 	const [activeView, setActiveView] = useState<View>("work");
-	const [mounted, setMounted] = useState(false);
-	const [currentTime, setCurrentTime] = useState(new Date());
+	const currentTime = useCurrentTime();
 	const { setTheme, resolvedTheme } = useTheme();
 
 	useEffect(() => {
-		requestAnimationFrame(() => setMounted(true));
 		safeGAEvent("session_metadata", {
 			screen_width: window.screen.width,
 			screen_height: window.screen.height,
@@ -30,14 +31,6 @@ export default function Home() {
 			timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
 		});
 	}, []);
-
-	useEffect(() => {
-		if (!mounted) return;
-		const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-		return () => clearInterval(timer);
-	}, [mounted]);
-
-	if (!mounted) return null;
 
 	return (
 		<>
@@ -69,21 +62,23 @@ export default function Home() {
 			</a>
 			<main className="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 transition-colors duration-500">
 				<header className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl border-b border-neutral-200 dark:border-neutral-800">
-					<div className="max-w-7xl 2xl:max-w-[1600px] 4k:max-w-[2400px] mx-auto px-6 h-20 4k:h-32 flex items-center justify-between">
-						<div className="flex items-center gap-3 4k:gap-6">
-							<div className="w-10 h-10 4k:w-16 4k:h-16 rounded-xl bg-indigo-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-								<Wallet className="text-white w-6 h-6 4k:w-10 4k:h-10" />
+					<div className="max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 h-20 flex items-center justify-between">
+						<div className="flex items-center gap-3">
+							<div className="w-10 h-10 rounded-xl bg-indigo-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+								<Wallet className="text-white w-6 h-6" aria-hidden="true" />
 							</div>
-							<h1 className="text-xl font-bold tracking-tight md:text-2xl 4k:text-5xl">
+							<h1 className="text-xl font-bold tracking-tight md:text-2xl">
 								WorkLoad
 							</h1>
 						</div>
 
 						<div className="flex items-center gap-4">
-							<div className="hidden md:flex items-center gap-2 px-4 py-2 bg-neutral-100 dark:bg-neutral-800 rounded-xl text-sm font-bold 4k:text-2xl 4k:px-8 4k:py-4">
-								<Clock className="w-4 h-4 text-indigo-500 4k:w-8 4k:h-8" />
+							<div className="hidden md:flex items-center gap-2 px-4 py-2 bg-neutral-100 dark:bg-neutral-800 rounded-xl text-sm font-bold">
+								<Clock className="w-4 h-4 text-indigo-500" aria-hidden="true" />
 								<span className="tabular-nums">
-									{format(currentTime, "HH:mm:ss")}
+									{currentTime === null
+										? PLACEHOLDER_CLOCK
+										: format(currentTime, "HH:mm:ss")}
 								</span>
 							</div>
 							<Button
@@ -97,11 +92,12 @@ export default function Home() {
 									});
 								}}
 								title="Alternar tema"
+								aria-label="Alternar tema"
 							>
 								{resolvedTheme === "dark" ? (
-									<Sun className="w-5 h-5 4k:w-10 4k:h-10" />
+									<Sun className="w-5 h-5" aria-hidden="true" />
 								) : (
-									<Moon className="w-5 h-5 4k:w-10 4k:h-10" />
+									<Moon className="w-5 h-5" aria-hidden="true" />
 								)}
 							</Button>
 						</div>
@@ -140,7 +136,7 @@ export default function Home() {
 				<div
 					id="main-content"
 					tabIndex={-1}
-					className="pt-32 pb-32 px-4 sm:px-6 lg:px-8 outline-none"
+					className="pt-32 pb-32 px-4 sm:px-6 lg:px-8 outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
 				>
 					<AnimatePresence mode="wait">
 						{activeView === "work" ? (

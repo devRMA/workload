@@ -20,15 +20,7 @@ export function formatCurrencySimple(value: number): string {
 }
 
 export function parseCurrency(value: string): number {
-	const cleanValue = value.replace(/\D/g, "");
-	return Number(cleanValue) / 100;
-}
-
-export function formatMinutes(minutes: number): string {
-	const isNegative = minutes < 0;
-	const absMinutes = Math.abs(minutes);
-	const h = Math.floor(absMinutes / 60);
-	const m = Math.floor(absMinutes % 60);
-	const sign = isNegative ? "-" : "";
-	return `${sign}${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
+	const digitsOnly = value.replace(/\D/g, "");
+	const parsed = Number(digitsOnly) / 100;
+	return Number.isFinite(parsed) ? parsed : 0;
 }

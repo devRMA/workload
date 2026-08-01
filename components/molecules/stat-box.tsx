@@ -21,7 +21,7 @@ export function StatBox({
 	return (
 		<div
 			className={cn(
-				"rounded-2xl border p-4 4k:p-8 flex flex-col gap-1 4k:gap-2",
+				"rounded-2xl border p-4 flex flex-col gap-1",
 				{
 					"bg-blue-50/50 border-blue-100 dark:bg-blue-900/10 dark:border-blue-800":
 						variant === "default",
@@ -38,14 +38,14 @@ export function StatBox({
 			)}
 			{...props}
 		>
-			<div className="flex items-center gap-2 text-sm 4k:text-2xl opacity-70 mb-1">
+			<div className="flex items-center gap-2 text-sm opacity-70 mb-1">
 				{icon}
-				<span className="font-medium uppercase tracking-wider text-xs 4k:text-xl">
+				<span className="font-medium uppercase tracking-wider text-xs">
 					{label}
 				</span>
 			</div>
 			<div
-				className={cn("text-2xl 4k:text-5xl font-bold tracking-tight", {
+				className={cn("text-2xl font-bold tracking-tight tabular-nums", {
 					"text-blue-600 dark:text-blue-400": variant === "default",
 					"text-emerald-600 dark:text-emerald-400": variant === "success",
 					"text-amber-600 dark:text-amber-400": variant === "warning",
@@ -56,9 +56,7 @@ export function StatBox({
 				{value}
 			</div>
 			{subValue && (
-				<div className="text-sm 4k:text-xl font-medium opacity-60 mt-1">
-					{subValue}
-				</div>
+				<div className="text-sm font-medium opacity-60 mt-1">{subValue}</div>
 			)}
 		</div>
 	);

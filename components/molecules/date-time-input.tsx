@@ -1,21 +1,37 @@
+"use client";
+
 import { format, isValid, parse } from "date-fns";
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { MaskedInput } from "../atoms/masked-input";
+
+const BR_DATE_GROUPS = [2, 2, 4] as const;
+const TIME_GROUPS = [2, 2] as const;
+const BR_DATE_FORMAT = "dd/MM/yyyy";
+const ISO_DATE_FORMAT = "yyyy-MM-dd";
+const FIELD_CLASSES =
+	"h-14 focus-visible:ring-indigo-500 placeholder:text-neutral-500 dark:placeholder:text-neutral-400";
 
 const toBRDate = (isoDate: string) => {
 	if (!isoDate) return "";
-	const [y, m, d] = isoDate.split("-");
-	if (!y || !m || !d) return isoDate;
-	return `${d}/${m}/${y}`;
+	const [year, month, day] = isoDate.split("-");
+	if (!year || !month || !day) return isoDate;
+	return `${day}/${month}/${year}`;
 };
 
 const fromBRDate = (brDate: string) => {
-	if (!brDate) return "";
-	const parts = brDate.split("/");
-	if (parts.length !== 3) return "";
-	const [d, m, y] = parts;
-	if (y.length !== 4) return "";
-	return `${y}-${m}-${d}`;
+	const [day, month, year] = brDate.split("/");
+	return `${year}-${month}-${day}`;
+};
+
+const isRealBRDate = (brDate: string) => {
+	const parsed = parse(brDate, BR_DATE_FORMAT, new Date());
+	return isValid(parsed) && format(parsed, BR_DATE_FORMAT) === brDate;
+};
+
+const isRealTime = (time: string) => {
+	const [hours, minutes] = time.split(":").map(Number);
+	return hours >= 0 && hours < 24 && minutes >= 0 && minutes < 60;
 };
 
 interface DateTimeInputProps {
@@ -38,94 +54,47 @@ export function DateTimeInput({
 	const generatedId = React.useId();
 	const inputId = id || generatedId;
 	const [datePart, timePart] = value.split("T");
-	const [localDate, setLocalDate] = React.useState(toBRDate(datePart));
-	const [localTime, setLocalTime] = React.useState(timePart || "");
 
-	React.useEffect(() => {
-		setLocalDate(toBRDate(datePart));
-	}, [datePart]);
-
-	React.useEffect(() => {
-		setLocalTime(timePart || "");
-	}, [timePart]);
-
-	const handleDateChange = (newDate: string) => {
-		onChange(
-			`${newDate || format(new Date(), "yyyy-MM-dd")}T${localTime || "00:00"}`,
-		);
+	const handleDateCommit = (brDate: string) => {
+		onChange(`${fromBRDate(brDate)}T${timePart || "00:00"}`);
 	};
 
-	const handleTimeChange = (newTime: string) => {
-		onChange(`${datePart || format(new Date(), "yyyy-MM-dd")}T${newTime}`);
+	const handleTimeCommit = (time: string) => {
+		onChange(`${datePart || format(new Date(), ISO_DATE_FORMAT)}T${time}`);
 	};
 
 	return (
 		<div className={cn("space-y-3", className)}>
 			<label
 				htmlFor={inputId}
-				className="flex items-center gap-2 text-sm font-medium text-neutral-500 4k:text-2xl"
+				className="flex items-center gap-2 text-sm font-medium text-neutral-500 dark:text-neutral-400"
 			>
-				<Icon className="w-4 h-4 4k:w-8 4k:h-8" aria-hidden="true" />
+				<Icon className="w-4 h-4" aria-hidden="true" />
 				{label}
 			</label>
 			<div className="flex flex-col sm:flex-row gap-3 sm:gap-2">
-				<div className="relative flex-1 min-w-0 group">
-					<input
+				<div className="flex-1 min-w-0">
+					<MaskedInput
 						id={inputId}
-						type="text"
-						inputMode="numeric"
 						placeholder="DD/MM/AAAA"
-						value={localDate}
-						onChange={(e) => {
-							let val = e.target.value.replace(/\D/g, "");
-							if (val.length > 8) val = val.slice(0, 8);
-							if (val.length >= 5) {
-								val = `${val.slice(0, 2)}/${val.slice(2, 4)}/${val.slice(4)}`;
-							} else if (val.length >= 3) {
-								val = `${val.slice(0, 2)}/${val.slice(2)}`;
-							}
-							setLocalDate(val);
-							if (val.length === 10) handleDateChange(fromBRDate(val));
-						}}
-						onBlur={() => {
-							if (localDate.length === 10) {
-								const d = parse(localDate, "dd/MM/yyyy", new Date());
-								if (isValid(d) && format(d, "dd/MM/yyyy") === localDate) {
-									handleDateChange(fromBRDate(localDate));
-									return;
-								}
-							}
-							setLocalDate(toBRDate(datePart));
-						}}
-						className="flex h-14 4k:h-20 w-full rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/50 dark:bg-neutral-900/50 px-4 py-2 text-lg 4k:text-2xl 4k:px-6 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 transition-all font-mono"
+						value={toBRDate(datePart)}
+						separator="/"
+						groupSizes={BR_DATE_GROUPS}
+						isValid={isRealBRDate}
+						onCommit={handleDateCommit}
+						className={FIELD_CLASSES}
 					/>
 				</div>
-				<div className="relative w-full sm:w-32 4k:w-48 shrink-0 group">
-					<input
-						type="text"
-						inputMode="numeric"
+				<div className="w-full sm:w-32 shrink-0">
+					<MaskedInput
 						placeholder="HH:mm"
 						aria-label={`Hora para ${label}`}
-						value={localTime}
-						onChange={(e) => {
-							let val = e.target.value.replace(/\D/g, "");
-							if (val.length > 4) val = val.slice(0, 4);
-							if (val.length >= 3) {
-								val = `${val.slice(0, 2)}:${val.slice(2)}`;
-							}
-							setLocalTime(val);
-						}}
-						onBlur={() => {
-							if (localTime.length === 5) {
-								const [h, m] = localTime.split(":").map(Number);
-								if (h >= 0 && h < 24 && m >= 0 && m < 60) {
-									handleTimeChange(localTime);
-									return;
-								}
-							}
-							setLocalTime(timePart || "");
-						}}
-						className="flex h-14 4k:h-20 w-full rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/50 dark:bg-neutral-900/50 px-4 py-2 text-lg 4k:text-2xl 4k:px-6 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 transition-all font-mono"
+						value={timePart || ""}
+						separator=":"
+						groupSizes={TIME_GROUPS}
+						isValid={isRealTime}
+						onCommit={handleTimeCommit}
+						className={FIELD_CLASSES}
 					/>
 				</div>
 			</div>

@@ -68,6 +68,19 @@ describe("AdManager", () => {
 		expect(screen.getByText("Vídeo da Semana")).toBeDefined();
 	});
 
+	it("hides side ads when viewed less than a week ago", () => {
+		vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
+		vi.stubEnv("NEXT_PUBLIC_ENABLE_ADS", "true");
+		localStorage.setItem(SIDE_AD_KEY, Date.now().toString());
+		render(<AdManager />);
+
+		act(() => {
+			vi.advanceTimersByTime(2000);
+		});
+
+		expect(screen.queryByText("Espaço do Apoiador")).toBeNull();
+	});
+
 	it("hides video ad when viewed less than a week ago", () => {
 		vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
 		vi.stubEnv("NEXT_PUBLIC_ENABLE_ADS", "true");
@@ -90,6 +103,21 @@ describe("AdManager", () => {
 		await vi.waitFor(() => {
 			expect(screen.getByText("Opa! Uma ajudinha?")).toBeDefined();
 		});
+	});
+
+	it("closes the adblock modal without reloading when dismissed", async () => {
+		vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
+		mockFetch.mockRejectedValueOnce(new Error("blocked"));
+
+		render(<AdManager />);
+
+		await vi.waitFor(() => {
+			expect(screen.getByText("Opa! Uma ajudinha?")).toBeDefined();
+		});
+
+		fireEvent.click(screen.getByText("Continuar com AdBlock ativo"));
+
+		expect(mockReload).not.toHaveBeenCalled();
 	});
 
 	it("reloads the page and closes the modal when confirming adblock is disabled", async () => {
@@ -139,7 +167,7 @@ describe("AdManager", () => {
 			vi.advanceTimersByTime(15000);
 		});
 
-		fireEvent.click(screen.getByRole("button"));
+		fireEvent.click(screen.getByRole("button", { name: "Fechar vídeo" }));
 
 		expect(localStorage.getItem(VIDEO_AD_KEY)).not.toBeNull();
 		expect(screen.queryByText("Vídeo da Semana")).toBeNull();

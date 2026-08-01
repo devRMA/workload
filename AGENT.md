@@ -74,6 +74,13 @@ Before implementing any feature, the AI MUST:
 - **README.md**: Keep it updated with high-level architecture.
 - **AGENT.md**: This file is the "law". Follow it strictly.
 - **Atomic Commits**: Each change should be self-contained and logical.
+- **Commit Attribution**: Every commit produced with AI assistance MUST end with a `Co-Authored-By` trailer naming the exact model that wrote it, so authorship is auditable per commit:
+
+    ```
+    Co-Authored-By: <Model Name> <noreply@anthropic.com>
+    ```
+
+    Use the model actually in use (e.g. `Claude Opus 5`), never a placeholder, never a stale name carried over from a template or a previous session. If several models contributed to the same commit, add one trailer line per model.
 
 ### Testing & Verification
 - **Mandatory Checks**: After EVERY change, the AI MUST run:

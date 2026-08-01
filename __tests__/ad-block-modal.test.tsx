@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AdBlockModal } from "@/components/molecules/ad-block-modal";
@@ -71,15 +71,39 @@ describe("AdBlockModal", () => {
 				onConfirm={mockOnConfirm}
 			/>,
 		);
-		const closeButtons = screen.getAllByRole("button");
-		const xButton = closeButtons.find(
-			(button) =>
-				!button.textContent?.includes("desativei") &&
-				!button.textContent?.includes("Continuar"),
+		await user.click(
+			screen.getByRole("button", {
+				name: "Fechar aviso do bloqueador de anúncios",
+			}),
 		);
-		if (xButton) {
-			await user.click(xButton);
-			expect(mockOnClose).toHaveBeenCalled();
-		}
+		expect(mockOnClose).toHaveBeenCalledOnce();
+	});
+
+	it("opens as a modal dialog named by its heading", () => {
+		const { container } = render(
+			<AdBlockModal
+				isOpen={true}
+				onClose={mockOnClose}
+				onConfirm={mockOnConfirm}
+			/>,
+		);
+		const dialog = container.querySelector("dialog") as HTMLDialogElement;
+		expect(dialog.open).toBe(true);
+		expect(dialog.getAttribute("aria-labelledby")).toBe("ad-block-modal-title");
+		expect(screen.getByText("Opa! Uma ajudinha?").id).toBe(
+			"ad-block-modal-title",
+		);
+	});
+
+	it("calls onClose when the native close event fires", () => {
+		const { container } = render(
+			<AdBlockModal
+				isOpen={true}
+				onClose={mockOnClose}
+				onConfirm={mockOnConfirm}
+			/>,
+		);
+		fireEvent(container.querySelector("dialog") as Element, new Event("close"));
+		expect(mockOnClose).toHaveBeenCalledOnce();
 	});
 });

@@ -24,7 +24,7 @@ export default defineConfig({
 					localStorage: [
 						{
 							name: "workload_cookie_consent",
-							value: JSON.stringify({ telemetry: true, timestamp: Date.now() }),
+							value: JSON.stringify({ telemetry: true, timestamp: 0 }),
 						},
 					],
 				},
@@ -39,6 +39,20 @@ export default defineConfig({
 			use: { ...devices["Desktop Chrome"] },
 		},
 		{
+			name: "desktop-qhd",
+			use: {
+				...devices["Desktop Chrome"],
+				viewport: { width: 2560, height: 1440 },
+			},
+		},
+		{
+			name: "desktop-4k",
+			use: {
+				...devices["Desktop Chrome"],
+				viewport: { width: 3840, height: 2160 },
+			},
+		},
+		{
 			name: "Mobile Chrome",
 			use: { ...devices["Pixel 5"] },
 		},
@@ -51,5 +65,6 @@ export default defineConfig({
 		command: process.env.CI ? "npm run start" : "npm run dev",
 		url: "http://localhost:3000",
 		reuseExistingServer: !process.env.CI,
+		timeout: 120_000,
 	},
 });

@@ -3,7 +3,6 @@ import {
 	cn,
 	formatCurrency,
 	formatCurrencySimple,
-	formatMinutes,
 	parseCurrency,
 } from "@/lib/utils";
 
@@ -66,26 +65,8 @@ describe("parseCurrency", () => {
 	it("strips non-digit characters", () => {
 		expect(parseCurrency("R$ 1.000,00")).toBe(1000);
 	});
-});
 
-describe("formatMinutes", () => {
-	it("formats positive minutes", () => {
-		expect(formatMinutes(130)).toBe("02:10");
-	});
-
-	it("formats zero", () => {
-		expect(formatMinutes(0)).toBe("00:00");
-	});
-
-	it("formats negative minutes with sign", () => {
-		expect(formatMinutes(-90)).toBe("-01:30");
-	});
-
-	it("pads single-digit hours and minutes", () => {
-		expect(formatMinutes(5)).toBe("00:05");
-	});
-
-	it("handles exact hours", () => {
-		expect(formatMinutes(120)).toBe("02:00");
+	it("returns zero instead of Infinity for absurdly long input", () => {
+		expect(parseCurrency("9".repeat(400))).toBe(0);
 	});
 });
