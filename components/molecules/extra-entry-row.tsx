@@ -5,7 +5,7 @@ import { formatCurrencySimple, parseCurrency } from "@/lib/utils";
 import { Button } from "../atoms/button";
 import { Input } from "../atoms/input";
 
-const COMPACT_FIELD_CLASSES = "h-12 4k:h-16 rounded-xl text-sm 4k:text-xl";
+const COMPACT_FIELD_CLASSES = "h-12 rounded-xl text-sm";
 
 interface ExtraEntryRowProps {
 	name: string;
@@ -42,7 +42,7 @@ export function ExtraEntryRow({
 					className={COMPACT_FIELD_CLASSES}
 				/>
 			</div>
-			<div className="w-24 sm:w-32 4k:w-48 shrink-0">
+			<div className="w-24 sm:w-32 shrink-0">
 				<Input
 					type="text"
 					inputMode="numeric"
@@ -61,7 +61,7 @@ export function ExtraEntryRow({
 				onClick={onRemove}
 				className="shrink-0"
 			>
-				<Trash2 className="w-4 h-4 4k:w-8 4k:h-8" aria-hidden="true" />
+				<Trash2 className="w-4 h-4" aria-hidden="true" />
 			</Button>
 		</div>
 	);

@@ -237,7 +237,7 @@ export function WorkCalculator() {
 					value={timerData.time}
 					tone={timerData.isOvertime ? "rose" : "emerald"}
 					badge={
-						<span className="bg-white/20 px-3 py-1 lg:px-4 lg:py-1.5 rounded-full text-xs lg:text-sm font-bold tabular-nums 4k:text-2xl 4k:px-8 4k:py-3">
+						<span className="bg-white/20 px-3 py-1 lg:px-4 lg:py-1.5 rounded-full text-xs lg:text-sm font-bold tabular-nums">
 							{currentTime === null
 								? PLACEHOLDER_CLOCK
 								: format(currentTime, "HH:mm:ss")}
@@ -246,16 +246,16 @@ export function WorkCalculator() {
 					footer={
 						<div className="flex items-center justify-between gap-4">
 							<div>
-								<div className="flex items-center gap-2 opacity-80 mb-1 4k:gap-4">
+								<div className="flex items-center gap-2 opacity-80 mb-1">
 									<LogOut
-										className="w-4 h-4 lg:w-5 lg:h-5 4k:w-10 4k:h-10"
+										className="w-4 h-4 lg:w-5 lg:h-5"
 										aria-hidden="true"
 									/>
-									<span className="text-xs lg:text-sm uppercase font-bold lg:font-medium 4k:text-2xl">
+									<span className="text-xs lg:text-sm uppercase font-bold lg:font-medium">
 										Saída {isManualExit ? "Real" : "Sugerida"}
 									</span>
 								</div>
-								<p className="text-3xl lg:text-5xl font-black 4k:text-8xl">
+								<p className="text-3xl lg:text-5xl font-black">
 									{timerData.exitLabel}
 								</p>
 							</div>
@@ -272,14 +272,14 @@ export function WorkCalculator() {
 					}
 				>
 					<div className="space-y-1.5 lg:space-y-2">
-						<div className="h-1.5 lg:h-2 w-full bg-white/20 rounded-full overflow-hidden 4k:h-4">
+						<div className="h-1.5 lg:h-2 w-full bg-white/20 rounded-full overflow-hidden">
 							<motion.div
 								initial={{ width: 0 }}
 								animate={{ width: `${timerData.progress}%` }}
 								className="h-full bg-white"
 							/>
 						</div>
-						<div className="flex justify-between text-[10px] lg:text-xs font-bold opacity-60 4k:text-xl">
+						<div className="flex justify-between text-[10px] lg:text-xs font-bold opacity-60">
 							<span>ENTRADA {timerData.entryLabel}</span>
 							<span>SAÍDA {timerData.exitLabel}</span>
 						</div>

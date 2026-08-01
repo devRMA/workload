@@ -45,8 +45,8 @@ export function TaxDetailsPanel({
 		rawValue ? parseCurrency(rawValue) : null;
 
 	return (
-		<div className="space-y-6 4k:space-y-12 bg-neutral-50 dark:bg-neutral-800/30 p-6 rounded-2xl 4k:p-12 4k:rounded-[2rem]">
-			<div className="grid grid-cols-1 sm:grid-cols-2 gap-6 4k:gap-12">
+		<div className="space-y-6 bg-neutral-50 dark:bg-neutral-800/30 p-6 rounded-2xl">
+			<div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
 				<FormField
 					id="inss-manual"
 					label="INSS (R$)"

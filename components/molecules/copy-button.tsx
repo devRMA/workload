@@ -50,10 +50,7 @@ export function CopyButton({ value, label, onCopied }: CopyButtonProps) {
 
 	return (
 		<div className="flex items-center gap-3">
-			<span
-				role="status"
-				className="text-xs font-bold text-right 4k:text-xl empty:hidden"
-			>
+			<span role="status" className="text-xs font-bold text-right empty:hidden">
 				{STATUS_MESSAGES[status]}
 			</span>
 			<button
@@ -61,18 +58,12 @@ export function CopyButton({ value, label, onCopied }: CopyButtonProps) {
 				aria-label={label}
 				title={label}
 				onClick={handleCopy}
-				className="p-4 lg:p-2 bg-white/10 hover:bg-white/20 rounded-2xl lg:rounded-lg transition-colors active:scale-95 4k:p-4 4k:rounded-xl"
+				className="p-4 lg:p-2 bg-white/10 hover:bg-white/20 rounded-2xl lg:rounded-lg transition-colors active:scale-95"
 			>
 				{status === "copied" ? (
-					<Check
-						className="w-6 h-6 lg:w-5 lg:h-5 4k:w-10 4k:h-10"
-						aria-hidden="true"
-					/>
+					<Check className="w-6 h-6 lg:w-5 lg:h-5" aria-hidden="true" />
 				) : (
-					<Copy
-						className="w-6 h-6 lg:w-5 lg:h-5 4k:w-10 4k:h-10"
-						aria-hidden="true"
-					/>
+					<Copy className="w-6 h-6 lg:w-5 lg:h-5" aria-hidden="true" />
 				)}
 			</button>
 		</div>

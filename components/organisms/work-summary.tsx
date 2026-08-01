@@ -34,32 +34,26 @@ export function WorkSummary({
 	return (
 		<div className="flex justify-center">
 			<div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
-				<div className="bg-white dark:bg-neutral-900 p-8 rounded-3xl border border-neutral-200 dark:border-neutral-800 shadow-sm 4k:p-16 text-center flex flex-col items-center justify-center">
+				<div className="bg-white dark:bg-neutral-900 p-8 rounded-3xl border border-neutral-200 dark:border-neutral-800 shadow-sm text-center flex flex-col items-center justify-center">
 					<div className="flex items-center justify-center gap-3 mb-6">
-						<h3 className="text-lg font-bold 4k:text-4xl">Balanço do Dia</h3>
+						<h3 className="text-lg font-bold">Balanço do Dia</h3>
 						<div
-							className={`p-2 rounded-xl 4k:p-4 ${isPositiveBalance ? "bg-emerald-500/10 text-emerald-500" : "bg-rose-500/10 text-rose-500"}`}
+							className={`p-2 rounded-xl ${isPositiveBalance ? "bg-emerald-500/10 text-emerald-500" : "bg-rose-500/10 text-rose-500"}`}
 						>
 							{isPositiveBalance ? (
-								<TrendingUp
-									className="w-5 h-5 4k:w-10 4k:h-10"
-									aria-hidden="true"
-								/>
+								<TrendingUp className="w-5 h-5" aria-hidden="true" />
 							) : (
-								<TrendingDown
-									className="w-5 h-5 4k:w-10 4k:h-10"
-									aria-hidden="true"
-								/>
+								<TrendingDown className="w-5 h-5" aria-hidden="true" />
 							)}
 						</div>
 					</div>
 					<div className="space-y-1">
 						<p
-							className={`text-4xl font-black tracking-tight 4k:text-7xl ${isPositiveBalance ? "text-emerald-500" : "text-rose-500"}`}
+							className={`text-4xl font-black tracking-tight ${isPositiveBalance ? "text-emerald-500" : "text-rose-500"}`}
 						>
 							{formatBalance(balanceMinutes)}
 						</p>
-						<p className="text-sm text-neutral-500 4k:text-2xl">
+						<p className="text-sm text-neutral-500">
 							{isPositiveBalance
 								? "Horas extras acumuladas"
 								: "Horas em débito hoje"}
@@ -67,11 +61,9 @@ export function WorkSummary({
 					</div>
 				</div>
 
-				<div className="bg-white dark:bg-neutral-900 p-8 rounded-3xl border border-neutral-200 dark:border-neutral-800 shadow-sm 4k:p-16 text-center flex flex-col items-center justify-center">
-					<h3 className="text-lg font-bold mb-6 4k:text-4xl">
-						Extras e Adicionais
-					</h3>
-					<div className="w-full max-w-[240px] mx-auto space-y-4 4k:space-y-8 4k:max-w-none">
+				<div className="bg-white dark:bg-neutral-900 p-8 rounded-3xl border border-neutral-200 dark:border-neutral-800 shadow-sm text-center flex flex-col items-center justify-center">
+					<h3 className="text-lg font-bold mb-6">Extras e Adicionais</h3>
+					<div className="w-full max-w-[240px] mx-auto space-y-4">
 						<DurationRow
 							icon={Zap}
 							iconClassName="text-amber-500"

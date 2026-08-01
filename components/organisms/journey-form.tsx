@@ -86,10 +86,10 @@ export function JourneyForm({
 	const [showSettings, setShowSettings] = useState(false);
 
 	return (
-		<div className="bg-white dark:bg-neutral-900 rounded-3xl p-6 sm:p-8 shadow-xl shadow-neutral-200/50 dark:shadow-none border border-neutral-200 dark:border-neutral-800 4k:p-24 4k:rounded-[4rem]">
-			<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 4k:mb-20">
+		<div className="bg-white dark:bg-neutral-900 rounded-3xl p-6 sm:p-8 shadow-xl shadow-neutral-200/50 dark:shadow-none border border-neutral-200 dark:border-neutral-800">
+			<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
 				<div className="flex items-center gap-4">
-					<h2 className="text-2xl font-bold 4k:text-7xl">Sua Jornada</h2>
+					<h2 className="text-2xl font-bold">Sua Jornada</h2>
 					<button
 						type="button"
 						onClick={() => setShowSettings(!showSettings)}
@@ -99,17 +99,17 @@ export function JourneyForm({
 						className={`p-2 rounded-xl transition-colors ${showSettings ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400" : "hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-400"}`}
 					>
 						<Settings
-							className={`w-5 h-5 4k:w-10 4k:h-10 transition-transform duration-500 ${showSettings ? "rotate-90" : ""}`}
+							className={`w-5 h-5 transition-transform duration-500 ${showSettings ? "rotate-90" : ""}`}
 							aria-hidden="true"
 						/>
 					</button>
 				</div>
-				<div className="flex items-center gap-1 bg-neutral-100 dark:bg-neutral-800 p-1.5 rounded-2xl 4k:p-3 4k:rounded-[2rem]">
+				<div className="flex items-center gap-1 bg-neutral-100 dark:bg-neutral-800 p-1.5 rounded-2xl">
 					<button
 						type="button"
 						aria-pressed={!isManualExit}
 						onClick={() => onManualExitChange(false)}
-						className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all 4k:px-12 4k:py-6 4k:text-3xl 4k:rounded-3xl ${!isManualExit ? "bg-white dark:bg-neutral-700 shadow-md text-emerald-500" : "text-neutral-400 hover:text-neutral-600"}`}
+						className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all ${!isManualExit ? "bg-white dark:bg-neutral-700 shadow-md text-emerald-500" : "text-neutral-400 hover:text-neutral-600"}`}
 					>
 						AUTO
 					</button>
@@ -117,7 +117,7 @@ export function JourneyForm({
 						type="button"
 						aria-pressed={isManualExit}
 						onClick={() => onManualExitChange(true)}
-						className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all 4k:px-12 4k:py-6 4k:text-3xl 4k:rounded-3xl ${isManualExit ? "bg-white dark:bg-neutral-700 shadow-md text-emerald-500" : "text-neutral-400 hover:text-neutral-600"}`}
+						className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all ${isManualExit ? "bg-white dark:bg-neutral-700 shadow-md text-emerald-500" : "text-neutral-400 hover:text-neutral-600"}`}
 					>
 						MANUAL
 					</button>
@@ -129,22 +129,19 @@ export function JourneyForm({
 				isOpen={showSettings}
 				className="mb-8"
 			>
-				<div className="bg-neutral-50 dark:bg-neutral-800/30 p-6 rounded-2xl border border-neutral-100 dark:border-neutral-800/50 4k:p-12 4k:rounded-[2rem] space-y-6 4k:space-y-12">
+				<div className="bg-neutral-50 dark:bg-neutral-800/30 p-6 rounded-2xl border border-neutral-100 dark:border-neutral-800/50 space-y-6">
 					<div className="flex items-center justify-between gap-6">
 						<div className="flex-1">
-							<Label htmlFor="daily-journey" className="font-bold mb-2 4k:mb-4">
-								<Zap
-									className="w-4 h-4 text-emerald-500 4k:w-8 4k:h-8"
-									aria-hidden="true"
-								/>
+							<Label htmlFor="daily-journey" className="font-bold mb-2">
+								<Zap className="w-4 h-4 text-emerald-500" aria-hidden="true" />
 								Tempo de Trabalho Diário
 							</Label>
-							<p className="text-xs text-neutral-400 mb-4 4k:text-xl">
+							<p className="text-xs text-neutral-400 mb-4">
 								Define o tempo total de trabalho esperado por dia para o cálculo
 								de banco de horas.
 							</p>
 						</div>
-						<div className="w-32 4k:w-64">
+						<div className="w-32">
 							<MaskedInput
 								id="daily-journey"
 								placeholder="08:48"
@@ -155,12 +152,12 @@ export function JourneyForm({
 								onCommit={(duration) =>
 									onWorkMinutesChange(parseDuration(duration))
 								}
-								className="h-12 4k:h-24 rounded-xl text-center text-lg font-bold focus-visible:ring-emerald-500"
+								className="h-12 rounded-xl text-center text-lg font-bold focus-visible:ring-emerald-500"
 							/>
 						</div>
 					</div>
 
-					<div className="grid grid-cols-1 sm:grid-cols-2 gap-6 4k:gap-12">
+					<div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
 						<FormField
 							id="first-tier-rate"
 							label="Adicional até 2h extras (%)"
@@ -168,7 +165,7 @@ export function JourneyForm({
 							min={0}
 							labelIcon={
 								<Percent
-									className="w-4 h-4 text-amber-500 4k:w-8 4k:h-8"
+									className="w-4 h-4 text-amber-500"
 									aria-hidden="true"
 								/>
 							}
@@ -183,10 +180,7 @@ export function JourneyForm({
 							type="number"
 							min={0}
 							labelIcon={
-								<Percent
-									className="w-4 h-4 text-rose-500 4k:w-8 4k:h-8"
-									aria-hidden="true"
-								/>
+								<Percent className="w-4 h-4 text-rose-500" aria-hidden="true" />
 							}
 							value={extraTierRate}
 							onChange={(event) =>
@@ -197,7 +191,7 @@ export function JourneyForm({
 				</div>
 			</CollapsiblePanel>
 
-			<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 4k:gap-12 mb-8 4k:mb-16">
+			<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
 				<DateTimeInput
 					label="Entrada"
 					icon={LogIn}
@@ -232,12 +226,12 @@ export function JourneyForm({
 					type="button"
 					aria-label="Resetar Horários"
 					onClick={onReset}
-					className="flex items-center gap-2 text-sm font-medium text-neutral-400 hover:text-emerald-500 transition-colors 4k:text-2xl 4k:gap-4"
+					className="flex items-center gap-2 text-sm font-medium text-neutral-400 hover:text-emerald-500 transition-colors"
 				>
-					<RotateCcw className="w-4 h-4 4k:w-8 4k:h-8" aria-hidden="true" />
+					<RotateCcw className="w-4 h-4" aria-hidden="true" />
 					Resetar Horários
 				</button>
-				<div className="text-[10px] text-neutral-300 uppercase tracking-widest font-bold 4k:text-xl">
+				<div className="text-[10px] text-neutral-300 uppercase tracking-widest font-bold">
 					WorkLoad
 				</div>
 			</div>

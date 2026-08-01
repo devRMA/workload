@@ -52,18 +52,18 @@ export function SalaryCalculator() {
 			className="selection:bg-blue-500/30"
 			main={
 				<>
-					<div className="bg-white dark:bg-neutral-900 rounded-3xl p-6 sm:p-8 shadow-xl shadow-neutral-200/50 dark:shadow-none border border-neutral-200 dark:border-neutral-800 4k:p-24 4k:rounded-[4rem]">
-						<div className="flex items-center gap-4 mb-8 4k:mb-20">
-							<div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-2xl 4k:p-6 4k:rounded-[2rem]">
+					<div className="bg-white dark:bg-neutral-900 rounded-3xl p-6 sm:p-8 shadow-xl shadow-neutral-200/50 dark:shadow-none border border-neutral-200 dark:border-neutral-800">
+						<div className="flex items-center gap-4 mb-8">
+							<div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-2xl">
 								<Calculator
-									className="w-6 h-6 text-blue-600 dark:text-blue-400 4k:w-12 4k:h-12"
+									className="w-6 h-6 text-blue-600 dark:text-blue-400"
 									aria-hidden="true"
 								/>
 							</div>
-							<h2 className="text-2xl font-bold 4k:text-7xl">Custo da Hora</h2>
+							<h2 className="text-2xl font-bold">Custo da Hora</h2>
 						</div>
 
-						<div className="grid grid-cols-1 sm:grid-cols-2 gap-6 4k:gap-12 mb-8">
+						<div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
 							<FormField
 								id="salario-bruto"
 								label="Salário Bruto (R$)"
@@ -80,7 +80,7 @@ export function SalaryCalculator() {
 								id="horas-mensais"
 								label="Carga Horária Mensal"
 								type="number"
-								icon={<Clock className="w-5 h-5 4k:w-8 4k:h-8" />}
+								icon={<Clock className="w-5 h-5" />}
 								placeholder="220"
 								value={monthlyHours || ""}
 								onChange={(event) =>
@@ -94,15 +94,13 @@ export function SalaryCalculator() {
 							onClick={() => setShowDetails(!showDetails)}
 							aria-expanded={showDetails}
 							aria-controls={DETAILS_PANEL_ID}
-							className="w-full flex items-center justify-between p-4 rounded-2xl border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors 4k:p-8"
+							className="w-full flex items-center justify-between p-4 rounded-2xl border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors"
 						>
-							<span className="font-medium 4k:text-3xl">
-								Impostos e Descontos
-							</span>
+							<span className="font-medium">Impostos e Descontos</span>
 							{showDetails ? (
-								<ChevronUp className="4k:w-8 4k:h-8" aria-hidden="true" />
+								<ChevronUp aria-hidden="true" />
 							) : (
-								<ChevronDown className="4k:w-8 4k:h-8" aria-hidden="true" />
+								<ChevronDown aria-hidden="true" />
 							)}
 						</button>
 
@@ -127,18 +125,18 @@ export function SalaryCalculator() {
 						</CollapsiblePanel>
 					</div>
 
-					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 4k:gap-8">
+					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 						<StatBox
 							label="Salário Líquido"
 							value={formatCurrency(stats.netSalary)}
-							icon={<Wallet className="w-4 h-4 4k:w-8 4k:h-8" />}
+							icon={<Wallet className="w-4 h-4" />}
 							variant="default"
 						/>
 						<StatBox
 							label="Total Recebido"
 							value={formatCurrency(stats.totalValue)}
 							subValue="Líquido + Extras"
-							icon={<TrendingUp className="w-4 h-4 4k:w-8 4k:h-8" />}
+							icon={<TrendingUp className="w-4 h-4" />}
 							variant="success"
 						/>
 						<StatBox
@@ -147,7 +145,7 @@ export function SalaryCalculator() {
 								stats.inss + stats.irrf + stats.totalExtraDeductions,
 							)}
 							subValue="INSS + IRRF + Outros"
-							icon={<TrendingDown className="w-4 h-4 4k:w-8 4k:h-8" />}
+							icon={<TrendingDown className="w-4 h-4" />}
 							variant="danger"
 						/>
 					</div>
@@ -161,23 +159,21 @@ export function SalaryCalculator() {
 					tone="blue"
 					footer={
 						<>
-							<p className="text-sm opacity-80 mb-2 4k:text-2xl 4k:mb-6">
-								Resumo Financeiro
-							</p>
-							<div className="grid grid-cols-2 gap-4 4k:gap-8">
+							<p className="text-sm opacity-80 mb-2">Resumo Financeiro</p>
+							<div className="grid grid-cols-2 gap-4">
 								<div>
-									<p className="text-xs opacity-60 uppercase font-bold 4k:text-xl">
+									<p className="text-xs opacity-60 uppercase font-bold">
 										Bruto
 									</p>
-									<p className="text-xl font-bold 4k:text-4xl">
+									<p className="text-xl font-bold">
 										{formatCurrency(grossSalary)}
 									</p>
 								</div>
 								<div>
-									<p className="text-xs opacity-60 uppercase font-bold 4k:text-xl">
+									<p className="text-xs opacity-60 uppercase font-bold">
 										Ganhos Extras
 									</p>
-									<p className="text-xl font-bold 4k:text-4xl">
+									<p className="text-xl font-bold">
 										+{formatCurrency(stats.totalExtraGains)}
 									</p>
 								</div>
@@ -185,7 +181,7 @@ export function SalaryCalculator() {
 						</>
 					}
 				>
-					<p className="mt-4 text-xl opacity-80 font-medium 4k:text-4xl">
+					<p className="mt-4 text-xl opacity-80 font-medium">
 						{formatCurrency(stats.minuteRate)} por minuto
 					</p>
 				</HeroPanel>

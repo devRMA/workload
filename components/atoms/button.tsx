@@ -24,11 +24,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 							variant === "ghost",
 						"bg-red-500/10 text-red-600 hover:bg-red-500/20":
 							variant === "danger",
-						"h-12 px-6 py-2 text-base 4k:h-20 4k:px-12 4k:text-2xl":
-							size === "default",
+						"h-12 px-6 py-2 text-base": size === "default",
 						"h-9 rounded-md px-3 text-sm": size === "sm",
 						"h-14 rounded-2xl px-8 text-lg": size === "lg",
-						"h-10 w-10 4k:h-16 4k:w-16": size === "icon",
+						"h-10 w-10": size === "icon",
 					},
 					className,
 				)}

@@ -25,9 +25,7 @@ export function ExtraEntryList({
 	return (
 		<div>
 			<div className="flex items-center justify-between mb-4">
-				<p className="text-sm font-medium text-neutral-500 4k:text-2xl">
-					{label}
-				</p>
+				<p className="text-sm font-medium text-neutral-500">{label}</p>
 				<Button
 					variant="outline"
 					size="sm"
