@@ -46,6 +46,42 @@ describe("calculateSocialSecurity", () => {
 		expect(calculateSocialSecurity(-1000)).toBe(0);
 		expect(calculateSocialSecurity(Number.NaN)).toBe(0);
 	});
+
+	it("treats empregado público exactly like CLT", () => {
+		for (const salary of [1000, 5000, 8475.55, 30000]) {
+			expect(calculateSocialSecurity(salary, "empregado-publico")).toBe(
+				calculateSocialSecurity(salary, "clt"),
+			);
+		}
+	});
+
+	it("matches CLT for estatutário up to the general regime ceiling", () => {
+		for (const salary of [1000, 5000, 8475.55]) {
+			expect(calculateSocialSecurity(salary, "estatutario")).toBe(
+				calculateSocialSecurity(salary, "clt"),
+			);
+		}
+	});
+
+	it("keeps charging estatutário past the ceiling that caps CLT", () => {
+		expect(calculateSocialSecurity(20000, "clt")).toBe(988.09);
+		expect(calculateSocialSecurity(20000, "estatutario")).toBeGreaterThan(
+			988.09,
+		);
+	});
+
+	it("applies every civil service tier at its own boundary", () => {
+		expect(calculateSocialSecurity(14514.3, "estatutario")).toBe(1863.71);
+		expect(calculateSocialSecurity(29028.57, "estatutario")).toBe(4258.56);
+		expect(calculateSocialSecurity(56605.73, "estatutario")).toBe(9498.23);
+	});
+
+	it("charges the top civil service rate above the last boundary", () => {
+		const atBoundary = calculateSocialSecurity(56605.73, "estatutario");
+		const above = calculateSocialSecurity(66605.73, "estatutario");
+
+		expect(above - atBoundary).toBeCloseTo(10000 * 0.22, 2);
+	});
 });
 
 describe("calculateIncomeTax", () => {
@@ -92,5 +128,48 @@ describe("calculateIncomeTax", () => {
 		expect(calculateIncomeTax(0, 0)).toBe(0);
 		expect(calculateIncomeTax(-5000, 0)).toBe(0);
 		expect(calculateIncomeTax(Number.NaN, Number.NaN)).toBe(0);
+	});
+
+	it("deducts each dependent from the taxable base", () => {
+		const contribution = calculateSocialSecurity(10000);
+
+		expect(calculateIncomeTax(10000, contribution, 0)).toBe(1569.55);
+		expect(calculateIncomeTax(10000, contribution, 2)).toBe(1465.27);
+	});
+
+	it("tips the deduction away from the simplified one at the first dependent", () => {
+		const contribution = calculateSocialSecurity(5500);
+		expect(contribution).toBeLessThan(607.2);
+
+		expect(calculateIncomeTax(5500, contribution, 0)).toBe(
+			calculateIncomeTax(5500, 0, 0),
+		);
+		expect(calculateIncomeTax(5500, contribution, 1)).toBeLessThan(
+			calculateIncomeTax(5500, contribution, 0),
+		);
+	});
+
+	it("ignores fractional and negative dependent counts", () => {
+		const contribution = calculateSocialSecurity(10000);
+
+		expect(calculateIncomeTax(10000, contribution, 2.9)).toBe(
+			calculateIncomeTax(10000, contribution, 2),
+		);
+		expect(calculateIncomeTax(10000, contribution, -3)).toBe(
+			calculateIncomeTax(10000, contribution, 0),
+		);
+	});
+
+	it("taxes estatutário less because the contribution is deductible", () => {
+		const cltTax = calculateIncomeTax(
+			20000,
+			calculateSocialSecurity(20000, "clt"),
+		);
+		const civilServiceTax = calculateIncomeTax(
+			20000,
+			calculateSocialSecurity(20000, "estatutario"),
+		);
+
+		expect(civilServiceTax).toBeLessThan(cltTax);
 	});
 });

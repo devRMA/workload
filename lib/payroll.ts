@@ -12,12 +12,28 @@ interface IncomeTaxBracket extends IncomeTaxRate {
 	readonly ceiling: number;
 }
 
-const SOCIAL_SECURITY_BRACKETS: readonly ProgressiveBracket[] = [
+export type WorkRegime = "clt" | "empregado-publico" | "estatutario";
+
+const GENERAL_REGIME_BRACKETS: readonly ProgressiveBracket[] = [
 	{ ceiling: 1621.0, rate: 0.075 },
 	{ ceiling: 2902.84, rate: 0.09 },
 	{ ceiling: 4354.27, rate: 0.12 },
 	{ ceiling: 8475.55, rate: 0.14 },
 ];
+
+const CIVIL_SERVICE_BRACKETS: readonly ProgressiveBracket[] = [
+	...GENERAL_REGIME_BRACKETS,
+	{ ceiling: 14514.3, rate: 0.145 },
+	{ ceiling: 29028.57, rate: 0.165 },
+	{ ceiling: 56605.73, rate: 0.19 },
+	{ ceiling: Number.POSITIVE_INFINITY, rate: 0.22 },
+];
+
+const BRACKETS_BY_REGIME: Record<WorkRegime, readonly ProgressiveBracket[]> = {
+	clt: GENERAL_REGIME_BRACKETS,
+	"empregado-publico": GENERAL_REGIME_BRACKETS,
+	estatutario: CIVIL_SERVICE_BRACKETS,
+};
 
 const INCOME_TAX_BRACKETS: readonly IncomeTaxBracket[] = [
 	{ ceiling: 2428.8, rate: 0, deduction: 0 },
@@ -29,6 +45,7 @@ const INCOME_TAX_BRACKETS: readonly IncomeTaxBracket[] = [
 const TOP_INCOME_TAX_RATE: IncomeTaxRate = { rate: 0.275, deduction: 908.73 };
 
 const SIMPLIFIED_DEDUCTION = 607.2;
+const DEPENDENT_DEDUCTION = 189.59;
 const EXEMPTION_CEILING = 5000;
 const REDUCTION_PHASE_OUT_CEILING = 7350;
 const REDUCTION_INTERCEPT = 978.62;
@@ -59,10 +76,13 @@ function sumProgressiveBrackets(
 	return roundToCents(total);
 }
 
-export function calculateSocialSecurity(grossSalary: number): number {
+export function calculateSocialSecurity(
+	grossSalary: number,
+	regime: WorkRegime = "clt",
+): number {
 	return sumProgressiveBrackets(
 		sanitizeAmount(grossSalary),
-		SOCIAL_SECURITY_BRACKETS,
+		BRACKETS_BY_REGIME[regime],
 	);
 }
 
@@ -81,14 +101,15 @@ function taxReductionFor(grossSalary: number): number {
 export function calculateIncomeTax(
 	grossSalary: number,
 	socialSecurity: number,
+	dependents = 0,
 ): number {
 	const gross = sanitizeAmount(grossSalary);
 	if (gross <= EXEMPTION_CEILING) return 0;
 
-	const deductible = Math.max(
-		sanitizeAmount(socialSecurity),
-		SIMPLIFIED_DEDUCTION,
-	);
+	const legalDeduction =
+		sanitizeAmount(socialSecurity) +
+		DEPENDENT_DEDUCTION * Math.trunc(sanitizeAmount(dependents));
+	const deductible = Math.max(legalDeduction, SIMPLIFIED_DEDUCTION);
 	const base = sanitizeAmount(gross - deductible);
 	const { rate, deduction } = findIncomeTaxRate(base);
 	const tax = base * rate - deduction - taxReductionFor(gross);
