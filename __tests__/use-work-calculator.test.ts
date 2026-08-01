@@ -34,9 +34,67 @@ describe("calculateSuggestedExit", () => {
 	});
 
 	it("returns the entry unchanged when a timestamp is unparseable", () => {
+		expect(calculateSuggestedExit("not-a-date", "", "", FULL_DAY_MINUTES)).toBe(
+			"not-a-date",
+		);
+	});
+
+	it("never suggests an exit before the end of lunch", () => {
 		expect(
-			calculateSuggestedExit("not-a-date", "", "", FULL_DAY_MINUTES),
-		).toBe("not-a-date");
+			calculateSuggestedExit(
+				`${MONDAY}T08:00`,
+				`${MONDAY}T18:00`,
+				`${MONDAY}T19:00`,
+				FULL_DAY_MINUTES,
+			),
+		).toBe(`${MONDAY}T19:00`);
+	});
+
+	const balanceAtSuggestedExit = (
+		entry: string,
+		lunchStart: string,
+		lunchEnd: string,
+		workMinutes: number,
+	) =>
+		calculateWorkStats(
+			entry,
+			lunchStart,
+			lunchEnd,
+			calculateSuggestedExit(entry, lunchStart, lunchEnd, workMinutes),
+			workMinutes,
+		).balance;
+
+	it("lands on a zero balance for a daytime journey", () => {
+		expect(
+			balanceAtSuggestedExit(
+				`${MONDAY}T08:00`,
+				`${MONDAY}T12:00`,
+				`${MONDAY}T13:00`,
+				FULL_DAY_MINUTES,
+			),
+		).toBe(0);
+	});
+
+	it("credits the reduced night hour so a night journey also lands on zero", () => {
+		expect(
+			balanceAtSuggestedExit(
+				`${MONDAY}T21:00`,
+				"2025-01-07T01:00",
+				"2025-01-07T02:00",
+				FULL_DAY_MINUTES,
+			),
+		).toBe(0);
+	});
+
+	it("gets within a minute when the reduced night hour makes zero unreachable", () => {
+		const balance = balanceAtSuggestedExit(
+			`${MONDAY}T22:00`,
+			"2025-01-07T00:00",
+			"2025-01-07T00:30",
+			420,
+		);
+
+		expect(Math.abs(balance)).toBeLessThanOrEqual(1);
 	});
 });
 

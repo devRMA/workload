@@ -7,6 +7,7 @@ const NIGHT_SHIFT_END_HOUR = 5;
 const NIGHT_HOUR_MINUTES = 52.5;
 const MINUTES_PER_HOUR = 60;
 const FIRST_TIER_LIMIT_MINUTES = 120;
+const EXIT_REFINEMENT_PASSES = 6;
 
 const DEFAULT_WORK_MINUTES = 8 * MINUTES_PER_HOUR + 48;
 const DEFAULT_FIRST_TIER_RATE = 50;
@@ -39,8 +40,7 @@ const EMPTY_STATS: WorkStats = {
 
 function isChronological(...dates: readonly Date[]): boolean {
 	return dates.every(
-		(date, index) =>
-			isValid(date) && (index === 0 || dates[index - 1] <= date),
+		(date, index) => isValid(date) && (index === 0 || dates[index - 1] <= date),
 	);
 }
 
@@ -73,12 +73,7 @@ function countNightMinutes(
 		nightEnd.setDate(nightEnd.getDate() + 1);
 		nightEnd.setHours(NIGHT_SHIFT_END_HOUR, 0, 0, 0);
 
-		const worked = overlapInMinutes(
-			nightStart,
-			nightEnd,
-			entryDate,
-			exitDate,
-		);
+		const worked = overlapInMinutes(nightStart, nightEnd, entryDate, exitDate);
 		const lunched = overlapInMinutes(
 			nightStart,
 			nightEnd,
@@ -93,6 +88,16 @@ function countNightMinutes(
 	return nightMinutes;
 }
 
+function nightEquivalentMinutes(nightMinutesWorked: number): number {
+	return Math.round(
+		nightMinutesWorked * (MINUTES_PER_HOUR / NIGHT_HOUR_MINUTES),
+	);
+}
+
+function nightBonusMinutes(nightMinutesWorked: number): number {
+	return nightEquivalentMinutes(nightMinutesWorked) - nightMinutesWorked;
+}
+
 function splitOvertime(
 	overtimeMinutes: number,
 	isWeekend: boolean,
@@ -103,10 +108,7 @@ function splitOvertime(
 
 	return {
 		firstTierMinutes: Math.min(overtimeMinutes, FIRST_TIER_LIMIT_MINUTES),
-		extraTierMinutes: Math.max(
-			0,
-			overtimeMinutes - FIRST_TIER_LIMIT_MINUTES,
-		),
+		extraTierMinutes: Math.max(0, overtimeMinutes - FIRST_TIER_LIMIT_MINUTES),
 	};
 }
 
@@ -122,9 +124,7 @@ export function calculateWorkStats(
 	const lunchEndDate = new Date(lunchEnd);
 	const exitDate = new Date(displayExit);
 
-	if (
-		!isChronological(entryDate, lunchStartDate, lunchEndDate, exitDate)
-	) {
+	if (!isChronological(entryDate, lunchStartDate, lunchEndDate, exitDate)) {
 		return EMPTY_STATS;
 	}
 
@@ -138,21 +138,35 @@ export function calculateWorkStats(
 		lunchStartDate,
 		lunchEndDate,
 	);
-	const nightMinutesEquivalent = Math.round(
-		nightMinutesWorked * (MINUTES_PER_HOUR / NIGHT_HOUR_MINUTES),
-	);
-	const nightBonusMinutes = nightMinutesEquivalent - nightMinutesWorked;
-
-	const totalWorked = workedMinutes + nightBonusMinutes;
+	const totalWorked = workedMinutes + nightBonusMinutes(nightMinutesWorked);
 	const balance = totalWorked - workMinutes;
 	const dayOfWeek = entryDate.getDay();
 
 	return {
 		balance,
-		nightMinutes: nightMinutesEquivalent,
+		nightMinutes: nightEquivalentMinutes(nightMinutesWorked),
 		totalWorked,
 		...splitOvertime(Math.max(0, balance), dayOfWeek === 0 || dayOfWeek === 6),
 	};
+}
+
+function creditedMinutes(
+	entryDate: Date,
+	lunchStartDate: Date,
+	lunchEndDate: Date,
+	exitDate: Date,
+): number {
+	const worked =
+		differenceInMinutes(lunchStartDate, entryDate) +
+		differenceInMinutes(exitDate, lunchEndDate);
+	const nightWorked = countNightMinutes(
+		entryDate,
+		exitDate,
+		lunchStartDate,
+		lunchEndDate,
+	);
+
+	return worked + nightBonusMinutes(nightWorked);
 }
 
 export function calculateSuggestedExit(
@@ -168,7 +182,30 @@ export function calculateSuggestedExit(
 	if (!isChronological(entryDate, lunchStartDate, lunchEndDate)) return entry;
 
 	const workedBeforeLunch = differenceInMinutes(lunchStartDate, entryDate);
-	const exitDate = addMinutes(lunchEndDate, workMinutes - workedBeforeLunch);
+	let exitDate = addMinutes(
+		lunchEndDate,
+		Math.max(0, workMinutes - workedBeforeLunch),
+	);
+	let surplus =
+		creditedMinutes(entryDate, lunchStartDate, lunchEndDate, exitDate) -
+		workMinutes;
+
+	for (
+		let pass = 0;
+		pass < EXIT_REFINEMENT_PASSES && surplus !== 0;
+		pass += 1
+	) {
+		const candidate = addMinutes(exitDate, -surplus);
+		if (candidate < lunchEndDate) break;
+
+		const candidateSurplus =
+			creditedMinutes(entryDate, lunchStartDate, lunchEndDate, candidate) -
+			workMinutes;
+		if (Math.abs(candidateSurplus) >= Math.abs(surplus)) break;
+
+		exitDate = candidate;
+		surplus = candidateSurplus;
+	}
 
 	return format(exitDate, "yyyy-MM-dd'T'HH:mm");
 }
