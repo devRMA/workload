@@ -20,10 +20,14 @@ This project was heavily driven and refactored from scratch to production level 
 ---
 
 ## ⚡ Features
-- **Workday Tracking**: Precise control of entry, lunch, and exit times, with real-time calculation of overtime (75% and 100%) and night shift bonus.
-- **Salary Calculator**: Exact calculation of INSS, IRRF, deductions, and extra gains (compatible with 2026 CLT rules).
+- **Workday Tracking**: Precise control of entry, lunch, and exit times, with real-time overtime calculation and the reduced night hour (CLT art. 73). Overtime rates are configurable and default to the statutory floor of 50%/100%.
+- **Work Regimes**: CLT, Empregado Público and Estatutário. The first two contribute under the RGPS table with its ceiling; Estatutário follows the federal RPPS ladder (7.5% to 22%, uncapped).
+- **Salary Calculator**: INSS, IRRF, dependents, deductions and extra gains, using the tables in force for 2026 — including the R$ 607,20 simplified deduction and the reduction that exempts income up to R$ 5.000,00.
+- **Any Period**: View your pay by hour, day, week, month or year, derived from your monthly workload and daily journey.
 - **Mobile-First & Premium UI**: An amazing interface developed from scratch to provide the best experience, with native support for Dark/Light Mode.
 - **Offline First**: Automatically saves all user preferences in `localStorage`.
+
+> Tax tables are the ones in force for 2026: **Portaria Interministerial MPS/MF nº 13 de 09/01/2026** for social security, and the IRRF table as amended by **Lei 15.270/2025**.
 
 ---
 

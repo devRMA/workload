@@ -9,6 +9,8 @@ vi.mock("@/lib/analytics", () => ({
 }));
 
 const baseProps = {
+	dependents: 0,
+	onDependentsChange: vi.fn(),
 	manualInss: null,
 	manualIrrf: null,
 	autoInss: 500,

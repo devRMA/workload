@@ -20,8 +20,120 @@ describe("SalaryCalculator", () => {
 		).toBeInTheDocument();
 		expect(screen.getByLabelText("Salário Bruto (R$)")).toHaveValue("5.000,00");
 		expect(screen.getByLabelText("Carga Horária Mensal")).toHaveValue(220);
-		expect(screen.getByText("Valor da Hora")).toBeInTheDocument();
+		expect(screen.getByText("Valor por Hora")).toBeInTheDocument();
 		expect(screen.getByText("Resumo Financeiro")).toBeInTheDocument();
+	});
+
+	it("defaults to the CLT regime and offers the public service ones", () => {
+		render(<SalaryCalculator />);
+
+		const regime = screen.getByLabelText("Regime de Trabalho");
+		expect(regime).toHaveValue("clt");
+		expect(
+			screen.getByRole("option", { name: "Empregado Público" }),
+		).toBeInTheDocument();
+		expect(
+			screen.getByRole("option", { name: "Estatutário" }),
+		).toBeInTheDocument();
+	});
+
+	it("contributes the capped amount for CLT and empregado público alike", async () => {
+		const user = userEvent.setup();
+		localStorage.setItem("grossSalary", "20000");
+		render(<SalaryCalculator />);
+
+		await user.click(
+			screen.getByRole("button", { name: /Impostos e Descontos/ }),
+		);
+		expect(screen.getByLabelText("INSS (R$)")).toHaveAttribute(
+			"placeholder",
+			"988,09",
+		);
+
+		await user.selectOptions(
+			screen.getByLabelText("Regime de Trabalho"),
+			"empregado-publico",
+		);
+		expect(screen.getByLabelText("INSS (R$)")).toHaveAttribute(
+			"placeholder",
+			"988,09",
+		);
+	});
+
+	it("keeps contributing past the ceiling for estatutário", async () => {
+		const user = userEvent.setup();
+		localStorage.setItem("grossSalary", "20000");
+		render(<SalaryCalculator />);
+
+		await user.selectOptions(
+			screen.getByLabelText("Regime de Trabalho"),
+			"estatutario",
+		);
+		await user.click(
+			screen.getByRole("button", { name: /Impostos e Descontos/ }),
+		);
+
+		expect(screen.getByLabelText("INSS (R$)")).toHaveAttribute(
+			"placeholder",
+			"2.768,85",
+		);
+	});
+
+	it("deducts declared dependents from the income tax", async () => {
+		const user = userEvent.setup();
+		localStorage.setItem("grossSalary", "10000");
+		render(<SalaryCalculator />);
+
+		await user.click(
+			screen.getByRole("button", { name: /Impostos e Descontos/ }),
+		);
+		expect(screen.getByLabelText("IRRF (R$)")).toHaveAttribute(
+			"placeholder",
+			"1.569,55",
+		);
+
+		await user.type(screen.getByLabelText("Dependentes"), "2");
+
+		expect(screen.getByLabelText("IRRF (R$)")).toHaveAttribute(
+			"placeholder",
+			"1.465,27",
+		);
+	});
+
+	it("switches the headline value between periods", async () => {
+		const user = userEvent.setup();
+		render(<SalaryCalculator />);
+
+		expect(screen.getByText("Valor por Hora")).toBeInTheDocument();
+
+		await user.click(screen.getByRole("radio", { name: "Mês" }));
+		expect(screen.getByText("Valor por Mês")).toBeInTheDocument();
+
+		await user.click(screen.getByRole("radio", { name: "Ano" }));
+		expect(screen.getByText("Valor por Ano")).toBeInTheDocument();
+	});
+
+	it("derives each period from the monthly net and the daily journey", async () => {
+		const user = userEvent.setup();
+		render(<SalaryCalculator />);
+
+		await user.click(screen.getByRole("radio", { name: "Dia" }));
+		expect(screen.getByText(/163,58/)).toBeInTheDocument();
+
+		const dailyHours = screen.getByLabelText("Jornada Diária (horas)");
+		await user.clear(dailyHours);
+		await user.type(dailyHours, "6");
+
+		expect(screen.getByText(/122,69/)).toBeInTheDocument();
+	});
+
+	it("counts thirteen paid months in the yearly view", async () => {
+		const user = userEvent.setup();
+		render(<SalaryCalculator />);
+
+		await user.click(screen.getByRole("radio", { name: "Ano" }));
+
+		expect(screen.getByText(/58\.480,37/)).toBeInTheDocument();
 	});
 
 	it("summarises net salary, total received and total deductions", () => {

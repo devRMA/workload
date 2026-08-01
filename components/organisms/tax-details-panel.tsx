@@ -1,5 +1,6 @@
 "use client";
 
+import { Users } from "lucide-react";
 import type { ExtraItem, ExtraKind } from "@/hooks/use-salary-calculator";
 import { safeGAEvent } from "@/lib/analytics";
 import { formatCurrencySimple, parseCurrency } from "@/lib/utils";
@@ -10,6 +11,8 @@ import { FormField } from "../molecules/form-field";
 type ExtraField = "name" | "value";
 
 interface TaxDetailsPanelProps {
+	dependents: number;
+	onDependentsChange: (value: number) => void;
 	manualInss: number | null;
 	onManualInssChange: (value: number | null) => void;
 	manualIrrf: number | null;
@@ -29,6 +32,8 @@ interface TaxDetailsPanelProps {
 }
 
 export function TaxDetailsPanel({
+	dependents,
+	onDependentsChange,
 	manualInss,
 	onManualInssChange,
 	manualIrrf,
@@ -47,6 +52,17 @@ export function TaxDetailsPanel({
 	return (
 		<div className="space-y-6 bg-neutral-50 dark:bg-neutral-800/30 p-6 rounded-2xl">
 			<div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+				<FormField
+					id="dependentes"
+					label="Dependentes"
+					type="number"
+					min={0}
+					step={1}
+					icon={<Users className="w-5 h-5" aria-hidden="true" />}
+					placeholder="0"
+					value={dependents || ""}
+					onChange={(event) => onDependentsChange(Number(event.target.value))}
+				/>
 				<FormField
 					id="inss-manual"
 					label="INSS (R$)"

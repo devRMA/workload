@@ -1,16 +1,20 @@
 "use client";
 
 import {
+	Briefcase,
 	Calculator,
 	ChevronDown,
 	ChevronUp,
 	Clock,
+	Sun,
 	TrendingDown,
 	TrendingUp,
 	Wallet,
 } from "lucide-react";
 import { useState } from "react";
 import { useSalaryCalculator } from "@/hooks/use-salary-calculator";
+import type { WorkRegime } from "@/lib/payroll";
+import { SALARY_PERIOD_LABELS } from "@/lib/salary-period";
 import {
 	formatCurrency,
 	formatCurrencySimple,
@@ -19,11 +23,19 @@ import {
 import { CollapsiblePanel } from "../molecules/collapsible-panel";
 import { FormField } from "../molecules/form-field";
 import { HeroPanel } from "../molecules/hero-panel";
+import { PeriodSelector } from "../molecules/period-selector";
+import { SelectField } from "../molecules/select-field";
 import { StatBox } from "../molecules/stat-box";
 import { CalculatorLayout } from "../templates/calculator-layout";
 import { TaxDetailsPanel } from "./tax-details-panel";
 
 const DETAILS_PANEL_ID = "tax-details";
+
+const REGIME_OPTIONS: readonly { value: WorkRegime; label: string }[] = [
+	{ value: "clt", label: "CLT" },
+	{ value: "empregado-publico", label: "Empregado Público" },
+	{ value: "estatutario", label: "Estatutário" },
+];
 
 export function SalaryCalculator() {
 	const {
@@ -31,6 +43,14 @@ export function SalaryCalculator() {
 		setGrossSalary,
 		monthlyHours,
 		setMonthlyHours,
+		dailyHours,
+		setDailyHours,
+		dependents,
+		setDependents,
+		regime,
+		setRegime,
+		period,
+		setPeriod,
 		manualInss,
 		setManualInss,
 		manualIrrf,
@@ -76,16 +96,35 @@ export function SalaryCalculator() {
 									setGrossSalary(parseCurrency(event.target.value))
 								}
 							/>
+							<SelectField
+								id="regime-trabalho"
+								label="Regime de Trabalho"
+								labelIcon={<Briefcase className="w-4 h-4" aria-hidden="true" />}
+								value={regime}
+								options={REGIME_OPTIONS}
+								onValueChange={setRegime}
+							/>
 							<FormField
 								id="horas-mensais"
 								label="Carga Horária Mensal"
 								type="number"
+								min={0}
 								icon={<Clock className="w-5 h-5" />}
 								placeholder="220"
 								value={monthlyHours || ""}
 								onChange={(event) =>
 									setMonthlyHours(Number(event.target.value))
 								}
+							/>
+							<FormField
+								id="jornada-diaria"
+								label="Jornada Diária (horas)"
+								type="number"
+								min={0}
+								icon={<Sun className="w-5 h-5" />}
+								placeholder="8"
+								value={dailyHours || ""}
+								onChange={(event) => setDailyHours(Number(event.target.value))}
 							/>
 						</div>
 
@@ -110,6 +149,8 @@ export function SalaryCalculator() {
 							className="mt-6"
 						>
 							<TaxDetailsPanel
+								dependents={dependents}
+								onDependentsChange={setDependents}
 								manualInss={manualInss}
 								onManualInssChange={setManualInss}
 								manualIrrf={manualIrrf}
@@ -154,8 +195,8 @@ export function SalaryCalculator() {
 			aside={
 				<HeroPanel
 					icon={Clock}
-					label="Valor da Hora"
-					value={formatCurrency(stats.hourlyRate)}
+					label={`Valor por ${SALARY_PERIOD_LABELS[period]}`}
+					value={formatCurrency(stats.periodValue)}
 					tone="blue"
 					footer={
 						<>
@@ -182,8 +223,12 @@ export function SalaryCalculator() {
 					}
 				>
 					<p className="mt-4 text-xl opacity-80 font-medium">
+						{formatCurrency(stats.hourlyRate)} por hora ·{" "}
 						{formatCurrency(stats.minuteRate)} por minuto
 					</p>
+					<div className="mt-6">
+						<PeriodSelector value={period} onChange={setPeriod} />
+					</div>
 				</HeroPanel>
 			}
 		/>
