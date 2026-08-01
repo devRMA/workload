@@ -24,7 +24,7 @@ export default defineConfig({
 					localStorage: [
 						{
 							name: "workload_cookie_consent",
-							value: JSON.stringify({ telemetry: true, timestamp: Date.now() }),
+							value: JSON.stringify({ telemetry: true, timestamp: 0 }),
 						},
 					],
 				},
@@ -51,5 +51,6 @@ export default defineConfig({
 		command: process.env.CI ? "npm run start" : "npm run dev",
 		url: "http://localhost:3000",
 		reuseExistingServer: !process.env.CI,
+		timeout: 120_000,
 	},
 });
