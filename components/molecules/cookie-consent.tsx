@@ -4,6 +4,7 @@ import { Cookie, Shield, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/atoms/button";
+import { ModalDialog } from "@/components/atoms/modal-dialog";
 import { readTelemetryConsent, writeTelemetryConsent } from "@/lib/consent";
 
 const BANNER_DELAY_MS = 1500;
@@ -44,14 +45,14 @@ export function CookieConsent() {
 						<div className="overflow-hidden rounded-3xl border border-neutral-200 dark:border-neutral-800 bg-white/95 dark:bg-neutral-950/95 backdrop-blur-xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.3)]">
 							<div className="flex flex-col md:flex-row items-center gap-6 p-6 md:p-8">
 								<div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
-									<Cookie size={32} />
+									<Cookie size={32} aria-hidden="true" />
 								</div>
 
 								<div className="flex-1 space-y-1 text-center md:text-left">
 									<h3 className="text-xl font-black tracking-tight">
 										Respeitamos sua privacidade
 									</h3>
-									<p className="text-sm text-muted-foreground leading-relaxed">
+									<p className="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed">
 										Usamos cookies para melhorar sua experiência e entender como
 										você usa o WorkLoad. Você pode optar por desativar a
 										telemetria a qualquer momento.
@@ -62,7 +63,7 @@ export function CookieConsent() {
 									<button
 										type="button"
 										onClick={() => setShowSettings(true)}
-										className="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors px-4 py-2"
+										className="min-h-11 px-4 text-sm font-semibold text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-50 transition-colors"
 									>
 										Configurar
 									</button>
@@ -86,97 +87,106 @@ export function CookieConsent() {
 				)}
 			</AnimatePresence>
 
-			<AnimatePresence>
-				{showSettings && (
-					<div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
-						<motion.div
-							initial={{ opacity: 0 }}
-							animate={{ opacity: 1 }}
-							exit={{ opacity: 0 }}
-							onClick={() => setShowSettings(false)}
-							className="absolute inset-0 bg-background/80 backdrop-blur-sm"
-						/>
-						<motion.div
-							initial={{ opacity: 0, scale: 0.95, y: 20 }}
-							animate={{ opacity: 1, scale: 1, y: 0 }}
-							exit={{ opacity: 0, scale: 0.95, y: 20 }}
-							className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 p-8 shadow-2xl"
+			<ModalDialog
+				isOpen={showSettings}
+				onClose={() => setShowSettings(false)}
+				labelledBy="privacy-settings-title"
+				className="w-full max-w-lg rounded-3xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 p-8 shadow-2xl"
+			>
+				<Button
+					variant="ghost"
+					size="icon"
+					onClick={() => setShowSettings(false)}
+					aria-label="Fechar configurações de privacidade"
+					className="absolute right-4 top-4 rounded-full text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-50"
+				>
+					<X size={20} aria-hidden="true" />
+				</Button>
+
+				<div className="space-y-8">
+					<div className="flex items-center gap-4">
+						<div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+							<Shield size={24} aria-hidden="true" />
+						</div>
+						<h2
+							id="privacy-settings-title"
+							className="text-2xl font-black tracking-tight"
 						>
+							Privacidade
+						</h2>
+					</div>
+
+					<div className="space-y-6">
+						<div className="flex min-h-11 items-center justify-between gap-4 p-4 rounded-2xl bg-neutral-100 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-800">
+							<div className="space-y-1">
+								<p className="font-bold">Cookies Essenciais</p>
+								<p className="text-xs text-neutral-500 dark:text-neutral-400">
+									Necessários para o funcionamento do site.
+								</p>
+							</div>
+							<div className="flex shrink-0 items-center gap-3">
+								<p className="text-xs font-bold text-indigo-600 dark:text-indigo-400">
+									Sempre ativo
+								</p>
+								<div
+									aria-hidden="true"
+									className="h-6 w-11 rounded-full bg-indigo-500 flex items-center px-1"
+								>
+									<div className="h-4 w-4 rounded-full bg-white ml-auto" />
+								</div>
+							</div>
+						</div>
+
+						<div className="flex items-center justify-between gap-4 p-4 rounded-2xl bg-neutral-100 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-800">
+							<div className="space-y-1">
+								<p id="telemetry-consent-label" className="font-bold">
+									Telemetria (Google Analytics)
+								</p>
+								<p className="text-xs text-neutral-500 dark:text-neutral-400">
+									Ajuda a entender como o site é usado.
+								</p>
+							</div>
 							<button
 								type="button"
-								onClick={() => setShowSettings(false)}
-								className="absolute right-6 top-6 text-muted-foreground hover:text-foreground transition-colors"
+								role="switch"
+								aria-checked={telemetryEnabled}
+								aria-labelledby="telemetry-consent-label"
+								onClick={() => setTelemetryEnabled(!telemetryEnabled)}
+								className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
 							>
-								<X size={20} />
-							</button>
-
-							<div className="space-y-8">
-								<div className="flex items-center gap-4">
-									<div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
-										<Shield size={24} />
-									</div>
-									<h2 className="text-2xl font-black tracking-tight">
-										Privacidade
-									</h2>
-								</div>
-
-								<div className="space-y-6">
-									<div className="flex items-center justify-between p-4 rounded-2xl bg-muted/50 border border-neutral-200 dark:border-neutral-800">
-										<div className="space-y-1">
-											<p className="font-bold">Cookies Essenciais</p>
-											<p className="text-xs text-muted-foreground">
-												Necessários para o funcionamento do site.
-											</p>
-										</div>
-										<div className="h-6 w-11 rounded-full bg-indigo-500 flex items-center px-1">
-											<div className="h-4 w-4 rounded-full bg-white ml-auto" />
-										</div>
-									</div>
-
-									<div className="flex items-center justify-between p-4 rounded-2xl bg-muted/50 border border-neutral-200 dark:border-neutral-800">
-										<div className="space-y-1">
-											<p className="font-bold">Telemetria (Google Analytics)</p>
-											<p className="text-xs text-muted-foreground">
-												Ajuda a entender como o site é usado.
-											</p>
-										</div>
-										<button
-											type="button"
-											onClick={() => setTelemetryEnabled(!telemetryEnabled)}
-											className={`h-6 w-11 rounded-full transition-colors flex items-center px-1 ${
-												telemetryEnabled
-													? "bg-indigo-500"
-													: "bg-neutral-300 dark:bg-neutral-700"
-											}`}
-										>
-											<motion.div
-												animate={{ x: telemetryEnabled ? 20 : 0 }}
-												className="h-4 w-4 rounded-full bg-white shadow-sm"
-											/>
-										</button>
-									</div>
-								</div>
-
-								<Button
-									onClick={() => saveConsent(telemetryEnabled)}
-									className="w-full h-14 text-lg font-bold"
+								<span
+									className={`h-6 w-11 rounded-full transition-colors flex items-center px-1 ${
+										telemetryEnabled
+											? "bg-indigo-500"
+											: "bg-neutral-300 dark:bg-neutral-700"
+									}`}
 								>
-									Salvar Preferências
-								</Button>
-							</div>
-						</motion.div>
+									<motion.span
+										animate={{ x: telemetryEnabled ? 20 : 0 }}
+										className="block h-4 w-4 rounded-full bg-white shadow-sm"
+									/>
+								</span>
+							</button>
+						</div>
 					</div>
-				)}
-			</AnimatePresence>
+
+					<Button
+						onClick={() => saveConsent(telemetryEnabled)}
+						className="w-full h-14 text-lg font-bold"
+					>
+						Salvar Preferências
+					</Button>
+				</div>
+			</ModalDialog>
 
 			{!isVisible && (
 				<button
 					type="button"
 					onClick={() => setShowSettings(true)}
-					className="fixed bottom-4 right-4 z-40 p-2 text-muted-foreground hover:text-indigo-500 transition-colors opacity-30 hover:opacity-100"
+					className="fixed bottom-4 right-4 z-40 flex h-11 w-11 items-center justify-center rounded-full text-neutral-500 dark:text-neutral-400 hover:text-indigo-500 transition-colors opacity-30 hover:opacity-100"
 					aria-label="Configurações de Privacidade"
 				>
-					<Shield size={18} />
+					<Shield size={18} aria-hidden="true" />
 				</button>
 			)}
 		</>

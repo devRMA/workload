@@ -167,7 +167,7 @@ describe("AdManager", () => {
 			vi.advanceTimersByTime(15000);
 		});
 
-		fireEvent.click(screen.getByRole("button"));
+		fireEvent.click(screen.getByRole("button", { name: "Fechar vídeo" }));
 
 		expect(localStorage.getItem(VIDEO_AD_KEY)).not.toBeNull();
 		expect(screen.queryByText("Vídeo da Semana")).toBeNull();

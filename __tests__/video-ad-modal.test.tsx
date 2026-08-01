@@ -11,7 +11,7 @@ describe("VideoAdModal", () => {
 		vi.useFakeTimers();
 	});
 
-	it("does not render when isOpen is false", () => {
+	it("keeps the dialog closed and empty when isOpen is false", () => {
 		const { container } = render(
 			<VideoAdModal
 				isOpen={false}
@@ -19,7 +19,24 @@ describe("VideoAdModal", () => {
 				onComplete={mockOnComplete}
 			/>,
 		);
-		expect(container.innerHTML).toBe("");
+		const dialog = container.querySelector("dialog") as HTMLDialogElement;
+		expect(dialog.open).toBe(false);
+		expect(dialog.textContent).toBe("");
+	});
+
+	it("closes when the native close event fires on the alert step", () => {
+		const { container } = render(
+			<VideoAdModal
+				isOpen={true}
+				onClose={mockOnClose}
+				onComplete={mockOnComplete}
+			/>,
+		);
+
+		fireEvent(container.querySelector("dialog") as Element, new Event("close"));
+
+		expect(mockOnClose).toHaveBeenCalledOnce();
+		expect(mockOnComplete).not.toHaveBeenCalled();
 	});
 
 	it("renders the alert step with the start video CTA", () => {
@@ -56,12 +73,11 @@ describe("VideoAdModal", () => {
 			/>,
 		);
 		fireEvent.click(screen.getByText("Ver vídeo e apoiar o projeto"));
-		expect(
-			screen.getByText("Você poderá fechar em instantes..."),
-		).toBeDefined();
+		expect(screen.getByText("Anúncio em exibição...")).toBeDefined();
+		expect(screen.getByText("Vídeo da Semana").id).toBe("video-ad-modal-title");
 	});
 
-	it("reveals the close button only after the video finishes and completes the flow", () => {
+	it("dismisses the video during playback without crediting the view", () => {
 		render(
 			<VideoAdModal
 				isOpen={true}
@@ -70,15 +86,30 @@ describe("VideoAdModal", () => {
 			/>,
 		);
 		fireEvent.click(screen.getByText("Ver vídeo e apoiar o projeto"));
-		expect(screen.queryByRole("button")).toBeNull();
+
+		fireEvent.click(screen.getByRole("button", { name: "Fechar vídeo" }));
+
+		expect(mockOnClose).toHaveBeenCalledOnce();
+		expect(mockOnComplete).not.toHaveBeenCalled();
+	});
+
+	it("credits the view once the video finishes and then closes", () => {
+		render(
+			<VideoAdModal
+				isOpen={true}
+				onClose={mockOnClose}
+				onComplete={mockOnComplete}
+			/>,
+		);
+		fireEvent.click(screen.getByText("Ver vídeo e apoiar o projeto"));
 
 		act(() => {
 			vi.advanceTimersByTime(15000);
 		});
 
-		expect(screen.queryByText("Você poderá fechar em instantes...")).toBeNull();
+		expect(screen.queryByText("Anúncio em exibição...")).toBeNull();
 
-		fireEvent.click(screen.getByRole("button"));
+		fireEvent.click(screen.getByRole("button", { name: "Fechar vídeo" }));
 		expect(mockOnComplete).toHaveBeenCalledOnce();
 		expect(mockOnClose).toHaveBeenCalledOnce();
 	});

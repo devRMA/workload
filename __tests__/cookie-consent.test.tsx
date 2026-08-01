@@ -17,10 +17,7 @@ const openSettingsFromShieldButton = () => {
 	);
 };
 
-const getTelemetryToggleButton = () => {
-	const label = screen.getByText("Telemetria (Google Analytics)");
-	return label.parentElement?.parentElement?.querySelector("button");
-};
+const getTelemetryToggle = () => screen.getByRole("switch");
 
 describe("CookieConsent", () => {
 	beforeEach(() => {
@@ -126,6 +123,21 @@ describe("CookieConsent", () => {
 		expect(screen.getByText("Privacidade")).toBeDefined();
 	});
 
+	it("opens the settings dialog as a modal named by its heading", () => {
+		const { container } = render(<CookieConsent />);
+		act(() => {
+			vi.advanceTimersByTime(BANNER_DELAY_MS);
+		});
+		fireEvent.click(screen.getByText("Configurar"));
+
+		const dialog = container.querySelector("dialog") as HTMLDialogElement;
+		expect(dialog.open).toBe(true);
+		expect(dialog.getAttribute("aria-labelledby")).toBe(
+			"privacy-settings-title",
+		);
+		expect(screen.getByText("Privacidade").id).toBe("privacy-settings-title");
+	});
+
 	it("closes the settings dialog from the backdrop without persisting anything", () => {
 		const { container } = render(<CookieConsent />);
 		act(() => {
@@ -133,29 +145,52 @@ describe("CookieConsent", () => {
 		});
 		fireEvent.click(screen.getByText("Configurar"));
 
-		const backdrop = container.querySelector('[class*="backdrop-blur-sm"]');
-		expect(backdrop).not.toBeNull();
-		fireEvent.click(backdrop as Element);
+		fireEvent.click(container.querySelector("dialog") as Element);
 
+		expect(screen.queryByText("Privacidade")).toBeNull();
 		expect(localStorage.getItem(CONSENT_KEY)).toBeNull();
 		expect(mockReload).not.toHaveBeenCalled();
 	});
 
-	it("closes the settings dialog from the X button without persisting anything", () => {
+	it("closes the settings dialog when the native close event fires", () => {
 		const { container } = render(<CookieConsent />);
 		act(() => {
 			vi.advanceTimersByTime(BANNER_DELAY_MS);
 		});
 		fireEvent.click(screen.getByText("Configurar"));
 
-		const closeButton = container.querySelector(
-			'[class*="right-6"][class*="top-6"]',
-		);
-		expect(closeButton).not.toBeNull();
-		fireEvent.click(closeButton as Element);
+		fireEvent(container.querySelector("dialog") as Element, new Event("close"));
 
+		expect(screen.queryByText("Privacidade")).toBeNull();
+		expect(localStorage.getItem(CONSENT_KEY)).toBeNull();
+	});
+
+	it("closes the settings dialog from the X button without persisting anything", () => {
+		render(<CookieConsent />);
+		act(() => {
+			vi.advanceTimersByTime(BANNER_DELAY_MS);
+		});
+		fireEvent.click(screen.getByText("Configurar"));
+
+		fireEvent.click(
+			screen.getByRole("button", {
+				name: "Fechar configurações de privacidade",
+			}),
+		);
+
+		expect(screen.queryByText("Privacidade")).toBeNull();
 		expect(localStorage.getItem(CONSENT_KEY)).toBeNull();
 		expect(mockReload).not.toHaveBeenCalled();
+	});
+
+	it("announces the always-on state of the essential cookies", () => {
+		render(<CookieConsent />);
+		act(() => {
+			vi.advanceTimersByTime(BANNER_DELAY_MS);
+		});
+		fireEvent.click(screen.getByText("Configurar"));
+
+		expect(screen.getByText("Sempre ativo")).toBeDefined();
 	});
 
 	it("toggles telemetry off and saves the toggled value", () => {
@@ -165,9 +200,13 @@ describe("CookieConsent", () => {
 		});
 		fireEvent.click(screen.getByText("Configurar"));
 
-		const toggleButton = getTelemetryToggleButton();
-		expect(toggleButton).not.toBeUndefined();
-		fireEvent.click(toggleButton as Element);
+		const toggle = getTelemetryToggle();
+		expect(toggle.getAttribute("aria-checked")).toBe("true");
+		expect(toggle.getAttribute("aria-labelledby")).toBe(
+			"telemetry-consent-label",
+		);
+		fireEvent.click(toggle);
+		expect(toggle.getAttribute("aria-checked")).toBe("false");
 
 		fireEvent.click(screen.getByText("Salvar Preferências"));
 
@@ -186,9 +225,9 @@ describe("CookieConsent", () => {
 
 		openSettingsFromShieldButton();
 
-		const toggleButton = getTelemetryToggleButton();
-		expect(toggleButton).not.toBeUndefined();
-		fireEvent.click(toggleButton as Element);
+		const toggle = getTelemetryToggle();
+		expect(toggle.getAttribute("aria-checked")).toBe("false");
+		fireEvent.click(toggle);
 
 		fireEvent.click(screen.getByText("Salvar Preferências"));
 
