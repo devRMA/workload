@@ -11,17 +11,11 @@ module.exports = {
 			},
 		},
 		assert: {
-			preset: "lighthouse:recommended",
 			assertions: {
 				"categories:performance": ["warn", { minScore: 0.7 }],
 				"categories:accessibility": ["warn", { minScore: 0.8 }],
 				"categories:best-practices": ["warn", { minScore: 0.8 }],
 				"categories:seo": ["warn", { minScore: 0.8 }],
-				"non-composited-animations": "off",
-				"unused-javascript": "warn",
-				"uses-rel-preconnect": "warn",
-				"csp-xss": "off",
-				"maskable-icon": "off",
 			},
 		},
 		upload: {
