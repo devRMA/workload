@@ -13,6 +13,7 @@ playwright-report/
 blob-report/
 playwright/.cache/
 coverage/
+.lighthouseci/
 
 # Environment Variables
 # We block all .env files but allow .env.example
