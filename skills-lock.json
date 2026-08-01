@@ -1,106 +1,100 @@
 {
-	"version": 1,
-	"skills": {
-		"cavecrew": {
-			"source": "juliusbrussee/caveman",
-			"sourceType": "github",
-			"skillPath": "skills/cavecrew/SKILL.md",
-			"computedHash": "c5527c994fbd4c22b36714e3b124a0f167a533d114ab164fb1d35e2123533917"
-		},
-		"caveman": {
-			"source": "juliusbrussee/caveman",
-			"sourceType": "github",
-			"skillPath": "skills/caveman/SKILL.md",
-			"computedHash": "d18cdf73a5f5c496d681a43a6846336b110223bdffa6817b8992529c57f1a815"
-		},
-		"caveman-commit": {
-			"source": "juliusbrussee/caveman",
-			"sourceType": "github",
-			"skillPath": "skills/caveman-commit/SKILL.md",
-			"computedHash": "790a4eeace0be35c6691faf923518ba5bd50f1f1305d1101d09dd4971be94e00"
-		},
-		"caveman-compress": {
-			"source": "juliusbrussee/caveman",
-			"sourceType": "github",
-			"skillPath": "skills/caveman-compress/SKILL.md",
-			"computedHash": "84517cd4cf7a49d8d2bc1baf00f61bc359306c6ad9389756b6937eff958bd374"
-		},
-		"caveman-help": {
-			"source": "juliusbrussee/caveman",
-			"sourceType": "github",
-			"skillPath": "skills/caveman-help/SKILL.md",
-			"computedHash": "dd85267e76baad76995157e7b9f762dfa557cd58951ee92af0c283f48aa26537"
-		},
-		"caveman-review": {
-			"source": "juliusbrussee/caveman",
-			"sourceType": "github",
-			"skillPath": "skills/caveman-review/SKILL.md",
-			"computedHash": "fb7214a1c5793bae6ba8b1be4329e2e6f40dbec6dd911dfb335ad29f09c316a1"
-		},
-		"caveman-stats": {
-			"source": "juliusbrussee/caveman",
-			"sourceType": "github",
-			"skillPath": "skills/caveman-stats/SKILL.md",
-			"computedHash": "47ce2de3d6cb39a75047b5c962e4eb3da15594e7397c94103e9a104d42626553"
-		},
-		"compress": {
-			"source": "JuliusBrussee/caveman",
-			"sourceType": "github",
-			"computedHash": "05c97bc3120108acd0b80bdef7fb4fa7c224ba83c8d384ccbc97f92e8a065918"
-		},
-		"gh-stack": {
-			"source": "github/gh-stack",
-			"sourceType": "github",
-			"skillPath": "skills/gh-stack/SKILL.md",
-			"computedHash": "10a4da93d82f822cbcd2eec43ec8ccf02d70bc98662b86531c6fb00de9856c65"
-		},
-		"multi-stage-dockerfile": {
-			"source": "github/awesome-copilot",
-			"sourceType": "github",
-			"skillPath": "skills/multi-stage-dockerfile/SKILL.md",
-			"computedHash": "698bf93a84dae18fd7bd0b1d35c21427307fde78fbdf4624be9726f5f98189ca"
-		},
-		"next-best-practices": {
-			"source": "vercel-labs/openreview",
-			"sourceType": "github",
-			"skillPath": ".agents/skills/next-best-practices/SKILL.md",
-			"computedHash": "db85045827ebeb83ac8dbc992b69188755eeb74dcf01cbf5e694d58aa494a106"
-		},
-		"next-cache-components": {
-			"source": "vercel-labs/openreview",
-			"sourceType": "github",
-			"skillPath": ".agents/skills/next-cache-components/SKILL.md",
-			"computedHash": "f835d8226c28abf012cc013928e2627c8a7a046de61127ef229be1711bd1f255"
-		},
-		"next-upgrade": {
-			"source": "vercel-labs/openreview",
-			"sourceType": "github",
-			"skillPath": ".agents/skills/next-upgrade/SKILL.md",
-			"computedHash": "e3aeb1f9e8a68d24df0c1c2e3c8ab97ede09a7251a2c76988318d02254346979"
-		},
-		"vercel-composition-patterns": {
-			"source": "vercel-labs/openreview",
-			"sourceType": "github",
-			"skillPath": ".agents/skills/vercel-composition-patterns/SKILL.md",
-			"computedHash": "bdc99908989f5d6904aae71e97b123f61ee0a4f8085101d5064f69bb7c9ac7bd"
-		},
-		"vercel-react-best-practices": {
-			"source": "vercel-labs/openreview",
-			"sourceType": "github",
-			"skillPath": ".agents/skills/vercel-react-best-practices/SKILL.md",
-			"computedHash": "090ba7e6666985d200d366d0683590947c8ce365976c8e79dfb06c6bdc561fec"
-		},
-		"vercel-react-native-skills": {
-			"source": "vercel-labs/openreview",
-			"sourceType": "github",
-			"skillPath": ".agents/skills/vercel-react-native-skills/SKILL.md",
-			"computedHash": "76d7054a1981b60efd010baca567a8073875339c236fd121bb7f547730be6310"
-		},
-		"web-design-guidelines": {
-			"source": "vercel-labs/openreview",
-			"sourceType": "github",
-			"skillPath": ".agents/skills/web-design-guidelines/SKILL.md",
-			"computedHash": "f3bc47f890f42a44db1007ab390709ec368e4b8c089baee6b0007182236ac474"
-		}
-	}
+  "version": 1,
+  "skills": {
+    "cavecrew": {
+      "source": "juliusbrussee/caveman",
+      "sourceType": "github",
+      "skillPath": "skills/cavecrew/SKILL.md",
+      "computedHash": "c5527c994fbd4c22b36714e3b124a0f167a533d114ab164fb1d35e2123533917"
+    },
+    "caveman": {
+      "source": "juliusbrussee/caveman",
+      "sourceType": "github",
+      "skillPath": "skills/caveman/SKILL.md",
+      "computedHash": "d18cdf73a5f5c496d681a43a6846336b110223bdffa6817b8992529c57f1a815"
+    },
+    "caveman-commit": {
+      "source": "juliusbrussee/caveman",
+      "sourceType": "github",
+      "skillPath": "skills/caveman-commit/SKILL.md",
+      "computedHash": "790a4eeace0be35c6691faf923518ba5bd50f1f1305d1101d09dd4971be94e00"
+    },
+    "caveman-compress": {
+      "source": "juliusbrussee/caveman",
+      "sourceType": "github",
+      "skillPath": "skills/caveman-compress/SKILL.md",
+      "computedHash": "84517cd4cf7a49d8d2bc1baf00f61bc359306c6ad9389756b6937eff958bd374"
+    },
+    "caveman-help": {
+      "source": "juliusbrussee/caveman",
+      "sourceType": "github",
+      "skillPath": "skills/caveman-help/SKILL.md",
+      "computedHash": "dd85267e76baad76995157e7b9f762dfa557cd58951ee92af0c283f48aa26537"
+    },
+    "caveman-review": {
+      "source": "juliusbrussee/caveman",
+      "sourceType": "github",
+      "skillPath": "skills/caveman-review/SKILL.md",
+      "computedHash": "fb7214a1c5793bae6ba8b1be4329e2e6f40dbec6dd911dfb335ad29f09c316a1"
+    },
+    "caveman-stats": {
+      "source": "juliusbrussee/caveman",
+      "sourceType": "github",
+      "skillPath": "skills/caveman-stats/SKILL.md",
+      "computedHash": "47ce2de3d6cb39a75047b5c962e4eb3da15594e7397c94103e9a104d42626553"
+    },
+    "compress": {
+      "source": "JuliusBrussee/caveman",
+      "sourceType": "github",
+      "computedHash": "05c97bc3120108acd0b80bdef7fb4fa7c224ba83c8d384ccbc97f92e8a065918"
+    },
+    "gh-stack": {
+      "source": "github/gh-stack",
+      "sourceType": "github",
+      "skillPath": "skills/gh-stack/SKILL.md",
+      "computedHash": "10a4da93d82f822cbcd2eec43ec8ccf02d70bc98662b86531c6fb00de9856c65"
+    },
+    "multi-stage-dockerfile": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/multi-stage-dockerfile/SKILL.md",
+      "computedHash": "698bf93a84dae18fd7bd0b1d35c21427307fde78fbdf4624be9726f5f98189ca"
+    },
+    "next-best-practices": {
+      "source": "vercel-labs/openreview",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/next-best-practices/SKILL.md",
+      "computedHash": "db85045827ebeb83ac8dbc992b69188755eeb74dcf01cbf5e694d58aa494a106"
+    },
+    "next-cache-components": {
+      "source": "vercel-labs/openreview",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/next-cache-components/SKILL.md",
+      "computedHash": "f835d8226c28abf012cc013928e2627c8a7a046de61127ef229be1711bd1f255"
+    },
+    "next-upgrade": {
+      "source": "vercel-labs/openreview",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/next-upgrade/SKILL.md",
+      "computedHash": "e3aeb1f9e8a68d24df0c1c2e3c8ab97ede09a7251a2c76988318d02254346979"
+    },
+    "vercel-composition-patterns": {
+      "source": "vercel-labs/openreview",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/vercel-composition-patterns/SKILL.md",
+      "computedHash": "bdc99908989f5d6904aae71e97b123f61ee0a4f8085101d5064f69bb7c9ac7bd"
+    },
+    "vercel-react-best-practices": {
+      "source": "vercel-labs/openreview",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/vercel-react-best-practices/SKILL.md",
+      "computedHash": "090ba7e6666985d200d366d0683590947c8ce365976c8e79dfb06c6bdc561fec"
+    },
+    "web-design-guidelines": {
+      "source": "vercel-labs/openreview",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/web-design-guidelines/SKILL.md",
+      "computedHash": "f3bc47f890f42a44db1007ab390709ec368e4b8c089baee6b0007182236ac474"
+    }
+  }
 }
