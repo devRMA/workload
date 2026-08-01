@@ -6,20 +6,21 @@ import { AnimatePresence, motion } from "motion/react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/atoms/button";
-import SalaryCalculator from "@/components/salary-calculator";
-import WorkCalculator from "@/components/work-calculator";
+import { SalaryCalculator } from "@/components/organisms/salary-calculator";
+import { WorkCalculator } from "@/components/organisms/work-calculator";
+import { useCurrentTime } from "@/hooks/use-current-time";
 import { safeGAEvent } from "@/lib/analytics";
 
 type View = "work" | "salary";
 
+const PLACEHOLDER_CLOCK = "--:--:--";
+
 export default function Home() {
 	const [activeView, setActiveView] = useState<View>("work");
-	const [mounted, setMounted] = useState(false);
-	const [currentTime, setCurrentTime] = useState(new Date());
+	const currentTime = useCurrentTime();
 	const { setTheme, resolvedTheme } = useTheme();
 
 	useEffect(() => {
-		requestAnimationFrame(() => setMounted(true));
 		safeGAEvent("session_metadata", {
 			screen_width: window.screen.width,
 			screen_height: window.screen.height,
@@ -30,14 +31,6 @@ export default function Home() {
 			timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
 		});
 	}, []);
-
-	useEffect(() => {
-		if (!mounted) return;
-		const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-		return () => clearInterval(timer);
-	}, [mounted]);
-
-	if (!mounted) return null;
 
 	return (
 		<>
@@ -83,7 +76,9 @@ export default function Home() {
 							<div className="hidden md:flex items-center gap-2 px-4 py-2 bg-neutral-100 dark:bg-neutral-800 rounded-xl text-sm font-bold 4k:text-2xl 4k:px-8 4k:py-4">
 								<Clock className="w-4 h-4 text-indigo-500 4k:w-8 4k:h-8" />
 								<span className="tabular-nums">
-									{format(currentTime, "HH:mm:ss")}
+									{currentTime === null
+										? PLACEHOLDER_CLOCK
+										: format(currentTime, "HH:mm:ss")}
 								</span>
 							</div>
 							<Button
