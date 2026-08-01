@@ -4,8 +4,9 @@ import { Cookie, Shield, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/atoms/button";
+import { readTelemetryConsent, writeTelemetryConsent } from "@/lib/consent";
 
-const CONSENT_KEY = "workload_cookie_consent";
+const BANNER_DELAY_MS = 1500;
 
 export function CookieConsent() {
 	const [isVisible, setIsVisible] = useState(false);
@@ -13,23 +14,18 @@ export function CookieConsent() {
 	const [telemetryEnabled, setTelemetryEnabled] = useState(true);
 
 	useEffect(() => {
-		const consent = localStorage.getItem(CONSENT_KEY);
-		if (!consent) {
-			setTimeout(() => setIsVisible(true), 1500);
-		} else {
-			const { telemetry } = JSON.parse(consent);
-			setTelemetryEnabled(telemetry);
+		const storedConsent = readTelemetryConsent();
+		if (storedConsent !== null) {
+			setTelemetryEnabled(storedConsent);
+			return;
 		}
+
+		const timer = setTimeout(() => setIsVisible(true), BANNER_DELAY_MS);
+		return () => clearTimeout(timer);
 	}, []);
 
 	const saveConsent = (telemetry: boolean) => {
-		localStorage.setItem(
-			CONSENT_KEY,
-			JSON.stringify({
-				telemetry,
-				timestamp: Date.now(),
-			}),
-		);
+		writeTelemetryConsent(telemetry);
 		setTelemetryEnabled(telemetry);
 		setIsVisible(false);
 		window.location.reload();
