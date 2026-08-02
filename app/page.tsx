@@ -1,22 +1,17 @@
 "use client";
 
 import { format } from "date-fns";
-import { Clock, DollarSign, Moon, Sun, Wallet } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
+import { Clock, Moon, Sun, Wallet } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect } from "react";
 import { Button } from "@/components/atoms/button";
-import { SalaryCalculator } from "@/components/organisms/salary-calculator";
-import { WorkCalculator } from "@/components/organisms/work-calculator";
+import { CalculatorViews, CalculatorViewsFromUrl } from "@/components/organisms/calculator-views";
 import { useCurrentTime } from "@/hooks/use-current-time";
 import { safeGAEvent } from "@/lib/analytics";
-
-type View = "work" | "salary";
 
 const PLACEHOLDER_CLOCK = "--:--:--";
 
 export default function Home() {
-  const [activeView, setActiveView] = useState<View>("work");
   const currentTime = useCurrentTime();
   const { setTheme, resolvedTheme } = useTheme();
 
@@ -99,64 +94,9 @@ export default function Home() {
           </div>
         </header>
 
-        <nav className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
-          <div className="bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl border border-neutral-200 dark:border-neutral-800 p-1.5 rounded-2xl shadow-2xl flex items-center gap-1">
-            <Button
-              variant={activeView === "work" ? "default" : "ghost"}
-              onClick={() => {
-                setActiveView("work");
-                safeGAEvent("switch_tab", { tab: "work" });
-              }}
-              className="gap-2"
-              aria-pressed={activeView === "work"}
-            >
-              <Clock className="w-4 h-4" aria-hidden="true" />
-              <span>Jornada</span>
-            </Button>
-            <Button
-              variant={activeView === "salary" ? "default" : "ghost"}
-              onClick={() => {
-                setActiveView("salary");
-                safeGAEvent("switch_tab", { tab: "salary" });
-              }}
-              className="gap-2"
-              aria-pressed={activeView === "salary"}
-            >
-              <DollarSign className="w-4 h-4" aria-hidden="true" />
-              <span>Custo da Hora</span>
-            </Button>
-          </div>
-        </nav>
-
-        <div
-          id="main-content"
-          tabIndex={-1}
-          className="pt-32 pb-32 px-4 sm:px-6 lg:px-8 outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-        >
-          <AnimatePresence mode="wait">
-            {activeView === "work" ? (
-              <motion.div
-                key="work"
-                initial={{ opacity: 0, y: 20, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -20, scale: 0.98 }}
-                transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-              >
-                <WorkCalculator />
-              </motion.div>
-            ) : (
-              <motion.div
-                key="salary"
-                initial={{ opacity: 0, y: 20, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -20, scale: 0.98 }}
-                transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-              >
-                <SalaryCalculator />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+        <Suspense fallback={<CalculatorViews activeView="work" />}>
+          <CalculatorViewsFromUrl />
+        </Suspense>
 
         <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
           <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-indigo-500/5 blur-[120px] rounded-full" />

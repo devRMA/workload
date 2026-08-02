@@ -215,7 +215,7 @@ describe("WorkCalculator", () => {
     const user = userEvent.setup();
     render(<WorkCalculator />);
 
-    await user.click(screen.getByRole("button", { name: "MANUAL" }));
+    await user.click(screen.getByRole("radio", { name: "MANUAL" }));
 
     expect(safeGAEvent).toHaveBeenCalledWith("toggle_manual_mode", {
       value: "manual",
@@ -223,7 +223,7 @@ describe("WorkCalculator", () => {
     expect(screen.getByText("BALANÇO FINAL")).toBeInTheDocument();
     expect(screen.getAllByText("Saída Real").length).toBeGreaterThan(0);
 
-    await user.click(screen.getByRole("button", { name: "AUTO" }));
+    await user.click(screen.getByRole("radio", { name: "AUTO" }));
 
     expect(safeGAEvent).toHaveBeenCalledWith("toggle_manual_mode", {
       value: "auto",
@@ -238,7 +238,7 @@ describe("WorkCalculator", () => {
     await user.clear(exitTimeField);
     await user.type(exitTimeField, "1900");
 
-    expect(screen.getByRole("button", { name: "MANUAL" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("radio", { name: "MANUAL" })).toBeChecked();
   });
 
   it("restores the defaults and tracks the reset", async () => {

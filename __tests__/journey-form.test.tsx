@@ -125,17 +125,17 @@ describe("JourneyForm", () => {
     const user = userEvent.setup();
     render(<JourneyHarness onManualExitChange={onManualExitChange} />);
 
-    const autoButton = screen.getByRole("button", { name: "AUTO" });
-    const manualButton = screen.getByRole("button", { name: "MANUAL" });
-    expect(autoButton).toHaveAttribute("aria-pressed", "true");
-    expect(manualButton).toHaveAttribute("aria-pressed", "false");
+    const autoOption = screen.getByRole("radio", { name: "AUTO" });
+    const manualOption = screen.getByRole("radio", { name: "MANUAL" });
+    expect(autoOption).toBeChecked();
+    expect(manualOption).not.toBeChecked();
 
-    await user.click(manualButton);
+    await user.click(manualOption);
 
     expect(onManualExitChange).toHaveBeenCalledWith(true);
-    expect(manualButton).toHaveAttribute("aria-pressed", "true");
+    expect(manualOption).toBeChecked();
 
-    await user.click(autoButton);
+    await user.click(autoOption);
 
     expect(onManualExitChange).toHaveBeenLastCalledWith(false);
   });

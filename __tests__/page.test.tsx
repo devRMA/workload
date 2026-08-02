@@ -26,6 +26,10 @@ vi.mock("@/components/organisms/salary-calculator", () => ({
   SalaryCalculator: () => <p>Painel do custo da hora</p>,
 }));
 
+vi.mock("next/navigation", () => ({
+  useSearchParams: () => new URLSearchParams(),
+}));
+
 describe("Home", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -68,21 +72,7 @@ describe("Home", () => {
     render(<Home />);
 
     expect(screen.getByText("Painel da jornada")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Jornada" })).toHaveAttribute("aria-pressed", "true");
-  });
-
-  it("switches to the hourly cost view and tracks it", async () => {
-    const user = userEvent.setup();
-    render(<Home />);
-
-    await user.click(screen.getByRole("button", { name: "Custo da Hora" }));
-
-    expect(safeGAEvent).toHaveBeenCalledWith("switch_tab", { tab: "salary" });
-    expect(await screen.findByText("Painel do custo da hora")).toBeInTheDocument();
-
-    await user.click(screen.getByRole("button", { name: "Jornada" }));
-
-    expect(safeGAEvent).toHaveBeenCalledWith("switch_tab", { tab: "work" });
+    expect(screen.getByRole("link", { name: "Jornada" })).toHaveAttribute("aria-current", "page");
   });
 
   it("offers the dark theme while the light one is active", async () => {

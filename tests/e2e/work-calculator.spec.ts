@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 test.describe("Work Calculator (Jornada)", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
-    await page.click('button:has-text("Jornada")');
+    await page.getByRole("link", { name: "Jornada" }).click();
   });
 
   test("should display default values correctly", async ({ page }) => {
@@ -14,7 +14,7 @@ test.describe("Work Calculator (Jornada)", () => {
   });
 
   test("should allow manual exit input", async ({ page }) => {
-    await page.click('button:has-text("MANUAL")');
+    await page.getByRole("radio", { name: "MANUAL" }).check();
     await expect(page.locator('text="Saída Real"').first()).toBeVisible();
   });
 

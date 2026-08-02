@@ -13,6 +13,11 @@ const DURATION_GROUPS = [2, 2] as const;
 const MINUTES_PER_HOUR = 60;
 const HOURS_IN_DAY = 24;
 
+const EXIT_MODES = [
+  { label: "AUTO", isManual: false },
+  { label: "MANUAL", isManual: true },
+] as const;
+
 function formatDuration(minutes: number): string {
   const hours = Math.floor(minutes / MINUTES_PER_HOUR);
   const remainingMinutes = minutes % MINUTES_PER_HOUR;
@@ -89,24 +94,25 @@ export function JourneyForm({
             />
           </button>
         </div>
-        <div className="flex items-center gap-1 bg-neutral-100 dark:bg-neutral-800 p-1.5 rounded-2xl">
-          <button
-            type="button"
-            aria-pressed={!isManualExit}
-            onClick={() => onManualExitChange(false)}
-            className={`px-6 py-3.5 rounded-xl text-xs font-bold transition-colors ${!isManualExit ? "bg-white dark:bg-neutral-700 shadow-md text-emerald-700 dark:text-emerald-400" : "text-neutral-600 hover:text-neutral-600"}`}
-          >
-            AUTO
-          </button>
-          <button
-            type="button"
-            aria-pressed={isManualExit}
-            onClick={() => onManualExitChange(true)}
-            className={`px-6 py-3.5 rounded-xl text-xs font-bold transition-colors ${isManualExit ? "bg-white dark:bg-neutral-700 shadow-md text-emerald-700 dark:text-emerald-400" : "text-neutral-600 hover:text-neutral-600"}`}
-          >
-            MANUAL
-          </button>
-        </div>
+        <fieldset className="flex items-center gap-1 bg-neutral-100 dark:bg-neutral-800 p-1.5 rounded-2xl">
+          <legend className="sr-only">Modo de cálculo da saída</legend>
+          {EXIT_MODES.map(({ label, isManual }) => (
+            <label
+              key={label}
+              className="relative cursor-pointer px-6 py-3.5 rounded-xl text-xs font-bold text-neutral-600 transition-colors has-checked:bg-white dark:has-checked:bg-neutral-700 has-checked:shadow-md has-checked:text-emerald-700 dark:has-checked:text-emerald-400 focus-within:ring-2 focus-within:ring-emerald-500"
+            >
+              <input
+                type="radio"
+                name="exit-mode"
+                value={label}
+                checked={isManualExit === isManual}
+                onChange={() => onManualExitChange(isManual)}
+                className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+              />
+              {label}
+            </label>
+          ))}
+        </fieldset>
       </div>
 
       <CollapsiblePanel id={SETTINGS_PANEL_ID} isOpen={showSettings} className="mb-8">

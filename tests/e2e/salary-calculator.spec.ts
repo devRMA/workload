@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 test.describe("Salary Calculator (Custo da Hora)", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
-    await page.click('button:has-text("Custo da Hora")');
+    await page.getByRole("link", { name: "Custo da Hora" }).click();
   });
 
   test("should display default salary elements", async ({ page }) => {
