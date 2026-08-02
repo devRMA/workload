@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/atoms/button";
 import { ModalDialog } from "@/components/atoms/modal-dialog";
-import { readTelemetryConsent, writeTelemetryConsent } from "@/lib/consent";
+import { CONSENT_CHANGED_EVENT, readTelemetryConsent, writeTelemetryConsent } from "@/lib/consent";
 
 const BANNER_DELAY_MS = 1500;
 
@@ -29,7 +29,8 @@ export function CookieConsent() {
     writeTelemetryConsent(telemetry);
     setTelemetryEnabled(telemetry);
     setIsVisible(false);
-    window.location.reload();
+    setShowSettings(false);
+    window.dispatchEvent(new CustomEvent(CONSENT_CHANGED_EVENT, { detail: { telemetry } }));
   };
 
   return (
@@ -49,7 +50,7 @@ export function CookieConsent() {
                 </div>
 
                 <div className="flex-1 space-y-1 text-center md:text-left">
-                  <h3 className="text-xl font-black tracking-tight">Respeitamos sua privacidade</h3>
+                  <h2 className="text-xl font-black tracking-tight">Respeitamos sua privacidade</h2>
                   <p className="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed">
                     Usamos cookies para melhorar sua experiência e entender como você usa o WorkLoad. Você pode optar
                     por desativar a telemetria a qualquer momento.
@@ -165,7 +166,7 @@ export function CookieConsent() {
         <button
           type="button"
           onClick={() => setShowSettings(true)}
-          className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-4 z-40 flex h-11 w-11 items-center justify-center rounded-full text-neutral-500 dark:text-neutral-400 hover:text-indigo-500 transition-colors opacity-30 hover:opacity-100"
+          className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-4 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-neutral-200 dark:border-neutral-800 bg-white/90 dark:bg-neutral-950/90 text-neutral-600 dark:text-neutral-300 shadow-sm backdrop-blur-sm hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
           aria-label="Configurações de Privacidade"
         >
           <Shield size={18} aria-hidden="true" />

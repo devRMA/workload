@@ -2,7 +2,7 @@
 
 import { Clock, LogIn } from "lucide-react";
 import { useMemo } from "react";
-import { useSalaryCalculator } from "@/hooks/use-salary-calculator";
+import { useHourlyRate } from "@/hooks/use-hourly-rate";
 import { useWorkCalculator } from "@/hooks/use-work-calculator";
 import { safeGAEvent } from "@/lib/analytics";
 import { findComplianceWarnings } from "@/lib/compliance";
@@ -81,7 +81,7 @@ export function WorkCalculator() {
     issue,
     resetDefaults,
   } = useWorkCalculator();
-  const { stats: salaryStats } = useSalaryCalculator();
+  const hourlyRate = useHourlyRate();
 
   const breakdown = useMemo(
     () =>
@@ -173,7 +173,7 @@ export function WorkCalculator() {
               nightMinutes={stats.nightMinutes}
               firstTierRate={firstTierRate}
               extraTierRate={extraTierRate}
-              hourlyRate={salaryStats.hourlyRate > 0 ? salaryStats.hourlyRate : null}
+              hourlyRate={hourlyRate}
               warnings={warnings}
             />
           )}
@@ -186,15 +186,22 @@ export function WorkCalculator() {
           value={exitLabel}
           tone={isInDebt ? "rose" : "emerald"}
           badge={
-            <span className="bg-white/20 px-3 py-1 lg:px-4 lg:py-1.5 rounded-full text-xs lg:text-sm font-bold tabular-nums">
+            <span
+              aria-hidden="true"
+              className="bg-white/20 px-3 py-1 lg:px-4 lg:py-1.5 rounded-full text-xs lg:text-sm font-bold tabular-nums"
+            >
               {currentTime === null ? PLACEHOLDER_CLOCK : formatClockTime(currentTime)}
             </span>
           }
           media={
-            <ProgressRing progressPercent={breakdown.progressPercent} overtimePercent={breakdown.overtimePercent}>
-              <span className="text-xs font-bold uppercase tracking-wider text-white/80">{timerData.statusLabel}</span>
-              <span className="text-2xl font-black tabular-nums">{timerData.statusTime}</span>
-            </ProgressRing>
+            <div aria-hidden="true">
+              <ProgressRing progressPercent={breakdown.progressPercent} overtimePercent={breakdown.overtimePercent}>
+                <span className="text-xs font-bold uppercase tracking-wider text-white/80">
+                  {timerData.statusLabel}
+                </span>
+                <span className="text-2xl font-black tabular-nums">{timerData.statusTime}</span>
+              </ProgressRing>
+            </div>
           }
           footer={
             <div className="flex items-center justify-between gap-4">

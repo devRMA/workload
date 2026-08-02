@@ -1,0 +1,77 @@
+"use client";
+
+import { Clock, Moon, Sun, Wallet } from "lucide-react";
+import { useTheme } from "next-themes";
+import { useEffect } from "react";
+import { Button } from "@/components/atoms/button";
+import { useCurrentTime } from "@/hooks/use-current-time";
+import { safeGAEvent } from "@/lib/analytics";
+import { formatClockTime } from "@/lib/utils";
+
+const PLACEHOLDER_CLOCK = "--:--:--";
+
+export function AppHeader() {
+  const currentTime = useCurrentTime();
+  const { setTheme, resolvedTheme } = useTheme();
+
+  useEffect(() => {
+    safeGAEvent("session_metadata", {
+      screen_width: window.screen.width,
+      screen_height: window.screen.height,
+      viewport_width: window.innerWidth,
+      viewport_height: window.innerHeight,
+      device_pixel_ratio: window.devicePixelRatio,
+      user_language: navigator.language,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    });
+  }, []);
+
+  return (
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl border-b border-neutral-200 dark:border-neutral-800">
+      <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 h-20 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-indigo-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+            <Wallet className="text-white w-6 h-6" aria-hidden="true" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold tracking-tight md:text-2xl">WorkLoad</h1>
+            <p className="hidden sm:block text-xs text-neutral-600 dark:text-neutral-400">
+              Sua jornada de trabalho, clara e no seu controle
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <div
+            aria-hidden="true"
+            className="hidden md:flex items-center gap-2 px-4 py-2 bg-neutral-100 dark:bg-neutral-800 rounded-xl text-sm font-bold"
+          >
+            <Clock className="w-4 h-4 text-indigo-500" aria-hidden="true" />
+            <span className="tabular-nums">
+              {currentTime === null ? PLACEHOLDER_CLOCK : formatClockTime(currentTime)}
+            </span>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => {
+              const newTheme = resolvedTheme === "dark" ? "light" : "dark";
+              setTheme(newTheme);
+              safeGAEvent("toggle_theme", {
+                theme: newTheme,
+              });
+            }}
+            title="Alternar tema"
+            aria-label="Alternar tema"
+          >
+            {resolvedTheme === "dark" ? (
+              <Sun className="w-5 h-5" aria-hidden="true" />
+            ) : (
+              <Moon className="w-5 h-5" aria-hidden="true" />
+            )}
+          </Button>
+        </div>
+      </div>
+    </header>
+  );
+}

@@ -40,7 +40,7 @@ export function ExtraEntryRow({
           placeholder={namePlaceholder}
           value={name}
           onChange={(event) => onNameChange(event.target.value)}
-          className={COMPACT_FIELD_CLASSES}
+          className={`${COMPACT_FIELD_CLASSES} font-sans`}
         />
       </div>
       <div className="w-24 sm:w-32 shrink-0">

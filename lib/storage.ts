@@ -1,3 +1,6 @@
+export const HOURLY_RATE_KEY = "hourlyRate";
+export const DAILY_MINUTES_KEY = "workMinutes";
+
 export function readStoredNumber(key: string, fallback: number): number {
   const raw = localStorage.getItem(key);
   if (raw === null || raw.trim() === "") return fallback;

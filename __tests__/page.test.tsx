@@ -1,21 +1,13 @@
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { renderToString } from "react-dom/server";
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import Home from "@/app/page";
-import { safeGAEvent } from "@/lib/analytics";
+import { describe, expect, it, vi } from "vitest";
+import Home, { generateMetadata } from "@/app/page";
 
 vi.mock("@/lib/analytics", () => ({
   safeGAEvent: vi.fn(),
 }));
 
-const themeState: { resolvedTheme: string | undefined; setTheme: () => void } = {
-  resolvedTheme: undefined,
-  setTheme: vi.fn(),
-};
-
 vi.mock("next-themes", () => ({
-  useTheme: () => themeState,
+  useTheme: () => ({ resolvedTheme: undefined, setTheme: vi.fn() }),
 }));
 
 vi.mock("@/components/organisms/work-calculator", () => ({
@@ -26,18 +18,17 @@ vi.mock("@/components/organisms/salary-calculator", () => ({
   SalaryCalculator: () => <p>Painel do custo da hora</p>,
 }));
 
-vi.mock("next/navigation", () => ({
-  useSearchParams: () => new URLSearchParams(),
-}));
+function searchParamsOf(view?: string | string[]) {
+  return Promise.resolve(view === undefined ? {} : { view });
+}
+
+async function renderPage(view?: string | string[]) {
+  return renderToString(await Home({ searchParams: searchParamsOf(view) }));
+}
 
 describe("Home", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    themeState.resolvedTheme = undefined;
-  });
-
-  it("renders the whole shell on the server instead of a blank document", () => {
-    const markup = renderToString(<Home />);
+  it("renders the whole shell on the server instead of a blank document", async () => {
+    const markup = await renderPage();
 
     expect(markup).toContain("WorkLoad");
     expect(markup).toContain("Jornada");
@@ -46,56 +37,56 @@ describe("Home", () => {
     expect(markup).toContain("--:--:--");
   });
 
-  it("describes the application for search engines", () => {
-    const markup = renderToString(<Home />);
+  it("describes the application for search engines", async () => {
+    const markup = await renderPage();
 
     expect(markup).toContain("application/ld+json");
     expect(markup).toContain("WebApplication");
   });
 
-  it("shows the live clock once the client takes over", () => {
-    render(<Home />);
+  it("starts on the journey view", async () => {
+    const markup = await renderPage();
 
-    expect(screen.getByText(/^\d{2}:\d{2}:\d{2}$/)).toBeInTheDocument();
+    expect(markup).toContain("Painel da jornada");
+    expect(markup).not.toContain("Painel do custo da hora");
   });
 
-  it("reports the session metadata on mount", () => {
-    render(<Home />);
+  it("serves the salary panel on the very first frame", async () => {
+    const markup = await renderPage("salary");
 
-    expect(safeGAEvent).toHaveBeenCalledWith(
-      "session_metadata",
-      expect.objectContaining({ viewport_width: window.innerWidth }),
-    );
+    expect(markup).toContain("Painel do custo da hora");
+    expect(markup).not.toContain("Painel da jornada");
+  });
+});
+
+describe("generateMetadata", () => {
+  it("describes the journey view by default", async () => {
+    const metadata = await generateMetadata({ searchParams: searchParamsOf() });
+
+    expect(metadata.title).toContain("Jornada");
+    expect(metadata.description).toContain("hora extra");
+    expect(metadata.alternates?.canonical).toBe("/");
+    expect(metadata.openGraph).toMatchObject({ url: "/" });
   });
 
-  it("starts on the journey view", () => {
-    render(<Home />);
+  it("describes the salary view", async () => {
+    const metadata = await generateMetadata({ searchParams: searchParamsOf("salary") });
 
-    expect(screen.getByText("Painel da jornada")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Jornada" })).toHaveAttribute("aria-current", "page");
+    expect(metadata.title).toContain("Salário Líquido");
+    expect(metadata.alternates?.canonical).toBe("/?view=salary");
   });
 
-  it("offers the dark theme while the light one is active", async () => {
-    themeState.resolvedTheme = "light";
-    const user = userEvent.setup();
-    render(<Home />);
+  it("keeps the first value when the view is repeated in the query string", async () => {
+    const metadata = await generateMetadata({ searchParams: searchParamsOf(["salary", "work"]) });
 
-    await user.click(screen.getByTitle("Alternar tema"));
-
-    expect(safeGAEvent).toHaveBeenCalledWith("toggle_theme", {
-      theme: "dark",
-    });
+    expect(metadata.alternates?.canonical).toBe("/?view=salary");
   });
 
-  it("offers the light theme while the dark one is active", async () => {
-    themeState.resolvedTheme = "dark";
-    const user = userEvent.setup();
-    render(<Home />);
+  it("falls back to the journey for an unknown or empty view", async () => {
+    const unknown = await generateMetadata({ searchParams: searchParamsOf("anything-else") });
+    const missing = await generateMetadata({ searchParams: searchParamsOf([]) });
 
-    await user.click(screen.getByTitle("Alternar tema"));
-
-    expect(safeGAEvent).toHaveBeenCalledWith("toggle_theme", {
-      theme: "light",
-    });
+    expect(unknown.alternates?.canonical).toBe("/");
+    expect(missing.alternates?.canonical).toBe("/");
   });
 });

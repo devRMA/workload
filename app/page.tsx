@@ -1,31 +1,45 @@
-"use client";
+import type { Metadata } from "next";
+import { AppHeader } from "@/components/organisms/app-header";
+import { CalculatorViews } from "@/components/organisms/calculator-views";
+import { type CalculatorView, toCalculatorView } from "@/lib/calculator-view";
 
-import { Clock, Moon, Sun, Wallet } from "lucide-react";
-import { useTheme } from "next-themes";
-import { Suspense, useEffect } from "react";
-import { Button } from "@/components/atoms/button";
-import { CalculatorViews, CalculatorViewsFromUrl } from "@/components/organisms/calculator-views";
-import { useCurrentTime } from "@/hooks/use-current-time";
-import { safeGAEvent } from "@/lib/analytics";
-import { formatClockTime } from "@/lib/utils";
+interface HomeProps {
+  searchParams: Promise<{ view?: string | string[] }>;
+}
 
-const PLACEHOLDER_CLOCK = "--:--:--";
+const VIEW_METADATA: Record<CalculatorView, { title: string; description: string; canonical: string }> = {
+  work: {
+    title: "Calculadora de Jornada, Horas Extras e Banco de Horas",
+    description:
+      "Veja a que horas você pode sair, quanto já trabalhou hoje e quanto tem de hora extra, com adicional noturno e os limites da CLT.",
+    canonical: "/",
+  },
+  salary: {
+    title: "Calculadora de Valor da Hora e Salário Líquido CLT",
+    description:
+      "Descubra quanto vale a sua hora de trabalho a partir do salário bruto, com INSS, IRRF, dependentes, descontos e ganhos extras.",
+    canonical: "/?view=salary",
+  },
+};
 
-export default function Home() {
-  const currentTime = useCurrentTime();
-  const { setTheme, resolvedTheme } = useTheme();
+async function readView(searchParams: HomeProps["searchParams"]): Promise<CalculatorView> {
+  const { view } = await searchParams;
+  return toCalculatorView(Array.isArray(view) ? (view[0] ?? null) : (view ?? null));
+}
 
-  useEffect(() => {
-    safeGAEvent("session_metadata", {
-      screen_width: window.screen.width,
-      screen_height: window.screen.height,
-      viewport_width: window.innerWidth,
-      viewport_height: window.innerHeight,
-      device_pixel_ratio: window.devicePixelRatio,
-      user_language: navigator.language,
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    });
-  }, []);
+export async function generateMetadata({ searchParams }: HomeProps): Promise<Metadata> {
+  const { title, description, canonical } = VIEW_METADATA[await readView(searchParams)];
+
+  return {
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: { title, description, url: canonical },
+  };
+}
+
+export default async function Home({ searchParams }: HomeProps) {
+  const activeView = await readView(searchParams);
 
   return (
     <>
@@ -55,48 +69,9 @@ export default function Home() {
         Pular para o conteúdo principal
       </a>
       <main className="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 transition-colors duration-500">
-        <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl border-b border-neutral-200 dark:border-neutral-800">
-          <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 h-20 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-indigo-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-                <Wallet className="text-white w-6 h-6" aria-hidden="true" />
-              </div>
-              <h1 className="text-xl font-bold tracking-tight md:text-2xl">WorkLoad</h1>
-            </div>
+        <AppHeader />
 
-            <div className="flex items-center gap-4">
-              <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-neutral-100 dark:bg-neutral-800 rounded-xl text-sm font-bold">
-                <Clock className="w-4 h-4 text-indigo-500" aria-hidden="true" />
-                <span className="tabular-nums">
-                  {currentTime === null ? PLACEHOLDER_CLOCK : formatClockTime(currentTime)}
-                </span>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => {
-                  const newTheme = resolvedTheme === "dark" ? "light" : "dark";
-                  setTheme(newTheme);
-                  safeGAEvent("toggle_theme", {
-                    theme: newTheme,
-                  });
-                }}
-                title="Alternar tema"
-                aria-label="Alternar tema"
-              >
-                {resolvedTheme === "dark" ? (
-                  <Sun className="w-5 h-5" aria-hidden="true" />
-                ) : (
-                  <Moon className="w-5 h-5" aria-hidden="true" />
-                )}
-              </Button>
-            </div>
-          </div>
-        </header>
-
-        <Suspense fallback={<CalculatorViews activeView="work" />}>
-          <CalculatorViewsFromUrl />
-        </Suspense>
+        <CalculatorViews activeView={activeView} />
 
         <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
           <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-indigo-500/5 blur-[120px] rounded-full" />

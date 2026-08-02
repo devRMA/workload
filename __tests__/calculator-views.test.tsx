@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { CalculatorViews, CalculatorViewsFromUrl, toCalculatorView } from "@/components/organisms/calculator-views";
+import { CalculatorViews } from "@/components/organisms/calculator-views";
 import { safeGAEvent } from "@/lib/analytics";
 
 vi.mock("@/lib/analytics", () => ({
@@ -16,25 +16,9 @@ vi.mock("@/components/organisms/salary-calculator", () => ({
   SalaryCalculator: () => <p>Painel do custo da hora</p>,
 }));
 
-const searchParams = { current: new URLSearchParams() };
-
-vi.mock("next/navigation", () => ({
-  useSearchParams: () => searchParams.current,
-}));
-
-describe("toCalculatorView", () => {
-  it("only accepts the salary view, falling back to the journey", () => {
-    expect(toCalculatorView("salary")).toBe("salary");
-    expect(toCalculatorView("work")).toBe("work");
-    expect(toCalculatorView("anything-else")).toBe("work");
-    expect(toCalculatorView(null)).toBe("work");
-  });
-});
-
 describe("CalculatorViews", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    searchParams.current = new URLSearchParams();
   });
 
   it("marks the active tab and links both views by URL", () => {
@@ -63,16 +47,25 @@ describe("CalculatorViews", () => {
     expect(safeGAEvent).toHaveBeenCalledWith("switch_tab", { tab: "salary" });
   });
 
-  it("reads the active view from the query string", () => {
-    searchParams.current = new URLSearchParams("view=salary");
-    render(<CalculatorViewsFromUrl />);
+  it("leaves the focus alone on the first render", () => {
+    const { container } = render(<CalculatorViews activeView="work" />);
 
-    expect(screen.getByText("Painel do custo da hora")).toBeInTheDocument();
+    expect(container.querySelector("#main-content")).not.toHaveFocus();
+    expect(document.activeElement).toBe(document.body);
   });
 
-  it("falls back to the journey when the query string has no view", () => {
-    render(<CalculatorViewsFromUrl />);
+  it("moves the focus to the panel once the view changes", () => {
+    const { container, rerender } = render(<CalculatorViews activeView="work" />);
 
-    expect(screen.getByText("Painel da jornada")).toBeInTheDocument();
+    rerender(<CalculatorViews activeView="salary" />);
+
+    expect(container.querySelector("#main-content")).toHaveFocus();
+  });
+
+  it("promises that nothing leaves the browser and that the numbers are an estimate", () => {
+    render(<CalculatorViews activeView="work" />);
+
+    expect(screen.getByText(/fica salvo apenas neste navegador/)).toBeInTheDocument();
+    expect(screen.getByText(/não substituem seu holerite/)).toBeInTheDocument();
   });
 });

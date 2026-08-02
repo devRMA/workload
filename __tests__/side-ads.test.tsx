@@ -23,13 +23,20 @@ describe("SideAds", () => {
     expect(screen.getAllByText("Espaço do Apoiador")).toHaveLength(2);
   });
 
-  it("auto-hides and calls onClose after 45 seconds", () => {
+  it("keeps the ads on screen until the user closes them", () => {
     render(<SideAds onClose={mockOnClose} />);
     act(() => {
-      vi.advanceTimersByTime(45000);
+      vi.advanceTimersByTime(600000);
     });
-    expect(mockOnClose).toHaveBeenCalledOnce();
-    expect(screen.queryByText("Espaço do Apoiador")).toBeNull();
+    expect(screen.getAllByText("Espaço do Apoiador")).toHaveLength(2);
+    expect(mockOnClose).not.toHaveBeenCalled();
+  });
+
+  it("clears the reveal timer on unmount so it never fires", () => {
+    const clearTimeoutSpy = vi.spyOn(window, "clearTimeout");
+    const { unmount } = render(<SideAds onClose={mockOnClose} />);
+    unmount();
+    expect(clearTimeoutSpy).toHaveBeenCalled();
   });
 
   it("closes the left ad and calls onClose when its close button is clicked", () => {
@@ -37,8 +44,7 @@ describe("SideAds", () => {
     act(() => {
       vi.advanceTimersByTime(2000);
     });
-    const closeButtons = screen.getAllByRole("button");
-    fireEvent.click(closeButtons[0]);
+    fireEvent.click(screen.getByRole("button", { name: "Fechar anúncio do lado esquerdo" }));
     expect(mockOnClose).toHaveBeenCalledOnce();
   });
 
@@ -47,8 +53,17 @@ describe("SideAds", () => {
     act(() => {
       vi.advanceTimersByTime(2000);
     });
-    const closeButtons = screen.getAllByRole("button");
-    fireEvent.click(closeButtons[1]);
+    fireEvent.click(screen.getByRole("button", { name: "Fechar anúncio do lado direito" }));
     expect(mockOnClose).toHaveBeenCalledOnce();
+  });
+
+  it("reveals the close buttons on keyboard focus", () => {
+    render(<SideAds onClose={mockOnClose} />);
+    act(() => {
+      vi.advanceTimersByTime(2000);
+    });
+    for (const closeButton of screen.getAllByRole("button")) {
+      expect(closeButton.className).toContain("focus-visible:opacity-100");
+    }
   });
 });
