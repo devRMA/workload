@@ -24,8 +24,8 @@ describe("CalculatorViews", () => {
   it("marks the active tab and links both views by URL", () => {
     render(<CalculatorViews activeView="salary" />);
 
-    expect(screen.getByRole("link", { name: "Jornada" })).toHaveAttribute("href", "/?view=work");
-    expect(screen.getByRole("link", { name: "Custo da Hora" })).toHaveAttribute("href", "/?view=salary");
+    expect(screen.getByRole("link", { name: "Jornada" })).toHaveAttribute("href", "/");
+    expect(screen.getByRole("link", { name: "Custo da Hora" })).toHaveAttribute("href", "/custo-da-hora");
     expect(screen.getByRole("link", { name: "Custo da Hora" })).toHaveAttribute("aria-current", "page");
     expect(screen.getByRole("link", { name: "Jornada" })).not.toHaveAttribute("aria-current");
   });

@@ -8,7 +8,7 @@ import { buttonClasses } from "@/components/atoms/button";
 import { SalaryCalculator } from "@/components/organisms/salary-calculator";
 import { WorkCalculator } from "@/components/organisms/work-calculator";
 import { safeGAEvent } from "@/lib/analytics";
-import type { CalculatorView } from "@/lib/calculator-view";
+import { type CalculatorView, VIEW_PATHS } from "@/lib/calculator-view";
 
 const VIEW_TABS: readonly { view: CalculatorView; label: string; icon: typeof Clock }[] = [
   { view: "work", label: "Jornada", icon: Clock },
@@ -42,7 +42,7 @@ export function CalculatorViews({ activeView }: { activeView: CalculatorView }) 
           {VIEW_TABS.map(({ view, label, icon: Icon }) => (
             <li key={view}>
               <Link
-                href={`/?view=${view}`}
+                href={VIEW_PATHS[view]}
                 scroll={false}
                 aria-current={activeView === view ? "page" : undefined}
                 onClick={() => safeGAEvent("switch_tab", { tab: view })}

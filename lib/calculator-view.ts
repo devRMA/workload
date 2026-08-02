@@ -1,7 +1,6 @@
 export type CalculatorView = "work" | "salary";
 
-const DEFAULT_VIEW: CalculatorView = "work";
-
-export function toCalculatorView(rawView: string | null): CalculatorView {
-  return rawView === "salary" ? "salary" : DEFAULT_VIEW;
-}
+export const VIEW_PATHS: Record<CalculatorView, string> = {
+  work: "/",
+  salary: "/custo-da-hora",
+};
