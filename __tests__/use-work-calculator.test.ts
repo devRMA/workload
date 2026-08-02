@@ -1,5 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { differenceInCalendarDays } from "date-fns";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { calculateSuggestedExit, calculateWorkStats, useWorkCalculator } from "@/hooks/use-work-calculator";
 
 const FULL_DAY_MINUTES = 8 * 60 + 48;
@@ -13,14 +14,12 @@ describe("calculateSuggestedExit", () => {
     );
   });
 
-  it("returns the entry unchanged when the times are out of order", () => {
-    expect(calculateSuggestedExit(`${MONDAY}T14:00`, `${MONDAY}T12:00`, `${MONDAY}T13:00`, FULL_DAY_MINUTES)).toBe(
-      `${MONDAY}T14:00`,
-    );
+  it("suggests nothing when the times are out of order", () => {
+    expect(calculateSuggestedExit(`${MONDAY}T14:00`, `${MONDAY}T12:00`, `${MONDAY}T13:00`, FULL_DAY_MINUTES)).toBe("");
   });
 
-  it("returns the entry unchanged when a timestamp is unparseable", () => {
-    expect(calculateSuggestedExit("not-a-date", "", "", FULL_DAY_MINUTES)).toBe("not-a-date");
+  it("suggests nothing when a timestamp is unparseable", () => {
+    expect(calculateSuggestedExit("not-a-date", "", "", FULL_DAY_MINUTES)).toBe("");
   });
 
   it("never suggests an exit before the end of lunch", () => {
@@ -162,6 +161,10 @@ describe("useWorkCalculator", () => {
     vi.setSystemTime(new Date(`${MONDAY}T10:00:00`));
   });
 
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it("starts from the legal overtime defaults", () => {
     const { result } = renderHook(() => useWorkCalculator());
 
@@ -190,6 +193,68 @@ describe("useWorkCalculator", () => {
 
     expect(result.current.entry).toBe(`${MONDAY}T08:00`);
     expect(result.current.lunchStart).toBe(`${MONDAY}T12:00`);
+  });
+
+  it("brings a journey stored on an earlier day back at the same hours", () => {
+    localStorage.setItem("entry", "2025-01-02T09:15");
+    localStorage.setItem("lunchStart", "2025-01-02T12:30");
+    localStorage.setItem("lunchEnd", "2025-01-02T13:30");
+    localStorage.setItem("exitOverride", "2025-01-02T18:20");
+
+    const { result } = renderHook(() => useWorkCalculator());
+
+    expect(result.current.entry).toBe(`${MONDAY}T09:15`);
+    expect(result.current.lunchStart).toBe(`${MONDAY}T12:30`);
+    expect(result.current.lunchEnd).toBe(`${MONDAY}T13:30`);
+    expect(result.current.exitOverride).toBe(`${MONDAY}T18:20`);
+  });
+
+  it("keeps the overnight gap of a stored night journey", () => {
+    localStorage.setItem("entry", "2025-01-01T22:00");
+    localStorage.setItem("lunchStart", "2025-01-02T01:00");
+    localStorage.setItem("lunchEnd", "2025-01-02T02:00");
+    localStorage.setItem("exitOverride", "2025-01-02T06:00");
+    localStorage.setItem("isManualExit", "true");
+
+    const { result } = renderHook(() => useWorkCalculator());
+
+    expect(result.current.entry).toBe(`${MONDAY}T22:00`);
+    expect(result.current.lunchStart).toBe("2025-01-07T01:00");
+    expect(result.current.isManualExit).toBe(true);
+    expect(result.current.displayExit).toBe("2025-01-07T06:00");
+    expect(differenceInCalendarDays(new Date(result.current.displayExit), new Date(result.current.entry))).toBe(1);
+  });
+
+  it("persists the manual exit so a reload keeps it", () => {
+    const { result, unmount } = renderHook(() => useWorkCalculator());
+
+    act(() => {
+      result.current.setIsManualExit(true);
+      result.current.setExitOverride(`${MONDAY}T19:30`);
+    });
+    unmount();
+
+    const reloaded = renderHook(() => useWorkCalculator());
+
+    expect(reloaded.result.current.isManualExit).toBe(true);
+    expect(reloaded.result.current.exitOverride).toBe(`${MONDAY}T19:30`);
+  });
+
+  it("reports no issue for the default journey", () => {
+    const { result } = renderHook(() => useWorkCalculator());
+
+    expect(result.current.issue).toBeNull();
+  });
+
+  it("reports the moment that breaks the journey order", () => {
+    const { result } = renderHook(() => useWorkCalculator());
+
+    act(() => {
+      result.current.setLunchStart(`${MONDAY}T07:00`);
+    });
+
+    expect(result.current.issue?.field).toBe("lunchStart");
+    expect(result.current.stats.totalWorked).toBe(0);
   });
 
   it("does not overwrite stored values before restoring them", () => {

@@ -3,15 +3,18 @@ import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { JourneyForm } from "@/components/organisms/journey-form";
+import type { JourneyIssue } from "@/lib/journey";
 
 const DEFAULT_WORK_MINUTES = 8 * 60 + 48;
 
 function JourneyHarness({
   onReset = vi.fn(),
   onManualExitChange,
+  issue = null,
 }: {
   onReset?: () => void;
   onManualExitChange?: (manual: boolean) => void;
+  issue?: JourneyIssue | null;
 }) {
   const [workMinutes, setWorkMinutes] = useState(DEFAULT_WORK_MINUTES);
   const [firstTierRate, setFirstTierRate] = useState(50);
@@ -44,6 +47,7 @@ function JourneyHarness({
         onManualExitChange?.(manual);
       }}
       onReset={onReset}
+      issue={issue}
     />
   );
 }
@@ -57,6 +61,34 @@ describe("JourneyForm", () => {
     expect(screen.getByLabelText("Saída Almoço")).toBeInTheDocument();
     expect(screen.getByLabelText("Volta Almoço")).toBeInTheDocument();
     expect(screen.getByLabelText("Saída Real")).toBeInTheDocument();
+  });
+
+  it("stays quiet while the journey makes sense", () => {
+    render(<JourneyHarness />);
+
+    expect(screen.queryByRole("alert")).toBeNull();
+    expect(screen.getByLabelText("Entrada")).not.toHaveAttribute("aria-invalid");
+  });
+
+  it("explains the problem and marks only the field that caused it", () => {
+    render(
+      <JourneyHarness
+        issue={{
+          field: "lunchEnd",
+          message: "A volta do almoço precisa vir depois da saída para o almoço.",
+        }}
+      />,
+    );
+
+    const banner = screen.getByRole("alert");
+    expect(banner).toHaveTextContent("Confira seus horários");
+    expect(banner).toHaveTextContent("A volta do almoço precisa vir depois da saída para o almoço.");
+
+    const lunchEndField = screen.getByLabelText("Volta Almoço");
+    expect(lunchEndField).toHaveAttribute("aria-invalid", "true");
+    expect(lunchEndField).toHaveAttribute("aria-describedby", banner.id);
+    expect(screen.getByLabelText("Entrada")).not.toHaveAttribute("aria-invalid");
+    expect(screen.getByLabelText("Saída Real")).not.toHaveAttribute("aria-invalid");
   });
 
   it("keeps the settings panel collapsed until requested", async () => {

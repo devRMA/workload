@@ -1,5 +1,11 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { readStoredList, readStoredNumber } from "@/lib/storage";
+import {
+  readStoredFlag,
+  readStoredList,
+  readStoredNumber,
+  readStoredOptionalNumber,
+  writeStoredOptionalNumber,
+} from "@/lib/storage";
 
 describe("readStoredNumber", () => {
   beforeEach(() => {
@@ -36,6 +42,84 @@ describe("readStoredNumber", () => {
 
     localStorage.setItem("blank-key", "   ");
     expect(readStoredNumber("blank-key", 3)).toBe(3);
+  });
+});
+
+describe("readStoredFlag", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it("returns the fallback when the key is missing", () => {
+    expect(readStoredFlag("missing-flag", true)).toBe(true);
+  });
+
+  it("reads both stored booleans back", () => {
+    localStorage.setItem("on-flag", "true");
+    expect(readStoredFlag("on-flag", false)).toBe(true);
+
+    localStorage.setItem("off-flag", "false");
+    expect(readStoredFlag("off-flag", true)).toBe(false);
+  });
+
+  it("returns the fallback when the value is not a boolean", () => {
+    localStorage.setItem("odd-flag", "sim");
+    expect(readStoredFlag("odd-flag", true)).toBe(true);
+  });
+});
+
+describe("readStoredOptionalNumber", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it("returns null when the key is missing", () => {
+    expect(readStoredOptionalNumber("missing-optional")).toBeNull();
+  });
+
+  it("returns the parsed value when it is valid", () => {
+    localStorage.setItem("valid-optional", "125.5");
+    expect(readStoredOptionalNumber("valid-optional")).toBe(125.5);
+  });
+
+  it("returns zero when the stored value is zero", () => {
+    localStorage.setItem("zero-optional", "0");
+    expect(readStoredOptionalNumber("zero-optional")).toBe(0);
+  });
+
+  it("returns null when the value is blank", () => {
+    localStorage.setItem("blank-optional", "   ");
+    expect(readStoredOptionalNumber("blank-optional")).toBeNull();
+  });
+
+  it("returns null when the value is non-numeric", () => {
+    localStorage.setItem("text-optional", "muito");
+    expect(readStoredOptionalNumber("text-optional")).toBeNull();
+  });
+
+  it("returns null when the value is negative", () => {
+    localStorage.setItem("negative-optional", "-3");
+    expect(readStoredOptionalNumber("negative-optional")).toBeNull();
+  });
+});
+
+describe("writeStoredOptionalNumber", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it("stores the value so it can be read back", () => {
+    writeStoredOptionalNumber("optional-key", 42);
+
+    expect(readStoredOptionalNumber("optional-key")).toBe(42);
+  });
+
+  it("drops the key when the value is cleared", () => {
+    localStorage.setItem("optional-key", "42");
+
+    writeStoredOptionalNumber("optional-key", null);
+
+    expect(localStorage.getItem("optional-key")).toBeNull();
   });
 });
 

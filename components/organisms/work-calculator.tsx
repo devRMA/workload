@@ -133,6 +133,7 @@ export function WorkCalculator() {
     suggestedExit,
     displayExit,
     stats,
+    issue,
     resetDefaults,
   } = useWorkCalculator();
 
@@ -194,16 +195,19 @@ export function WorkCalculator() {
             isManualExit={isManualExit}
             onManualExitChange={handleManualToggle}
             onReset={handleReset}
+            issue={issue}
           />
-          <WorkSummary
-            balanceMinutes={stats.balance}
-            balanceSign={balanceSign}
-            firstTierMinutes={stats.firstTierMinutes}
-            extraTierMinutes={stats.extraTierMinutes}
-            nightMinutes={stats.nightMinutes}
-            firstTierRate={firstTierRate}
-            extraTierRate={extraTierRate}
-          />
+          {issue ? null : (
+            <WorkSummary
+              balanceMinutes={stats.balance}
+              balanceSign={balanceSign}
+              firstTierMinutes={stats.firstTierMinutes}
+              extraTierMinutes={stats.extraTierMinutes}
+              nightMinutes={stats.nightMinutes}
+              firstTierRate={firstTierRate}
+              extraTierRate={extraTierRate}
+            />
+          )}
         </>
       }
       aside={

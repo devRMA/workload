@@ -8,7 +8,7 @@ import {
   type WorkRegime,
 } from "@/lib/payroll";
 import { amountForPeriod, SALARY_PERIODS, type SalaryPeriod } from "@/lib/salary-period";
-import { readStoredList, readStoredNumber } from "@/lib/storage";
+import { readStoredList, readStoredNumber, readStoredOptionalNumber, writeStoredOptionalNumber } from "@/lib/storage";
 
 export interface ExtraItem {
   id: string;
@@ -29,6 +29,8 @@ const STORAGE_KEYS = {
   monthlyHours: "monthlyHours",
   dailyMinutes: "dailyMinutes",
   dependents: "dependents",
+  manualInss: "manualInss",
+  manualIrrf: "manualIrrf",
   regime: "workRegime",
   period: "salaryPeriod",
   extraDeductions: "extraDeductions",
@@ -73,6 +75,8 @@ export function useSalaryCalculator(initialSalary = DEFAULT_GROSS_SALARY, initia
     setMonthlyHours(readStoredNumber(STORAGE_KEYS.monthlyHours, initialHours));
     setDailyMinutes(readStoredNumber(STORAGE_KEYS.dailyMinutes, DEFAULT_DAILY_MINUTES));
     setDependents(readStoredNumber(STORAGE_KEYS.dependents, 0));
+    setManualInss(readStoredOptionalNumber(STORAGE_KEYS.manualInss));
+    setManualIrrf(readStoredOptionalNumber(STORAGE_KEYS.manualIrrf));
     setRegime(readStoredOption(STORAGE_KEYS.regime, WORK_REGIMES, DEFAULT_REGIME));
     setPeriod(readStoredOption(STORAGE_KEYS.period, SALARY_PERIODS, DEFAULT_PERIOD));
     setExtraDeductions(readStoredList(STORAGE_KEYS.extraDeductions, isExtraItem));
@@ -91,7 +95,21 @@ export function useSalaryCalculator(initialSalary = DEFAULT_GROSS_SALARY, initia
     localStorage.setItem(STORAGE_KEYS.period, period);
     localStorage.setItem(STORAGE_KEYS.extraDeductions, JSON.stringify(extraDeductions));
     localStorage.setItem(STORAGE_KEYS.extraGains, JSON.stringify(extraGains));
-  }, [isRestored, grossSalary, monthlyHours, dailyMinutes, dependents, regime, period, extraDeductions, extraGains]);
+    writeStoredOptionalNumber(STORAGE_KEYS.manualInss, manualInss);
+    writeStoredOptionalNumber(STORAGE_KEYS.manualIrrf, manualIrrf);
+  }, [
+    isRestored,
+    grossSalary,
+    monthlyHours,
+    dailyMinutes,
+    dependents,
+    regime,
+    period,
+    extraDeductions,
+    extraGains,
+    manualInss,
+    manualIrrf,
+  ]);
 
   const autoInss = useMemo(() => calculateSocialSecurity(grossSalary, regime), [grossSalary, regime]);
   const autoIrrf = useMemo(
@@ -108,8 +126,7 @@ export function useSalaryCalculator(initialSalary = DEFAULT_GROSS_SALARY, initia
     const netSalary = sanitizeAmount(grossSalary) - inss - irrf - totalExtraDeductions;
     const totalValue = netSalary + totalExtraGains;
 
-    const billableHours = monthlyHours > 0 ? monthlyHours : 1;
-    const hourlyRate = totalValue / billableHours;
+    const hourlyRate = monthlyHours > 0 ? totalValue / monthlyHours : 0;
 
     return {
       inss,

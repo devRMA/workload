@@ -217,14 +217,54 @@ describe("useSalaryCalculator", () => {
     expect(result.current.stats.periodValue).toBeCloseTo(result.current.stats.hourlyRate * 7.5, 6);
   });
 
-  it("avoids dividing by zero when the monthly hours are cleared", () => {
+  it("has no hourly value while the monthly hours are cleared", () => {
     const { result } = renderHook(() => useSalaryCalculator());
 
     act(() => {
       result.current.setMonthlyHours(0);
     });
 
-    expect(result.current.stats.hourlyRate).toBe(result.current.stats.totalValue);
-    expect(Number.isFinite(result.current.stats.hourlyRate)).toBe(true);
+    expect(result.current.stats.hourlyRate).toBe(0);
+    expect(result.current.stats.minuteRate).toBe(0);
+    expect(result.current.stats.periodValue).toBe(0);
+  });
+
+  it("restores manual INSS and IRRF overrides", () => {
+    localStorage.setItem("manualInss", "320");
+    localStorage.setItem("manualIrrf", "180");
+
+    const { result } = renderHook(() => useSalaryCalculator());
+
+    expect(result.current.manualInss).toBe(320);
+    expect(result.current.manualIrrf).toBe(180);
+    expect(result.current.stats.inss).toBe(320);
+    expect(result.current.stats.irrf).toBe(180);
+  });
+
+  it("starts without manual overrides when nothing was stored", () => {
+    const { result } = renderHook(() => useSalaryCalculator());
+
+    expect(result.current.manualInss).toBeNull();
+    expect(result.current.manualIrrf).toBeNull();
+  });
+
+  it("persists the manual overrides and forgets them once cleared", () => {
+    const { result } = renderHook(() => useSalaryCalculator());
+
+    act(() => {
+      result.current.setManualInss(410);
+      result.current.setManualIrrf(90);
+    });
+
+    expect(localStorage.getItem("manualInss")).toBe("410");
+    expect(localStorage.getItem("manualIrrf")).toBe("90");
+
+    act(() => {
+      result.current.setManualInss(null);
+      result.current.setManualIrrf(null);
+    });
+
+    expect(localStorage.getItem("manualInss")).toBeNull();
+    expect(localStorage.getItem("manualIrrf")).toBeNull();
   });
 });

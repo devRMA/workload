@@ -1,6 +1,7 @@
-import { addMinutes, differenceInMinutes, format, isValid } from "date-fns";
+import { addDays, addMinutes, differenceInCalendarDays, differenceInMinutes, format, isValid } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
-import { readStoredNumber } from "@/lib/storage";
+import { findJourneyIssue } from "@/lib/journey";
+import { readStoredFlag, readStoredNumber } from "@/lib/storage";
 
 const NIGHT_SHIFT_START_HOUR = 22;
 const NIGHT_SHIFT_END_HOUR = 5;
@@ -13,11 +14,15 @@ const DEFAULT_WORK_MINUTES = 8 * MINUTES_PER_HOUR + 48;
 const DEFAULT_FIRST_TIER_RATE = 50;
 const DEFAULT_EXTRA_TIER_RATE = 100;
 
+const TIMESTAMP_FORMAT = "yyyy-MM-dd'T'HH:mm";
+
 const STORAGE_KEYS = {
   workMinutes: "workMinutes",
   entry: "entry",
   lunchStart: "lunchStart",
   lunchEnd: "lunchEnd",
+  exitOverride: "exitOverride",
+  isManualExit: "isManualExit",
   firstTierRate: "firstTierRate",
   extraTierRate: "extraTierRate",
 } as const;
@@ -100,14 +105,12 @@ export function calculateWorkStats(
   displayExit: string,
   workMinutes: number,
 ): WorkStats {
+  if (findJourneyIssue({ entry, lunchStart, lunchEnd, exit: displayExit })) return EMPTY_STATS;
+
   const entryDate = new Date(entry);
   const lunchStartDate = new Date(lunchStart);
   const lunchEndDate = new Date(lunchEnd);
   const exitDate = new Date(displayExit);
-
-  if (!isChronological(entryDate, lunchStartDate, lunchEndDate, exitDate)) {
-    return EMPTY_STATS;
-  }
 
   const workedBeforeLunch = differenceInMinutes(lunchStartDate, entryDate);
   const workedAfterLunch = differenceInMinutes(exitDate, lunchEndDate);
@@ -143,7 +146,7 @@ export function calculateSuggestedExit(
   const lunchStartDate = new Date(lunchStart);
   const lunchEndDate = new Date(lunchEnd);
 
-  if (!isChronological(entryDate, lunchStartDate, lunchEndDate)) return entry;
+  if (!isChronological(entryDate, lunchStartDate, lunchEndDate)) return "";
 
   const workedBeforeLunch = differenceInMinutes(lunchStartDate, entryDate);
   let exitDate = addMinutes(lunchEndDate, Math.max(0, workMinutes - workedBeforeLunch));
@@ -160,20 +163,25 @@ export function calculateSuggestedExit(
     surplus = candidateSurplus;
   }
 
-  return format(exitDate, "yyyy-MM-dd'T'HH:mm");
+  return format(exitDate, TIMESTAMP_FORMAT);
 }
 
 function todayAt(time: string): string {
   const [hours, minutes] = time.split(":").map(Number);
   const date = new Date();
   date.setHours(hours, minutes, 0, 0);
-  return format(date, "yyyy-MM-dd'T'HH:mm");
+  return format(date, TIMESTAMP_FORMAT);
 }
 
-function readStoredTimestamp(key: string, fallback: string): string {
+function readStoredTimestamp(key: string): string | null {
   const stored = localStorage.getItem(key);
-  if (!stored?.includes("T") || !isValid(new Date(stored))) return fallback;
+  if (!stored?.includes("T") || !isValid(new Date(stored))) return null;
   return stored;
+}
+
+function shiftedByDays(stored: string | null, dayShift: number, fallback: string): string {
+  if (stored === null) return fallback;
+  return format(addDays(new Date(stored), dayShift), TIMESTAMP_FORMAT);
 }
 
 export function useWorkCalculator() {
@@ -191,9 +199,15 @@ export function useWorkCalculator() {
     setWorkMinutes(readStoredNumber(STORAGE_KEYS.workMinutes, DEFAULT_WORK_MINUTES));
     setFirstTierRate(readStoredNumber(STORAGE_KEYS.firstTierRate, DEFAULT_FIRST_TIER_RATE));
     setExtraTierRate(readStoredNumber(STORAGE_KEYS.extraTierRate, DEFAULT_EXTRA_TIER_RATE));
-    setEntry((current) => readStoredTimestamp(STORAGE_KEYS.entry, current));
-    setLunchStart((current) => readStoredTimestamp(STORAGE_KEYS.lunchStart, current));
-    setLunchEnd((current) => readStoredTimestamp(STORAGE_KEYS.lunchEnd, current));
+
+    const storedEntry = readStoredTimestamp(STORAGE_KEYS.entry);
+    const dayShift = storedEntry === null ? 0 : differenceInCalendarDays(new Date(), new Date(storedEntry));
+
+    setEntry((current) => shiftedByDays(storedEntry, dayShift, current));
+    setLunchStart((current) => shiftedByDays(readStoredTimestamp(STORAGE_KEYS.lunchStart), dayShift, current));
+    setLunchEnd((current) => shiftedByDays(readStoredTimestamp(STORAGE_KEYS.lunchEnd), dayShift, current));
+    setExitOverride((current) => shiftedByDays(readStoredTimestamp(STORAGE_KEYS.exitOverride), dayShift, current));
+    setIsManualExit(readStoredFlag(STORAGE_KEYS.isManualExit, false));
     setIsRestored(true);
   }, []);
 
@@ -206,7 +220,9 @@ export function useWorkCalculator() {
     localStorage.setItem(STORAGE_KEYS.entry, entry);
     localStorage.setItem(STORAGE_KEYS.lunchStart, lunchStart);
     localStorage.setItem(STORAGE_KEYS.lunchEnd, lunchEnd);
-  }, [isRestored, workMinutes, firstTierRate, extraTierRate, entry, lunchStart, lunchEnd]);
+    localStorage.setItem(STORAGE_KEYS.exitOverride, exitOverride);
+    localStorage.setItem(STORAGE_KEYS.isManualExit, isManualExit.toString());
+  }, [isRestored, workMinutes, firstTierRate, extraTierRate, entry, lunchStart, lunchEnd, exitOverride, isManualExit]);
 
   const suggestedExit = useMemo(
     () => calculateSuggestedExit(entry, lunchStart, lunchEnd, workMinutes),
@@ -218,6 +234,11 @@ export function useWorkCalculator() {
   const stats = useMemo(
     () => calculateWorkStats(entry, lunchStart, lunchEnd, displayExit, workMinutes),
     [entry, lunchStart, lunchEnd, displayExit, workMinutes],
+  );
+
+  const issue = useMemo(
+    () => findJourneyIssue({ entry, lunchStart, lunchEnd, exit: displayExit }),
+    [entry, lunchStart, lunchEnd, displayExit],
   );
 
   const resetDefaults = () => {
@@ -251,6 +272,7 @@ export function useWorkCalculator() {
     suggestedExit,
     displayExit,
     stats,
+    issue,
     resetDefaults,
   };
 }

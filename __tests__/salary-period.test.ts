@@ -44,10 +44,14 @@ describe("amountForPeriod", () => {
     expect(amountForPeriod(MONTHLY_NET, "day", MONTHLY_HOURS, 6)).toBeCloseTo(forPeriod("hour") * 6, 6);
   });
 
-  it("avoids dividing by zero when the monthly hours are cleared", () => {
-    const hourly = amountForPeriod(MONTHLY_NET, "hour", 0, DAILY_HOURS);
+  it("has no hourly, daily or weekly amount when the monthly hours are cleared", () => {
+    expect(amountForPeriod(MONTHLY_NET, "hour", 0, DAILY_HOURS)).toBe(0);
+    expect(amountForPeriod(MONTHLY_NET, "day", 0, DAILY_HOURS)).toBe(0);
+    expect(amountForPeriod(MONTHLY_NET, "week", 0, DAILY_HOURS)).toBe(0);
+  });
 
-    expect(hourly).toBe(MONTHLY_NET);
-    expect(Number.isFinite(hourly)).toBe(true);
+  it("still reports the monthly and yearly amounts when the monthly hours are cleared", () => {
+    expect(amountForPeriod(MONTHLY_NET, "month", 0, DAILY_HOURS)).toBe(MONTHLY_NET);
+    expect(amountForPeriod(MONTHLY_NET, "year", 0, DAILY_HOURS)).toBeCloseTo(MONTHLY_NET * 13, 6);
   });
 });

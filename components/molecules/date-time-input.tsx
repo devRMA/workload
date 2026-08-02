@@ -34,6 +34,8 @@ const isRealTime = (time: string) => {
   return hours >= 0 && hours < 24 && minutes >= 0 && minutes < 60;
 };
 
+const INVALID_FIELD_CLASSES = "border-rose-500 dark:border-rose-500 focus-visible:ring-rose-500";
+
 interface DateTimeInputProps {
   value: string;
   onChange: (val: string) => void;
@@ -41,12 +43,25 @@ interface DateTimeInputProps {
   icon: React.ElementType;
   className?: string;
   id?: string;
+  hasError?: boolean;
+  errorId?: string;
 }
 
-export function DateTimeInput({ value, onChange, label, icon: Icon, className = "", id }: DateTimeInputProps) {
+export function DateTimeInput({
+  value,
+  onChange,
+  label,
+  icon: Icon,
+  className = "",
+  id,
+  hasError = false,
+  errorId,
+}: DateTimeInputProps) {
   const generatedId = React.useId();
   const inputId = id || generatedId;
   const [datePart, timePart] = value.split("T");
+  const fieldClasses = cn(FIELD_CLASSES, hasError && INVALID_FIELD_CLASSES);
+  const errorProps = hasError ? { "aria-invalid": true, "aria-describedby": errorId } : {};
 
   const handleDateCommit = (brDate: string) => {
     onChange(`${fromBRDate(brDate)}T${timePart || "00:00"}`);
@@ -75,7 +90,8 @@ export function DateTimeInput({ value, onChange, label, icon: Icon, className = 
             groupSizes={BR_DATE_GROUPS}
             isValid={isRealBRDate}
             onCommit={handleDateCommit}
-            className={FIELD_CLASSES}
+            className={fieldClasses}
+            {...errorProps}
           />
         </div>
         <div className="w-full sm:w-32 shrink-0">
@@ -87,7 +103,8 @@ export function DateTimeInput({ value, onChange, label, icon: Icon, className = 
             groupSizes={TIME_GROUPS}
             isValid={isRealTime}
             onCommit={handleTimeCommit}
-            className={FIELD_CLASSES}
+            className={fieldClasses}
+            {...errorProps}
           />
         </div>
       </div>
