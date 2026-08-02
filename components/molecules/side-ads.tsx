@@ -36,7 +36,7 @@ export function SideAds({ onClose }: SideAdsProps) {
             initial={{ opacity: 0, x: -100 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -100 }}
-            className="fixed left-4 top-1/2 -translate-y-1/2 z-[40] hidden 2xl:block w-[160px] h-[600px]"
+            className="fixed left-4 top-1/2 -translate-y-1/2 z-[40] hidden min-[1980px]:block w-[160px] h-[600px]"
           >
             <div className="relative group bg-card border rounded-2xl p-1 shadow-xl">
               <button
@@ -60,7 +60,7 @@ export function SideAds({ onClose }: SideAdsProps) {
             initial={{ opacity: 0, x: 100 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 100 }}
-            className="fixed right-4 top-1/2 -translate-y-1/2 z-[40] hidden 2xl:block w-[160px] h-[600px]"
+            className="fixed right-4 top-1/2 -translate-y-1/2 z-[40] hidden min-[1980px]:block w-[160px] h-[600px]"
           >
             <div className="relative group bg-card border rounded-2xl p-1 shadow-xl">
               <button

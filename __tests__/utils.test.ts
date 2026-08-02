@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cn, formatCurrency, formatCurrencySimple, parseCurrency } from "@/lib/utils";
+import { cn, formatClockTime, formatCurrency, formatCurrencySimple, parseCurrency } from "@/lib/utils";
 
 describe("cn", () => {
   it("merges class names", () => {
@@ -63,5 +63,15 @@ describe("parseCurrency", () => {
 
   it("returns zero instead of Infinity for absurdly long input", () => {
     expect(parseCurrency("9".repeat(400))).toBe(0);
+  });
+});
+
+describe("formatClockTime", () => {
+  it("renders a 24-hour clock with seconds, matching the pt-BR interface", () => {
+    expect(formatClockTime(new Date(2026, 7, 2, 14, 33, 54))).toBe("14:33:54");
+  });
+
+  it("keeps midnight and single digits padded", () => {
+    expect(formatClockTime(new Date(2026, 7, 2, 0, 5, 9))).toBe("00:05:09");
   });
 });

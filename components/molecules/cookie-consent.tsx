@@ -40,7 +40,7 @@ export function CookieConsent() {
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
-            className="fixed bottom-6 left-6 right-6 z-[60] mx-auto max-w-4xl"
+            className="fixed bottom-[max(1.5rem,env(safe-area-inset-bottom))] left-6 right-6 z-[60] mx-auto max-w-4xl"
           >
             <div className="overflow-hidden rounded-3xl border border-neutral-200 dark:border-neutral-800 bg-white/95 dark:bg-neutral-950/95 backdrop-blur-xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.3)]">
               <div className="flex flex-col md:flex-row items-center gap-6 p-6 md:p-8">
@@ -165,7 +165,7 @@ export function CookieConsent() {
         <button
           type="button"
           onClick={() => setShowSettings(true)}
-          className="fixed bottom-4 right-4 z-40 flex h-11 w-11 items-center justify-center rounded-full text-neutral-500 dark:text-neutral-400 hover:text-indigo-500 transition-colors opacity-30 hover:opacity-100"
+          className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-4 z-40 flex h-11 w-11 items-center justify-center rounded-full text-neutral-500 dark:text-neutral-400 hover:text-indigo-500 transition-colors opacity-30 hover:opacity-100"
           aria-label="Configurações de Privacidade"
         >
           <Shield size={18} aria-hidden="true" />

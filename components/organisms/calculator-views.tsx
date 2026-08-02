@@ -32,7 +32,10 @@ export function toCalculatorView(rawView: string | null): CalculatorView {
 export function CalculatorViews({ activeView }: { activeView: CalculatorView }) {
   return (
     <>
-      <nav aria-label="Calculadoras" className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
+      <nav
+        aria-label="Calculadoras"
+        className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] sm:bottom-8 left-1/2 -translate-x-1/2 z-50"
+      >
         <ul className="bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl border border-neutral-200 dark:border-neutral-800 p-1.5 rounded-2xl shadow-2xl flex items-center gap-1">
           {VIEW_TABS.map(({ view, label, icon: Icon }) => (
             <li key={view}>
@@ -54,7 +57,7 @@ export function CalculatorViews({ activeView }: { activeView: CalculatorView }) 
       <div
         id="main-content"
         tabIndex={-1}
-        className="pt-32 pb-32 px-4 sm:px-6 lg:px-8 outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+        className="pt-24 pb-28 sm:pt-32 sm:pb-32 px-4 sm:px-6 lg:px-8 outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
       >
         <AnimatePresence mode="wait">
           <motion.div key={activeView} {...PANEL_TRANSITION}>

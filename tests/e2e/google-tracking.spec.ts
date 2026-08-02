@@ -23,7 +23,7 @@ test.describe("Google Tracking & Ads", () => {
 
   test("should show side ads on desktop after delay", async ({ page }) => {
     const viewport = page.viewportSize();
-    test.skip(!viewport || viewport.width < 1536, "side ads only render from the 2xl breakpoint up");
+    test.skip(!viewport || viewport.width < 1980, "side ads only render from 1980px up, where they clear the content");
 
     await page.click('button:has-text("Aceitar Tudo")');
 

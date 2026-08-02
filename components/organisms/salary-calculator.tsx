@@ -15,8 +15,9 @@ import { useState } from "react";
 import { useSalaryCalculator } from "@/hooks/use-salary-calculator";
 import type { WorkRegime } from "@/lib/payroll";
 import { SALARY_PERIOD_LABELS } from "@/lib/salary-period";
-import { formatCurrency, formatCurrencySimple, parseCurrency } from "@/lib/utils";
+import { formatCurrency, parseCurrency } from "@/lib/utils";
 import { CollapsiblePanel } from "../molecules/collapsible-panel";
+import { CurrencyField } from "../molecules/currency-field";
 import { FormField } from "../molecules/form-field";
 import { HeroPanel } from "../molecules/hero-panel";
 import { PeriodSelector } from "../molecules/period-selector";
@@ -77,15 +78,13 @@ export function SalaryCalculator() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-              <FormField
+              <CurrencyField
                 id="salario-bruto"
                 label="Salário Bruto (R$)"
-                type="text"
-                inputMode="decimal"
                 icon={<span className="font-bold text-blue-500">R$</span>}
                 placeholder="0,00"
-                value={formatCurrencySimple(grossSalary)}
-                onChange={(event) => setGrossSalary(parseCurrency(event.target.value))}
+                value={grossSalary}
+                onValueChange={(rawValue) => setGrossSalary(parseCurrency(rawValue))}
               />
               <SelectField
                 id="regime-trabalho"

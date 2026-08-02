@@ -1,8 +1,9 @@
 "use client";
 
 import { Trash2 } from "lucide-react";
-import { formatCurrencySimple, parseCurrency } from "@/lib/utils";
+import { parseCurrency } from "@/lib/utils";
 import { Button } from "../atoms/button";
+import { CurrencyInput } from "../atoms/currency-input";
 import { Input } from "../atoms/input";
 
 const COMPACT_FIELD_CLASSES = "h-12 rounded-xl text-sm";
@@ -43,13 +44,11 @@ export function ExtraEntryRow({
         />
       </div>
       <div className="w-24 sm:w-32 shrink-0">
-        <Input
-          type="text"
-          inputMode="decimal"
+        <CurrencyInput
           aria-label={valueLabel}
           placeholder="Valor"
-          value={formatCurrencySimple(value)}
-          onChange={(event) => onValueChange(parseCurrency(event.target.value))}
+          value={value}
+          onValueChange={(rawValue) => onValueChange(parseCurrency(rawValue))}
           className={COMPACT_FIELD_CLASSES}
         />
       </div>

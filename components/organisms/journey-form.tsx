@@ -2,13 +2,16 @@
 
 import { Coffee, LogIn, LogOut, Percent, RotateCcw, Settings, Zap } from "lucide-react";
 import { useState } from "react";
+import { Button } from "../atoms/button";
 import { Label } from "../atoms/label";
 import { MaskedInput } from "../atoms/masked-input";
+import { ModalDialog } from "../atoms/modal-dialog";
 import { CollapsiblePanel } from "../molecules/collapsible-panel";
 import { DateTimeInput } from "../molecules/date-time-input";
 import { FormField } from "../molecules/form-field";
 
 const SETTINGS_PANEL_ID = "journey-settings";
+const RESET_DIALOG_TITLE_ID = "journey-reset-title";
 const DURATION_GROUPS = [2, 2] as const;
 const MINUTES_PER_HOUR = 60;
 const HOURS_IN_DAY = 24;
@@ -74,6 +77,7 @@ export function JourneyForm({
   onReset,
 }: JourneyFormProps) {
   const [showSettings, setShowSettings] = useState(false);
+  const [isConfirmingReset, setIsConfirmingReset] = useState(false);
 
   return (
     <div className="bg-white dark:bg-neutral-900 rounded-3xl p-6 sm:p-8 shadow-xl shadow-neutral-200/50 dark:shadow-none border border-neutral-200 dark:border-neutral-800">
@@ -188,13 +192,43 @@ export function JourneyForm({
         <button
           type="button"
           aria-label="Resetar Horários"
-          onClick={onReset}
+          onClick={() => setIsConfirmingReset(true)}
           className="flex items-center gap-2 -mx-2 px-2 py-3 text-sm font-medium text-neutral-600 hover:text-emerald-500 transition-colors"
         >
           <RotateCcw className="w-4 h-4" aria-hidden="true" />
           Resetar Horários
         </button>
       </div>
+
+      <ModalDialog
+        isOpen={isConfirmingReset}
+        onClose={() => setIsConfirmingReset(false)}
+        labelledBy={RESET_DIALOG_TITLE_ID}
+        className="w-full max-w-md rounded-3xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 p-8 shadow-2xl"
+      >
+        <div className="space-y-6">
+          <h2 id={RESET_DIALOG_TITLE_ID} className="text-2xl font-black tracking-tight">
+            Resetar os horários?
+          </h2>
+          <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed">
+            Entrada, almoço, saída e as configurações da jornada voltam aos valores padrão. Não dá para desfazer.
+          </p>
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+            <Button variant="outline" onClick={() => setIsConfirmingReset(false)}>
+              Cancelar
+            </Button>
+            <Button
+              variant="danger"
+              onClick={() => {
+                setIsConfirmingReset(false);
+                onReset();
+              }}
+            >
+              Resetar horários
+            </Button>
+          </div>
+        </div>
+      </ModalDialog>
     </div>
   );
 }

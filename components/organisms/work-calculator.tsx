@@ -7,6 +7,7 @@ import { useMemo } from "react";
 import { useCurrentTime } from "@/hooks/use-current-time";
 import { useWorkCalculator } from "@/hooks/use-work-calculator";
 import { safeGAEvent } from "@/lib/analytics";
+import { formatClockTime } from "@/lib/utils";
 import { CopyButton } from "../molecules/copy-button";
 import { HeroPanel } from "../molecules/hero-panel";
 import { CalculatorLayout } from "../templates/calculator-layout";
@@ -221,7 +222,7 @@ export function WorkCalculator() {
           tone={timerData.isOvertime ? "rose" : "emerald"}
           badge={
             <span className="bg-white/20 px-3 py-1 lg:px-4 lg:py-1.5 rounded-full text-xs lg:text-sm font-bold tabular-nums">
-              {currentTime === null ? PLACEHOLDER_CLOCK : format(currentTime, "HH:mm:ss")}
+              {currentTime === null ? PLACEHOLDER_CLOCK : formatClockTime(currentTime)}
             </span>
           }
           footer={

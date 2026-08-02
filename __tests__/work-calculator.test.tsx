@@ -246,6 +246,7 @@ describe("WorkCalculator", () => {
     render(<WorkCalculator />);
 
     await user.click(screen.getByRole("button", { name: "Resetar Horários" }));
+    await user.click(screen.getByRole("button", { name: "Resetar horários" }));
 
     expect(safeGAEvent).toHaveBeenCalledWith("reset_defaults");
   });

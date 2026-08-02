@@ -1,6 +1,5 @@
 "use client";
 
-import { format } from "date-fns";
 import { Clock, Moon, Sun, Wallet } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Suspense, useEffect } from "react";
@@ -8,6 +7,7 @@ import { Button } from "@/components/atoms/button";
 import { CalculatorViews, CalculatorViewsFromUrl } from "@/components/organisms/calculator-views";
 import { useCurrentTime } from "@/hooks/use-current-time";
 import { safeGAEvent } from "@/lib/analytics";
+import { formatClockTime } from "@/lib/utils";
 
 const PLACEHOLDER_CLOCK = "--:--:--";
 
@@ -68,7 +68,7 @@ export default function Home() {
               <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-neutral-100 dark:bg-neutral-800 rounded-xl text-sm font-bold">
                 <Clock className="w-4 h-4 text-indigo-500" aria-hidden="true" />
                 <span className="tabular-nums">
-                  {currentTime === null ? PLACEHOLDER_CLOCK : format(currentTime, "HH:mm:ss")}
+                  {currentTime === null ? PLACEHOLDER_CLOCK : formatClockTime(currentTime)}
                 </span>
               </div>
               <Button

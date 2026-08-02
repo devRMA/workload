@@ -140,13 +140,28 @@ describe("JourneyForm", () => {
     expect(onManualExitChange).toHaveBeenLastCalledWith(false);
   });
 
-  it("asks for a reset when the reset action is used", async () => {
+  it("asks for a reset when the reset action is confirmed", async () => {
     const onReset = vi.fn();
     const user = userEvent.setup();
     render(<JourneyHarness onReset={onReset} />);
 
     await user.click(screen.getByRole("button", { name: "Resetar Horários" }));
+    expect(onReset).not.toHaveBeenCalled();
+
+    await user.click(screen.getByRole("button", { name: "Resetar horários" }));
 
     expect(onReset).toHaveBeenCalledOnce();
+  });
+
+  it("keeps the times when the reset is dismissed", async () => {
+    const onReset = vi.fn();
+    const user = userEvent.setup();
+    render(<JourneyHarness onReset={onReset} />);
+
+    await user.click(screen.getByRole("button", { name: "Resetar Horários" }));
+    await user.click(screen.getByRole("button", { name: "Cancelar" }));
+
+    expect(onReset).not.toHaveBeenCalled();
+    expect(screen.queryByText("Resetar os horários?")).not.toBeInTheDocument();
   });
 });

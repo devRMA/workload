@@ -4,6 +4,7 @@ import { Users } from "lucide-react";
 import type { ExtraItem, ExtraKind } from "@/hooks/use-salary-calculator";
 import { safeGAEvent } from "@/lib/analytics";
 import { formatCurrencySimple, parseCurrency } from "@/lib/utils";
+import { CurrencyField } from "../molecules/currency-field";
 import { ExtraEntryList } from "../molecules/extra-entry-list";
 import { ExtraEntryRow } from "../molecules/extra-entry-row";
 import { FormField } from "../molecules/form-field";
@@ -57,25 +58,21 @@ export function TaxDetailsPanel({
           value={dependents || ""}
           onChange={(event) => onDependentsChange(Number(event.target.value))}
         />
-        <FormField
+        <CurrencyField
           id="inss-manual"
           label="INSS (R$)"
-          type="text"
-          inputMode="decimal"
           icon={<span className="font-bold text-red-500">R$</span>}
           placeholder={formatCurrencySimple(autoInss)}
-          value={manualInss !== null ? formatCurrencySimple(manualInss) : ""}
-          onChange={(event) => onManualInssChange(toManualAmount(event.target.value))}
+          value={manualInss}
+          onValueChange={(rawValue) => onManualInssChange(toManualAmount(rawValue))}
         />
-        <FormField
+        <CurrencyField
           id="irrf-manual"
           label="IRRF (R$)"
-          type="text"
-          inputMode="decimal"
           icon={<span className="font-bold text-red-500">R$</span>}
           placeholder={formatCurrencySimple(autoIrrf)}
-          value={manualIrrf !== null ? formatCurrencySimple(manualIrrf) : ""}
-          onChange={(event) => onManualIrrfChange(toManualAmount(event.target.value))}
+          value={manualIrrf}
+          onValueChange={(rawValue) => onManualIrrfChange(toManualAmount(rawValue))}
         />
       </div>
 
