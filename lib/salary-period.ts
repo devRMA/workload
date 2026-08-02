@@ -19,7 +19,7 @@ export function amountForPeriod(
   monthlyHours: number,
   dailyHours: number,
 ): number {
-  const hourlyAmount = monthlyAmount / (monthlyHours > 0 ? monthlyHours : 1);
+  const hourlyAmount = monthlyHours > 0 ? monthlyAmount / monthlyHours : 0;
 
   switch (period) {
     case "hour":

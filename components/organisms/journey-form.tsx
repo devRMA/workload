@@ -1,18 +1,21 @@
 "use client";
 
-import { Coffee, LogIn, LogOut, Percent, RotateCcw, Settings, Zap } from "lucide-react";
+import { AlertTriangle, Coffee, LogIn, LogOut, Percent, RotateCcw, Settings, Zap } from "lucide-react";
 import { useState } from "react";
 import { DURATION_GROUP_SIZES, formatPaddedDuration, isRealDuration, parsePaddedDuration } from "@/lib/duration";
+import type { JourneyIssue } from "@/lib/journey";
 import { Button } from "../atoms/button";
 import { Label } from "../atoms/label";
 import { MaskedInput } from "../atoms/masked-input";
 import { ModalDialog } from "../atoms/modal-dialog";
+import { AlertBanner } from "../molecules/alert-banner";
 import { CollapsiblePanel } from "../molecules/collapsible-panel";
 import { DateTimeInput } from "../molecules/date-time-input";
 import { FormField } from "../molecules/form-field";
 
 const SETTINGS_PANEL_ID = "journey-settings";
 const RESET_DIALOG_TITLE_ID = "journey-reset-title";
+const ISSUE_BANNER_ID = "journey-issue";
 
 const EXIT_MODES = [
   { label: "AUTO", isManual: false },
@@ -37,6 +40,7 @@ interface JourneyFormProps {
   isManualExit: boolean;
   onManualExitChange: (manual: boolean) => void;
   onReset: () => void;
+  issue: JourneyIssue | null;
 }
 
 export function JourneyForm({
@@ -57,6 +61,7 @@ export function JourneyForm({
   isManualExit,
   onManualExitChange,
   onReset,
+  issue,
 }: JourneyFormProps) {
   const [showSettings, setShowSettings] = useState(false);
   const [isConfirmingReset, setIsConfirmingReset] = useState(false);
@@ -150,15 +155,43 @@ export function JourneyForm({
         </div>
       </CollapsiblePanel>
 
+      {issue ? (
+        <AlertBanner
+          id={ISSUE_BANNER_ID}
+          icon={AlertTriangle}
+          tone="danger"
+          title="Confira seus horários"
+          className="mb-6"
+        >
+          <p>{issue.message}</p>
+        </AlertBanner>
+      ) : null}
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <DateTimeInput label="Entrada" icon={LogIn} value={entry} onChange={onEntryChange} />
-        <DateTimeInput label="Saída Almoço" icon={Coffee} value={lunchStart} onChange={onLunchStartChange} />
+        <DateTimeInput
+          label="Entrada"
+          icon={LogIn}
+          value={entry}
+          onChange={onEntryChange}
+          hasError={issue?.field === "entry"}
+          errorId={ISSUE_BANNER_ID}
+        />
+        <DateTimeInput
+          label="Saída Almoço"
+          icon={Coffee}
+          value={lunchStart}
+          onChange={onLunchStartChange}
+          hasError={issue?.field === "lunchStart"}
+          errorId={ISSUE_BANNER_ID}
+        />
         <DateTimeInput
           label="Volta Almoço"
           icon={RotateCcw}
           className="[&_svg]:rotate-180"
           value={lunchEnd}
           onChange={onLunchEndChange}
+          hasError={issue?.field === "lunchEnd"}
+          errorId={ISSUE_BANNER_ID}
         />
         <DateTimeInput
           label="Saída Real"
@@ -167,6 +200,8 @@ export function JourneyForm({
           value={exitValue}
           onChange={onExitChange}
           className={isManualExit ? "text-emerald-500" : ""}
+          hasError={issue?.field === "exit"}
+          errorId={ISSUE_BANNER_ID}
         />
       </div>
 

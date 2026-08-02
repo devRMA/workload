@@ -129,6 +129,23 @@ describe("SalaryCalculator", () => {
     expect(screen.getByLabelText("Carga Horária Mensal")).toHaveValue(null);
   });
 
+  it("asks for the workload instead of showing a made up hourly value", () => {
+    localStorage.setItem("monthlyHours", "0");
+
+    render(<SalaryCalculator />);
+
+    expect(screen.getByRole("alert")).toHaveTextContent("Informe a carga horária mensal");
+    expect(screen.getByText("—")).toBeInTheDocument();
+    expect(screen.getByText("Informe a carga horária mensal para calcular")).toBeInTheDocument();
+  });
+
+  it("keeps the hourly value visible once the workload is known", () => {
+    render(<SalaryCalculator />);
+
+    expect(screen.queryByRole("alert")).toBeNull();
+    expect(screen.getByText(/20,45 por hora/)).toBeInTheDocument();
+  });
+
   it("accepts a new workload", async () => {
     const user = userEvent.setup();
     render(<SalaryCalculator />);

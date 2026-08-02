@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { calculateTimerData, WorkCalculator } from "@/components/organisms/work-calculator";
 import { safeGAEvent } from "@/lib/analytics";
 
@@ -8,10 +8,11 @@ vi.mock("@/lib/analytics", () => ({
   safeGAEvent: vi.fn(),
 }));
 
-const ENTRY = "2099-06-01T08:00";
-const LUNCH_START = "2099-06-01T12:00";
-const LUNCH_END = "2099-06-01T13:00";
-const SUGGESTED_EXIT = "2099-06-01T17:48";
+const DAY = "2025-01-06";
+const ENTRY = `${DAY}T08:00`;
+const LUNCH_START = `${DAY}T12:00`;
+const LUNCH_END = `${DAY}T13:00`;
+const SUGGESTED_EXIT = `${DAY}T17:48`;
 
 function storeJourney() {
   localStorage.setItem("entry", ENTRY);
@@ -29,7 +30,7 @@ function setClipboard(clipboard: unknown) {
 
 describe("calculateTimerData", () => {
   const baseInput = {
-    currentTime: new Date("2099-06-01T10:00:00"),
+    currentTime: new Date("2025-01-06T10:00:00"),
     displayExit: SUGGESTED_EXIT,
     entry: ENTRY,
     workMinutes: 528,
@@ -55,7 +56,7 @@ describe("calculateTimerData", () => {
   it("counts up once the exit has passed", () => {
     const timer = calculateTimerData({
       ...baseInput,
-      currentTime: new Date("2099-06-01T18:48:00"),
+      currentTime: new Date("2025-01-06T18:48:00"),
     });
 
     expect(timer).toMatchObject({
@@ -144,7 +145,7 @@ describe("calculateTimerData", () => {
 
     const beforeEntry = calculateTimerData({
       ...baseInput,
-      currentTime: new Date("2099-06-01T06:00:00"),
+      currentTime: new Date("2025-01-06T06:00:00"),
     });
     expect(beforeEntry.progress).toBe(0);
   });
@@ -175,7 +176,13 @@ describe("WorkCalculator", () => {
   beforeEach(() => {
     localStorage.clear();
     vi.clearAllMocks();
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date(`${DAY}T10:00:00`));
     storeJourney();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it("renders the journey form and the countdown side by side", () => {
@@ -194,6 +201,18 @@ describe("WorkCalculator", () => {
     expect(screen.getByText("+0h 0m")).toBeInTheDocument();
     expect(screen.getByText("Extra 50%")).toBeInTheDocument();
     expect(screen.getByText("Extra 100%")).toBeInTheDocument();
+  });
+
+  it("replaces the day balance with an explanation when the journey is out of order", async () => {
+    const user = userEvent.setup();
+    render(<WorkCalculator />);
+
+    const lunchStartTimeField = screen.getByLabelText("Hora para Saída Almoço");
+    await user.clear(lunchStartTimeField);
+    await user.type(lunchStartTimeField, "0700");
+
+    expect(screen.getByRole("alert")).toHaveTextContent("A saída para o almoço precisa vir depois da entrada.");
+    expect(screen.queryByRole("heading", { name: "Balanço do Dia" })).toBeNull();
   });
 
   it("copies the exit time and tracks the event", async () => {

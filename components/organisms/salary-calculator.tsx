@@ -1,10 +1,21 @@
 "use client";
 
-import { Calculator, ChevronDown, ChevronUp, Clock, Sun, TrendingDown, TrendingUp, Wallet } from "lucide-react";
+import {
+  AlertTriangle,
+  Calculator,
+  ChevronDown,
+  ChevronUp,
+  Clock,
+  Sun,
+  TrendingDown,
+  TrendingUp,
+  Wallet,
+} from "lucide-react";
 import { useState } from "react";
 import { useSalaryCalculator } from "@/hooks/use-salary-calculator";
 import { SALARY_PERIOD_LABELS } from "@/lib/salary-period";
 import { formatCurrency, parseCurrency } from "@/lib/utils";
+import { AlertBanner } from "../molecules/alert-banner";
 import { CollapsiblePanel } from "../molecules/collapsible-panel";
 import { CurrencyField } from "../molecules/currency-field";
 import { DurationField } from "../molecules/duration-field";
@@ -17,6 +28,7 @@ import { CalculatorLayout } from "../templates/calculator-layout";
 import { TaxDetailsPanel } from "./tax-details-panel";
 
 const DETAILS_PANEL_ID = "tax-details";
+const MISSING_VALUE = "—";
 
 export function SalaryCalculator() {
   const {
@@ -47,6 +59,7 @@ export function SalaryCalculator() {
   } = useSalaryCalculator();
 
   const [showDetails, setShowDetails] = useState(false);
+  const hasMonthlyHours = monthlyHours > 0;
 
   return (
     <CalculatorLayout
@@ -91,6 +104,12 @@ export function SalaryCalculator() {
                 onMinutesChange={setDailyMinutes}
               />
             </div>
+
+            {hasMonthlyHours ? null : (
+              <AlertBanner icon={AlertTriangle} tone="danger" title="Informe a carga horária mensal" className="mb-6">
+                <p>Sem ela não dá para saber quanto vale a sua hora. O padrão da jornada de 8h é 220 horas por mês.</p>
+              </AlertBanner>
+            )}
 
             <button
               type="button"
@@ -159,7 +178,7 @@ export function SalaryCalculator() {
         <HeroPanel
           icon={Clock}
           label={`Valor por ${SALARY_PERIOD_LABELS[period]}`}
-          value={formatCurrency(stats.periodValue)}
+          value={hasMonthlyHours ? formatCurrency(stats.periodValue) : MISSING_VALUE}
           tone="blue"
           footer={
             <>
@@ -178,7 +197,9 @@ export function SalaryCalculator() {
           }
         >
           <p className="mt-4 text-xl font-medium">
-            {formatCurrency(stats.hourlyRate)} por hora · {formatCurrency(stats.minuteRate)} por minuto
+            {hasMonthlyHours
+              ? `${formatCurrency(stats.hourlyRate)} por hora · ${formatCurrency(stats.minuteRate)} por minuto`
+              : "Informe a carga horária mensal para calcular"}
           </p>
           <div className="mt-6">
             <PeriodSelector value={period} onChange={setPeriod} />

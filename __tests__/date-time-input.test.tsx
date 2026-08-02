@@ -114,6 +114,32 @@ describe("DateTimeInput", () => {
     expect(screen.getByLabelText("Entrada")).toHaveValue("indefinido");
   });
 
+  it("leaves both fields valid while there is no error", () => {
+    render(<InputHarness />);
+
+    expect(screen.getByLabelText("Entrada")).not.toHaveAttribute("aria-invalid");
+    expect(screen.getByLabelText("Hora para Entrada")).not.toHaveAttribute("aria-invalid");
+  });
+
+  it("marks both fields as invalid and points them at the error message", () => {
+    render(
+      <DateTimeInput
+        label="Entrada"
+        icon={LogIn}
+        value="2026-02-01T08:00"
+        onChange={vi.fn()}
+        hasError
+        errorId="journey-issue"
+      />,
+    );
+
+    for (const field of [screen.getByLabelText("Entrada"), screen.getByLabelText("Hora para Entrada")]) {
+      expect(field).toHaveAttribute("aria-invalid", "true");
+      expect(field).toHaveAttribute("aria-describedby", "journey-issue");
+      expect(field.className).toContain("border-rose-500");
+    }
+  });
+
   it("uses the provided id for the date field", () => {
     render(
       <DateTimeInput label="Saída Real" icon={LogIn} id="saida-real" value="2026-02-01T18:00" onChange={vi.fn()} />,
