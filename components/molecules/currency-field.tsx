@@ -1,23 +1,23 @@
 import type * as React from "react";
 import { cn } from "@/lib/utils";
-import { Input, type InputProps } from "../atoms/input";
+import { CurrencyInput, type CurrencyInputProps } from "../atoms/currency-input";
 import { Label } from "../atoms/label";
 
-interface FormFieldProps extends InputProps {
+interface CurrencyFieldProps extends CurrencyInputProps {
   label: string;
-  icon?: React.ReactNode;
   id: string;
+  icon?: React.ReactNode;
   labelIcon?: React.ReactNode;
 }
 
-export function FormField({ label, icon, id, className, labelIcon, ...props }: FormFieldProps) {
+export function CurrencyField({ label, icon, id, className, labelIcon, ...props }: CurrencyFieldProps) {
   return (
     <div className={cn("space-y-3", className)}>
       <Label htmlFor={id}>
         {labelIcon}
         {label}
       </Label>
-      <Input id={id} icon={icon} {...props} />
+      <CurrencyInput id={id} icon={icon} {...props} />
     </div>
   );
 }
