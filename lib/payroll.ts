@@ -14,6 +14,42 @@ interface IncomeTaxBracket extends IncomeTaxRate {
 
 export type WorkRegime = "clt" | "empregado-publico" | "estatutario";
 
+interface WorkRegimeInfo {
+  readonly value: WorkRegime;
+  readonly label: string;
+  readonly summary: string;
+  readonly who: string;
+  readonly impact: string;
+}
+
+export const WORK_REGIME_INFO: readonly WorkRegimeInfo[] = [
+  {
+    value: "clt",
+    label: "CLT",
+    summary: "Carteira assinada na iniciativa privada",
+    who: "Quem tem contrato regido pela CLT em empresa privada: carteira assinada, FGTS, aviso prévio e férias com 1/3.",
+    impact:
+      "INSS pelo INSS/RGPS, com alíquotas progressivas de 7,5% a 14% e teto de contribuição em R$ 8.475,55 — acima disso o desconto trava em R$ 988,09.",
+  },
+  {
+    value: "empregado-publico",
+    label: "Empregado Público",
+    summary: "Concursado de empresa pública, sob CLT",
+    who: "Quem passou em concurso para empresa pública ou sociedade de economia mista (Correios, Caixa, Petrobras). O vínculo continua sendo CLT.",
+    impact: "Desconto de INSS idêntico ao do CLT: mesmas faixas, mesmo teto de R$ 988,09.",
+  },
+  {
+    value: "estatutario",
+    label: "Estatutário",
+    summary: "Servidor público efetivo, com regime próprio",
+    who: "Servidor efetivo regido por estatuto (RJU) e vinculado a um regime próprio de previdência (RPPS), não ao INSS.",
+    impact:
+      "A contribuição não para no teto do INSS: as faixas seguem subindo até 22% sobre a parcela mais alta, então salários maiores descontam bem mais.",
+  },
+];
+
+export const WORK_REGIMES: readonly WorkRegime[] = WORK_REGIME_INFO.map(({ value }) => value);
+
 const GENERAL_REGIME_BRACKETS: readonly ProgressiveBracket[] = [
   { ceiling: 1621.0, rate: 0.075 },
   { ceiling: 2902.84, rate: 0.09 },

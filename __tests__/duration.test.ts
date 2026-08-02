@@ -4,6 +4,8 @@ import {
   formatHoursAndMinutes,
   formatPaddedDuration,
   formatSignedHoursAndMinutes,
+  isRealDuration,
+  minutesToHours,
   minutesToSeconds,
   parsePaddedDuration,
   splitHoursAndMinutes,
@@ -63,5 +65,26 @@ describe("minutesToSeconds", () => {
   it("converts minutes to seconds", () => {
     expect(minutesToSeconds(0)).toBe(0);
     expect(minutesToSeconds(90)).toBe(5400);
+  });
+});
+
+describe("minutesToHours", () => {
+  it("converts minutes to fractional hours", () => {
+    expect(minutesToHours(0)).toBe(0);
+    expect(minutesToHours(528)).toBeCloseTo(8.8, 10);
+  });
+});
+
+describe("isRealDuration", () => {
+  it("accepts durations inside a day", () => {
+    expect(isRealDuration("00:00")).toBe(true);
+    expect(isRealDuration("08:48")).toBe(true);
+    expect(isRealDuration("23:59")).toBe(true);
+  });
+
+  it("rejects impossible hours and minutes", () => {
+    expect(isRealDuration("24:00")).toBe(false);
+    expect(isRealDuration("08:60")).toBe(false);
+    expect(isRealDuration("ab:cd")).toBe(false);
   });
 });
