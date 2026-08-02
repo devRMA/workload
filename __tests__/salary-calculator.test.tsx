@@ -84,11 +84,11 @@ describe("SalaryCalculator", () => {
     render(<SalaryCalculator />);
 
     await user.click(screen.getByRole("radio", { name: "Dia" }));
-    expect(screen.getByText(/163,58/)).toBeInTheDocument();
+    expect(screen.getByText(/179,94/)).toBeInTheDocument();
 
-    const dailyHours = screen.getByLabelText("Jornada Diária (horas)");
-    await user.clear(dailyHours);
-    await user.type(dailyHours, "6");
+    const dailyJourney = screen.getByLabelText("Jornada Diária");
+    await user.clear(dailyJourney);
+    await user.type(dailyJourney, "0600");
 
     expect(screen.getByText(/122,69/)).toBeInTheDocument();
   });

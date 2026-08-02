@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { minutesToHours } from "@/lib/duration";
 import {
   calculateIncomeTax,
   calculateSocialSecurity,
@@ -19,14 +20,14 @@ export type ExtraKind = "gain" | "deduction";
 
 const DEFAULT_GROSS_SALARY = 5000;
 const DEFAULT_MONTHLY_HOURS = 220;
-const DEFAULT_DAILY_HOURS = 8;
+const DEFAULT_DAILY_MINUTES = 8 * 60 + 48;
 const DEFAULT_REGIME: WorkRegime = "clt";
 const DEFAULT_PERIOD: SalaryPeriod = "hour";
 
 const STORAGE_KEYS = {
   grossSalary: "grossSalary",
   monthlyHours: "monthlyHours",
-  dailyHours: "dailyHours",
+  dailyMinutes: "dailyMinutes",
   dependents: "dependents",
   regime: "workRegime",
   period: "salaryPeriod",
@@ -57,7 +58,7 @@ function sumValues(items: readonly ExtraItem[]): number {
 export function useSalaryCalculator(initialSalary = DEFAULT_GROSS_SALARY, initialHours = DEFAULT_MONTHLY_HOURS) {
   const [grossSalary, setGrossSalary] = useState(initialSalary);
   const [monthlyHours, setMonthlyHours] = useState(initialHours);
-  const [dailyHours, setDailyHours] = useState(DEFAULT_DAILY_HOURS);
+  const [dailyMinutes, setDailyMinutes] = useState(DEFAULT_DAILY_MINUTES);
   const [dependents, setDependents] = useState(0);
   const [regime, setRegime] = useState<WorkRegime>(DEFAULT_REGIME);
   const [period, setPeriod] = useState<SalaryPeriod>(DEFAULT_PERIOD);
@@ -70,7 +71,7 @@ export function useSalaryCalculator(initialSalary = DEFAULT_GROSS_SALARY, initia
   useEffect(() => {
     setGrossSalary(readStoredNumber(STORAGE_KEYS.grossSalary, initialSalary));
     setMonthlyHours(readStoredNumber(STORAGE_KEYS.monthlyHours, initialHours));
-    setDailyHours(readStoredNumber(STORAGE_KEYS.dailyHours, DEFAULT_DAILY_HOURS));
+    setDailyMinutes(readStoredNumber(STORAGE_KEYS.dailyMinutes, DEFAULT_DAILY_MINUTES));
     setDependents(readStoredNumber(STORAGE_KEYS.dependents, 0));
     setRegime(readStoredOption(STORAGE_KEYS.regime, WORK_REGIMES, DEFAULT_REGIME));
     setPeriod(readStoredOption(STORAGE_KEYS.period, SALARY_PERIODS, DEFAULT_PERIOD));
@@ -84,13 +85,13 @@ export function useSalaryCalculator(initialSalary = DEFAULT_GROSS_SALARY, initia
 
     localStorage.setItem(STORAGE_KEYS.grossSalary, grossSalary.toString());
     localStorage.setItem(STORAGE_KEYS.monthlyHours, monthlyHours.toString());
-    localStorage.setItem(STORAGE_KEYS.dailyHours, dailyHours.toString());
+    localStorage.setItem(STORAGE_KEYS.dailyMinutes, dailyMinutes.toString());
     localStorage.setItem(STORAGE_KEYS.dependents, dependents.toString());
     localStorage.setItem(STORAGE_KEYS.regime, regime);
     localStorage.setItem(STORAGE_KEYS.period, period);
     localStorage.setItem(STORAGE_KEYS.extraDeductions, JSON.stringify(extraDeductions));
     localStorage.setItem(STORAGE_KEYS.extraGains, JSON.stringify(extraGains));
-  }, [isRestored, grossSalary, monthlyHours, dailyHours, dependents, regime, period, extraDeductions, extraGains]);
+  }, [isRestored, grossSalary, monthlyHours, dailyMinutes, dependents, regime, period, extraDeductions, extraGains]);
 
   const autoInss = useMemo(() => calculateSocialSecurity(grossSalary, regime), [grossSalary, regime]);
   const autoIrrf = useMemo(
@@ -119,12 +120,12 @@ export function useSalaryCalculator(initialSalary = DEFAULT_GROSS_SALARY, initia
       totalValue,
       hourlyRate,
       minuteRate: hourlyRate / 60,
-      periodValue: amountForPeriod(totalValue, period, monthlyHours, dailyHours),
+      periodValue: amountForPeriod(totalValue, period, monthlyHours, minutesToHours(dailyMinutes)),
     };
   }, [
     grossSalary,
     monthlyHours,
-    dailyHours,
+    dailyMinutes,
     period,
     manualInss,
     autoInss,
@@ -168,8 +169,8 @@ export function useSalaryCalculator(initialSalary = DEFAULT_GROSS_SALARY, initia
     setGrossSalary,
     monthlyHours,
     setMonthlyHours,
-    dailyHours,
-    setDailyHours,
+    dailyMinutes,
+    setDailyMinutes,
     dependents,
     setDependents,
     regime,
