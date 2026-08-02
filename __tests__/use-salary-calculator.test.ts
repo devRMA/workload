@@ -203,6 +203,20 @@ describe("useSalaryCalculator", () => {
     expect(result.current.autoIrrf).toBeGreaterThan(withAutoInss);
   });
 
+  it("keeps the daily journey in minutes and scales the daily value by it", () => {
+    const { result } = renderHook(() => useSalaryCalculator());
+
+    expect(result.current.dailyMinutes).toBe(528);
+
+    act(() => {
+      result.current.setPeriod("day");
+      result.current.setDailyMinutes(450);
+    });
+
+    expect(localStorage.getItem("dailyMinutes")).toBe("450");
+    expect(result.current.stats.periodValue).toBeCloseTo(result.current.stats.hourlyRate * 7.5, 6);
+  });
+
   it("avoids dividing by zero when the monthly hours are cleared", () => {
     const { result } = renderHook(() => useSalaryCalculator());
 

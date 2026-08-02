@@ -7,6 +7,7 @@ import { SALARY_PERIOD_LABELS } from "@/lib/salary-period";
 import { formatCurrency, parseCurrency } from "@/lib/utils";
 import { CollapsiblePanel } from "../molecules/collapsible-panel";
 import { CurrencyField } from "../molecules/currency-field";
+import { DurationField } from "../molecules/duration-field";
 import { FormField } from "../molecules/form-field";
 import { HeroPanel } from "../molecules/hero-panel";
 import { PeriodSelector } from "../molecules/period-selector";
@@ -23,8 +24,8 @@ export function SalaryCalculator() {
     setGrossSalary,
     monthlyHours,
     setMonthlyHours,
-    dailyHours,
-    setDailyHours,
+    dailyMinutes,
+    setDailyMinutes,
     dependents,
     setDependents,
     regime,
@@ -81,15 +82,13 @@ export function SalaryCalculator() {
                 value={monthlyHours || ""}
                 onChange={(event) => setMonthlyHours(Number(event.target.value))}
               />
-              <FormField
+              <DurationField
                 id="jornada-diaria"
-                label="Jornada Diária (horas)"
-                type="number"
-                min={0}
+                label="Jornada Diária"
+                hint="Horas e minutos por dia. Ex.: 08:48"
                 icon={<Sun className="w-5 h-5" aria-hidden="true" />}
-                placeholder="8"
-                value={dailyHours || ""}
-                onChange={(event) => setDailyHours(Number(event.target.value))}
+                minutes={dailyMinutes}
+                onMinutesChange={setDailyMinutes}
               />
             </div>
 
