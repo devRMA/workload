@@ -4,207 +4,168 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { SalaryCalculator } from "@/components/organisms/salary-calculator";
 
 vi.mock("@/lib/analytics", () => ({
-	safeGAEvent: vi.fn(),
+  safeGAEvent: vi.fn(),
 }));
 
 describe("SalaryCalculator", () => {
-	beforeEach(() => {
-		localStorage.clear();
-	});
+  beforeEach(() => {
+    localStorage.clear();
+  });
 
-	it("shows the stored salary, the workload and the resulting hourly value", () => {
-		render(<SalaryCalculator />);
+  it("shows the stored salary, the workload and the resulting hourly value", () => {
+    render(<SalaryCalculator />);
 
-		expect(
-			screen.getByRole("heading", { name: "Custo da Hora" }),
-		).toBeInTheDocument();
-		expect(screen.getByLabelText("Salário Bruto (R$)")).toHaveValue("5.000,00");
-		expect(screen.getByLabelText("Carga Horária Mensal")).toHaveValue(220);
-		expect(screen.getByText("Valor por Hora")).toBeInTheDocument();
-		expect(screen.getByText("Resumo Financeiro")).toBeInTheDocument();
-	});
+    expect(screen.getByRole("heading", { name: "Custo da Hora" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Salário Bruto (R$)")).toHaveValue("5.000,00");
+    expect(screen.getByLabelText("Carga Horária Mensal")).toHaveValue(220);
+    expect(screen.getByText("Valor por Hora")).toBeInTheDocument();
+    expect(screen.getByText("Resumo Financeiro")).toBeInTheDocument();
+  });
 
-	it("defaults to the CLT regime and offers the public service ones", () => {
-		render(<SalaryCalculator />);
+  it("defaults to the CLT regime and offers the public service ones", () => {
+    render(<SalaryCalculator />);
 
-		const regime = screen.getByLabelText("Regime de Trabalho");
-		expect(regime).toHaveValue("clt");
-		expect(
-			screen.getByRole("option", { name: "Empregado Público" }),
-		).toBeInTheDocument();
-		expect(
-			screen.getByRole("option", { name: "Estatutário" }),
-		).toBeInTheDocument();
-	});
+    const regime = screen.getByLabelText("Regime de Trabalho");
+    expect(regime).toHaveValue("clt");
+    expect(screen.getByRole("option", { name: "Empregado Público" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "Estatutário" })).toBeInTheDocument();
+  });
 
-	it("contributes the capped amount for CLT and empregado público alike", async () => {
-		const user = userEvent.setup();
-		localStorage.setItem("grossSalary", "20000");
-		render(<SalaryCalculator />);
+  it("contributes the capped amount for CLT and empregado público alike", async () => {
+    const user = userEvent.setup();
+    localStorage.setItem("grossSalary", "20000");
+    render(<SalaryCalculator />);
 
-		await user.click(
-			screen.getByRole("button", { name: /Impostos e Descontos/ }),
-		);
-		expect(screen.getByLabelText("INSS (R$)")).toHaveAttribute(
-			"placeholder",
-			"988,09",
-		);
+    await user.click(screen.getByRole("button", { name: /Impostos e Descontos/ }));
+    expect(screen.getByLabelText("INSS (R$)")).toHaveAttribute("placeholder", "988,09");
 
-		await user.selectOptions(
-			screen.getByLabelText("Regime de Trabalho"),
-			"empregado-publico",
-		);
-		expect(screen.getByLabelText("INSS (R$)")).toHaveAttribute(
-			"placeholder",
-			"988,09",
-		);
-	});
+    await user.selectOptions(screen.getByLabelText("Regime de Trabalho"), "empregado-publico");
+    expect(screen.getByLabelText("INSS (R$)")).toHaveAttribute("placeholder", "988,09");
+  });
 
-	it("keeps contributing past the ceiling for estatutário", async () => {
-		const user = userEvent.setup();
-		localStorage.setItem("grossSalary", "20000");
-		render(<SalaryCalculator />);
+  it("keeps contributing past the ceiling for estatutário", async () => {
+    const user = userEvent.setup();
+    localStorage.setItem("grossSalary", "20000");
+    render(<SalaryCalculator />);
 
-		await user.selectOptions(
-			screen.getByLabelText("Regime de Trabalho"),
-			"estatutario",
-		);
-		await user.click(
-			screen.getByRole("button", { name: /Impostos e Descontos/ }),
-		);
+    await user.selectOptions(screen.getByLabelText("Regime de Trabalho"), "estatutario");
+    await user.click(screen.getByRole("button", { name: /Impostos e Descontos/ }));
 
-		expect(screen.getByLabelText("INSS (R$)")).toHaveAttribute(
-			"placeholder",
-			"2.768,85",
-		);
-	});
+    expect(screen.getByLabelText("INSS (R$)")).toHaveAttribute("placeholder", "2.768,85");
+  });
 
-	it("deducts declared dependents from the income tax", async () => {
-		const user = userEvent.setup();
-		localStorage.setItem("grossSalary", "10000");
-		render(<SalaryCalculator />);
+  it("deducts declared dependents from the income tax", async () => {
+    const user = userEvent.setup();
+    localStorage.setItem("grossSalary", "10000");
+    render(<SalaryCalculator />);
 
-		await user.click(
-			screen.getByRole("button", { name: /Impostos e Descontos/ }),
-		);
-		expect(screen.getByLabelText("IRRF (R$)")).toHaveAttribute(
-			"placeholder",
-			"1.569,55",
-		);
+    await user.click(screen.getByRole("button", { name: /Impostos e Descontos/ }));
+    expect(screen.getByLabelText("IRRF (R$)")).toHaveAttribute("placeholder", "1.569,55");
 
-		await user.type(screen.getByLabelText("Dependentes"), "2");
+    await user.type(screen.getByLabelText("Dependentes"), "2");
 
-		expect(screen.getByLabelText("IRRF (R$)")).toHaveAttribute(
-			"placeholder",
-			"1.465,27",
-		);
-	});
+    expect(screen.getByLabelText("IRRF (R$)")).toHaveAttribute("placeholder", "1.465,27");
+  });
 
-	it("switches the headline value between periods", async () => {
-		const user = userEvent.setup();
-		render(<SalaryCalculator />);
+  it("switches the headline value between periods", async () => {
+    const user = userEvent.setup();
+    render(<SalaryCalculator />);
 
-		expect(screen.getByText("Valor por Hora")).toBeInTheDocument();
+    expect(screen.getByText("Valor por Hora")).toBeInTheDocument();
 
-		await user.click(screen.getByRole("radio", { name: "Mês" }));
-		expect(screen.getByText("Valor por Mês")).toBeInTheDocument();
+    await user.click(screen.getByRole("radio", { name: "Mês" }));
+    expect(screen.getByText("Valor por Mês")).toBeInTheDocument();
 
-		await user.click(screen.getByRole("radio", { name: "Ano" }));
-		expect(screen.getByText("Valor por Ano")).toBeInTheDocument();
-	});
+    await user.click(screen.getByRole("radio", { name: "Ano" }));
+    expect(screen.getByText("Valor por Ano")).toBeInTheDocument();
+  });
 
-	it("derives each period from the monthly net and the daily journey", async () => {
-		const user = userEvent.setup();
-		render(<SalaryCalculator />);
+  it("derives each period from the monthly net and the daily journey", async () => {
+    const user = userEvent.setup();
+    render(<SalaryCalculator />);
 
-		await user.click(screen.getByRole("radio", { name: "Dia" }));
-		expect(screen.getByText(/163,58/)).toBeInTheDocument();
+    await user.click(screen.getByRole("radio", { name: "Dia" }));
+    expect(screen.getByText(/163,58/)).toBeInTheDocument();
 
-		const dailyHours = screen.getByLabelText("Jornada Diária (horas)");
-		await user.clear(dailyHours);
-		await user.type(dailyHours, "6");
+    const dailyHours = screen.getByLabelText("Jornada Diária (horas)");
+    await user.clear(dailyHours);
+    await user.type(dailyHours, "6");
 
-		expect(screen.getByText(/122,69/)).toBeInTheDocument();
-	});
+    expect(screen.getByText(/122,69/)).toBeInTheDocument();
+  });
 
-	it("counts thirteen paid months in the yearly view", async () => {
-		const user = userEvent.setup();
-		render(<SalaryCalculator />);
+  it("counts thirteen paid months in the yearly view", async () => {
+    const user = userEvent.setup();
+    render(<SalaryCalculator />);
 
-		await user.click(screen.getByRole("radio", { name: "Ano" }));
+    await user.click(screen.getByRole("radio", { name: "Ano" }));
 
-		expect(screen.getByText(/58\.480,37/)).toBeInTheDocument();
-	});
+    expect(screen.getByText(/58\.480,37/)).toBeInTheDocument();
+  });
 
-	it("summarises net salary, total received and total deductions", () => {
-		render(<SalaryCalculator />);
+  it("summarises net salary, total received and total deductions", () => {
+    render(<SalaryCalculator />);
 
-		expect(screen.getByText("Salário Líquido")).toBeInTheDocument();
-		expect(screen.getByText("Total Recebido")).toBeInTheDocument();
-		expect(screen.getByText("Total Descontos")).toBeInTheDocument();
-	});
+    expect(screen.getByText("Salário Líquido")).toBeInTheDocument();
+    expect(screen.getByText("Total Recebido")).toBeInTheDocument();
+    expect(screen.getByText("Total Descontos")).toBeInTheDocument();
+  });
 
-	it("recalculates the hourly value when the salary changes", async () => {
-		const user = userEvent.setup();
-		render(<SalaryCalculator />);
+  it("recalculates the hourly value when the salary changes", async () => {
+    const user = userEvent.setup();
+    render(<SalaryCalculator />);
 
-		const salaryField = screen.getByLabelText("Salário Bruto (R$)");
-		await user.clear(salaryField);
-		await user.type(salaryField, "100000");
+    const salaryField = screen.getByLabelText("Salário Bruto (R$)");
+    await user.clear(salaryField);
+    await user.type(salaryField, "100000");
 
-		expect(salaryField).toHaveValue("1.000,00");
-	});
+    expect(salaryField).toHaveValue("1.000,00");
+  });
 
-	it("leaves the workload field empty when no hours are stored", () => {
-		localStorage.setItem("monthlyHours", "0");
+  it("leaves the workload field empty when no hours are stored", () => {
+    localStorage.setItem("monthlyHours", "0");
 
-		render(<SalaryCalculator />);
+    render(<SalaryCalculator />);
 
-		expect(screen.getByLabelText("Carga Horária Mensal")).toHaveValue(null);
-	});
+    expect(screen.getByLabelText("Carga Horária Mensal")).toHaveValue(null);
+  });
 
-	it("accepts a new workload", async () => {
-		const user = userEvent.setup();
-		render(<SalaryCalculator />);
+  it("accepts a new workload", async () => {
+    const user = userEvent.setup();
+    render(<SalaryCalculator />);
 
-		const hoursField = screen.getByLabelText("Carga Horária Mensal");
-		await user.clear(hoursField);
-		await user.type(hoursField, "200");
+    const hoursField = screen.getByLabelText("Carga Horária Mensal");
+    await user.clear(hoursField);
+    await user.type(hoursField, "200");
 
-		expect(hoursField).toHaveValue(200);
-	});
+    expect(hoursField).toHaveValue(200);
+  });
 
-	it("reveals the taxes and deductions panel on demand", async () => {
-		const user = userEvent.setup();
-		render(<SalaryCalculator />);
+  it("reveals the taxes and deductions panel on demand", async () => {
+    const user = userEvent.setup();
+    render(<SalaryCalculator />);
 
-		const detailsToggle = screen.getByRole("button", {
-			name: "Impostos e Descontos",
-		});
-		expect(detailsToggle).toHaveAttribute("aria-expanded", "false");
-		expect(screen.queryByLabelText("INSS (R$)")).toBeNull();
+    const detailsToggle = screen.getByRole("button", {
+      name: "Impostos e Descontos",
+    });
+    expect(detailsToggle).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByLabelText("INSS (R$)")).toBeNull();
 
-		await user.click(detailsToggle);
+    await user.click(detailsToggle);
 
-		expect(detailsToggle).toHaveAttribute("aria-expanded", "true");
-		expect(screen.getByLabelText("INSS (R$)")).toBeInTheDocument();
-		expect(screen.getByText("Outros Descontos")).toBeInTheDocument();
-		expect(screen.getByText("Ganhos Extras (Líquido)")).toBeInTheDocument();
-	});
+    expect(detailsToggle).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByLabelText("INSS (R$)")).toBeInTheDocument();
+    expect(screen.getByText("Outros Descontos")).toBeInTheDocument();
+    expect(screen.getByText("Ganhos Extras (Líquido)")).toBeInTheDocument();
+  });
 
-	it("adds a deduction row through the panel", async () => {
-		const user = userEvent.setup();
-		render(<SalaryCalculator />);
+  it("adds a deduction row through the panel", async () => {
+    const user = userEvent.setup();
+    render(<SalaryCalculator />);
 
-		await user.click(
-			screen.getByRole("button", { name: "Impostos e Descontos" }),
-		);
-		await user.click(
-			screen.getByRole("button", { name: "Adicionar desconto" }),
-		);
+    await user.click(screen.getByRole("button", { name: "Impostos e Descontos" }));
+    await user.click(screen.getByRole("button", { name: "Adicionar desconto" }));
 
-		expect(
-			screen.getByPlaceholderText("Nome (ex: Plano de Saúde)"),
-		).toBeInTheDocument();
-	});
+    expect(screen.getByPlaceholderText("Nome (ex: Plano de Saúde)")).toBeInTheDocument();
+  });
 });

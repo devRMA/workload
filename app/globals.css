@@ -5,20 +5,20 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-	color-scheme: light;
+  color-scheme: light;
 }
 
 .dark {
-	color-scheme: dark;
+  color-scheme: dark;
 }
 
 @media (prefers-reduced-motion: reduce) {
-	*,
-	*::before,
-	*::after {
-		animation-duration: 0.01ms !important;
-		animation-iteration-count: 1 !important;
-		transition-duration: 0.01ms !important;
-		scroll-behavior: auto !important;
-	}
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
