@@ -1,9 +1,17 @@
 const MINUTES_PER_HOUR = 60;
 const SECONDS_PER_MINUTE = 60;
 const SECONDS_PER_HOUR = MINUTES_PER_HOUR * SECONDS_PER_MINUTE;
+const HOURS_PER_DAY = 24;
+
+export const DURATION_GROUP_SIZES = [2, 2] as const;
 
 function pad(value: number): string {
   return value.toString().padStart(2, "0");
+}
+
+export function isRealDuration(duration: string): boolean {
+  const [hours, minutes] = duration.split(":").map(Number);
+  return hours >= 0 && hours < HOURS_PER_DAY && minutes >= 0 && minutes < MINUTES_PER_HOUR;
 }
 
 export function splitHoursAndMinutes(minutes: number): { hours: number; minutes: number } {
@@ -43,4 +51,8 @@ export function formatClock(totalSeconds: number): string {
 
 export function minutesToSeconds(minutes: number): number {
   return minutes * SECONDS_PER_MINUTE;
+}
+
+export function minutesToHours(minutes: number): number {
+  return minutes / MINUTES_PER_HOUR;
 }

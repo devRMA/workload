@@ -1,5 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { calculateIncomeTax, calculateSocialSecurity, sanitizeAmount, type WorkRegime } from "@/lib/payroll";
+import {
+  calculateIncomeTax,
+  calculateSocialSecurity,
+  sanitizeAmount,
+  WORK_REGIMES,
+  type WorkRegime,
+} from "@/lib/payroll";
 import { amountForPeriod, SALARY_PERIODS, type SalaryPeriod } from "@/lib/salary-period";
 import { readStoredList, readStoredNumber } from "@/lib/storage";
 
@@ -16,8 +22,6 @@ const DEFAULT_MONTHLY_HOURS = 220;
 const DEFAULT_DAILY_HOURS = 8;
 const DEFAULT_REGIME: WorkRegime = "clt";
 const DEFAULT_PERIOD: SalaryPeriod = "hour";
-
-const WORK_REGIMES: readonly WorkRegime[] = ["clt", "empregado-publico", "estatutario"];
 
 const STORAGE_KEYS = {
   grossSalary: "grossSalary",

@@ -2,7 +2,7 @@
 
 import { Coffee, LogIn, LogOut, Percent, RotateCcw, Settings, Zap } from "lucide-react";
 import { useState } from "react";
-import { formatPaddedDuration, parsePaddedDuration } from "@/lib/duration";
+import { DURATION_GROUP_SIZES, formatPaddedDuration, isRealDuration, parsePaddedDuration } from "@/lib/duration";
 import { Button } from "../atoms/button";
 import { Label } from "../atoms/label";
 import { MaskedInput } from "../atoms/masked-input";
@@ -13,19 +13,11 @@ import { FormField } from "../molecules/form-field";
 
 const SETTINGS_PANEL_ID = "journey-settings";
 const RESET_DIALOG_TITLE_ID = "journey-reset-title";
-const DURATION_GROUPS = [2, 2] as const;
-const MINUTES_PER_HOUR = 60;
-const HOURS_IN_DAY = 24;
 
 const EXIT_MODES = [
   { label: "AUTO", isManual: false },
   { label: "MANUAL", isManual: true },
 ] as const;
-
-function isRealDuration(duration: string): boolean {
-  const [hours, minutes] = duration.split(":").map(Number);
-  return hours >= 0 && hours < HOURS_IN_DAY && minutes >= 0 && minutes < MINUTES_PER_HOUR;
-}
 
 interface JourneyFormProps {
   workMinutes: number;
@@ -127,7 +119,7 @@ export function JourneyForm({
                 placeholder="08:48"
                 value={formatPaddedDuration(workMinutes)}
                 separator=":"
-                groupSizes={DURATION_GROUPS}
+                groupSizes={DURATION_GROUP_SIZES}
                 isValid={isRealDuration}
                 onCommit={(duration) => onWorkMinutesChange(parsePaddedDuration(duration))}
                 className="h-12 rounded-xl text-center text-lg font-bold focus-visible:ring-emerald-500"
