@@ -292,6 +292,40 @@ describe("useWorkCalculator", () => {
     expect(result.current.displayExit).toBe(`${MONDAY}T18:00`);
   });
 
+  it("exposes the client clock once the browser has one", () => {
+    const { result } = renderHook(() => useWorkCalculator());
+
+    expect(result.current.currentTime).toEqual(new Date(`${MONDAY}T10:00:00`));
+  });
+
+  it("keeps the balance at zero while the suggested exit is still ahead", () => {
+    const { result } = renderHook(() => useWorkCalculator());
+
+    expect(result.current.displayExit).toBe(`${MONDAY}T17:48`);
+    expect(result.current.stats.balance).toBe(0);
+    expect(result.current.stats.firstTierMinutes).toBe(0);
+  });
+
+  it("grows the balance with the clock once the suggested exit has passed", () => {
+    vi.setSystemTime(new Date(`${MONDAY}T19:00:00`));
+
+    const { result } = renderHook(() => useWorkCalculator());
+
+    expect(result.current.displayExit).toBe(`${MONDAY}T17:48`);
+    expect(result.current.stats.balance).toBe(72);
+    expect(result.current.stats.firstTierMinutes).toBe(72);
+  });
+
+  it("stops counting at the registered exit in manual mode, whatever the clock says", () => {
+    vi.setSystemTime(new Date(`${MONDAY}T19:00:00`));
+    localStorage.setItem("isManualExit", "true");
+    localStorage.setItem("exitOverride", `${MONDAY}T16:00`);
+
+    const { result } = renderHook(() => useWorkCalculator());
+
+    expect(result.current.stats.balance).toBe(-108);
+  });
+
   it("restores every default, including the overtime rates", () => {
     const { result } = renderHook(() => useWorkCalculator());
 

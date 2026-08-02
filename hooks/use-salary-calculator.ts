@@ -18,7 +18,7 @@ export interface ExtraItem {
 
 export type ExtraKind = "gain" | "deduction";
 
-const DEFAULT_GROSS_SALARY = 5000;
+const DEFAULT_GROSS_SALARY = 0;
 const DEFAULT_MONTHLY_HOURS = 220;
 const DEFAULT_DAILY_MINUTES = 8 * 60 + 48;
 const DEFAULT_REGIME: WorkRegime = "clt";

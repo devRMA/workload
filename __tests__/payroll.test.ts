@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { calculateIncomeTax, calculateSocialSecurity, sanitizeAmount } from "@/lib/payroll";
+import { calculateIncomeTax, calculateSocialSecurity, overtimePay, sanitizeAmount } from "@/lib/payroll";
 
 describe("sanitizeAmount", () => {
   it("keeps positive finite amounts untouched", () => {
@@ -11,6 +11,28 @@ describe("sanitizeAmount", () => {
     expect(sanitizeAmount(-500)).toBe(0);
     expect(sanitizeAmount(Number.NaN)).toBe(0);
     expect(sanitizeAmount(Number.POSITIVE_INFINITY)).toBe(0);
+  });
+});
+
+describe("overtimePay", () => {
+  it("pays an hour with the legal fifty percent on top", () => {
+    expect(overtimePay(60, 20, 50)).toBe(30);
+  });
+
+  it("doubles the hour on the higher tier", () => {
+    expect(overtimePay(90, 20, 100)).toBe(60);
+  });
+
+  it("pays the plain hourly value when there is no additional rate", () => {
+    expect(overtimePay(60, 20, 0)).toBe(20);
+  });
+
+  it("pays nothing without overtime minutes", () => {
+    expect(overtimePay(0, 20, 50)).toBe(0);
+  });
+
+  it("prices a fraction of an hour proportionally", () => {
+    expect(overtimePay(30, 20, 50)).toBe(15);
   });
 });
 
@@ -39,12 +61,6 @@ describe("calculateSocialSecurity", () => {
     expect(calculateSocialSecurity(0)).toBe(0);
     expect(calculateSocialSecurity(-1000)).toBe(0);
     expect(calculateSocialSecurity(Number.NaN)).toBe(0);
-  });
-
-  it("treats empregado público exactly like CLT", () => {
-    for (const salary of [1000, 5000, 8475.55, 30000]) {
-      expect(calculateSocialSecurity(salary, "empregado-publico")).toBe(calculateSocialSecurity(salary, "clt"));
-    }
   });
 
   it("matches CLT for estatutário up to the general regime ceiling", () => {

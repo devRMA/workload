@@ -15,11 +15,12 @@ interface HeroPanelProps {
   value: string;
   tone: keyof typeof TONE_CLASSES;
   badge?: ReactNode;
+  media?: ReactNode;
   footer?: ReactNode;
   children?: ReactNode;
 }
 
-export function HeroPanel({ icon: Icon, label, value, tone, badge, footer, children }: HeroPanelProps) {
+export function HeroPanel({ icon: Icon, label, value, tone, badge, media, footer, children }: HeroPanelProps) {
   return (
     <div
       className={cn(
@@ -40,6 +41,7 @@ export function HeroPanel({ icon: Icon, label, value, tone, badge, footer, child
           {badge}
         </div>
         <div className="@container space-y-4 text-center">
+          {media}
           <p
             className="font-black tracking-tighter tabular-nums whitespace-nowrap text-[length:var(--hero-value-size)]"
             style={

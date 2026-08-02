@@ -1,11 +1,10 @@
 import { addDays, addMinutes, differenceInCalendarDays, differenceInMinutes, format, isValid } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
+import { useCurrentTime } from "@/hooks/use-current-time";
 import { findJourneyIssue } from "@/lib/journey";
+import { countNightMinutes, nightBonusMinutes, nightEquivalentMinutes } from "@/lib/night-shift";
 import { readStoredFlag, readStoredNumber } from "@/lib/storage";
 
-const NIGHT_SHIFT_START_HOUR = 22;
-const NIGHT_SHIFT_END_HOUR = 5;
-const NIGHT_HOUR_MINUTES = 52.5;
 const MINUTES_PER_HOUR = 60;
 const FIRST_TIER_LIMIT_MINUTES = 120;
 const EXIT_REFINEMENT_PASSES = 6;
@@ -45,43 +44,6 @@ const EMPTY_STATS: WorkStats = {
 
 function isChronological(...dates: readonly Date[]): boolean {
   return dates.every((date, index) => isValid(date) && (index === 0 || dates[index - 1] <= date));
-}
-
-function overlapInMinutes(firstStart: Date, firstEnd: Date, secondStart: Date, secondEnd: Date): number {
-  const start = Math.max(firstStart.getTime(), secondStart.getTime());
-  const end = Math.min(firstEnd.getTime(), secondEnd.getTime());
-  return end > start ? differenceInMinutes(new Date(end), new Date(start)) : 0;
-}
-
-function countNightMinutes(entryDate: Date, exitDate: Date, lunchStartDate: Date, lunchEndDate: Date): number {
-  let nightMinutes = 0;
-  const window = new Date(entryDate);
-  window.setHours(0, 0, 0, 0);
-  window.setDate(window.getDate() - 1);
-
-  while (window <= exitDate) {
-    const nightStart = new Date(window);
-    nightStart.setHours(NIGHT_SHIFT_START_HOUR, 0, 0, 0);
-    const nightEnd = new Date(window);
-    nightEnd.setDate(nightEnd.getDate() + 1);
-    nightEnd.setHours(NIGHT_SHIFT_END_HOUR, 0, 0, 0);
-
-    const worked = overlapInMinutes(nightStart, nightEnd, entryDate, exitDate);
-    const lunched = overlapInMinutes(nightStart, nightEnd, lunchStartDate, lunchEndDate);
-    nightMinutes += Math.max(0, worked - lunched);
-
-    window.setDate(window.getDate() + 1);
-  }
-
-  return nightMinutes;
-}
-
-function nightEquivalentMinutes(nightMinutesWorked: number): number {
-  return Math.round(nightMinutesWorked * (MINUTES_PER_HOUR / NIGHT_HOUR_MINUTES));
-}
-
-function nightBonusMinutes(nightMinutesWorked: number): number {
-  return nightEquivalentMinutes(nightMinutesWorked) - nightMinutesWorked;
 }
 
 function splitOvertime(
@@ -184,7 +146,14 @@ function shiftedByDays(stored: string | null, dayShift: number, fallback: string
   return format(addDays(new Date(stored), dayShift), TIMESTAMP_FORMAT);
 }
 
+function latestOf(timestamp: string, moment: Date): string {
+  const parsed = new Date(timestamp);
+  if (Number.isNaN(parsed.getTime()) || moment <= parsed) return timestamp;
+  return format(moment, TIMESTAMP_FORMAT);
+}
+
 export function useWorkCalculator() {
+  const currentTime = useCurrentTime();
   const [workMinutes, setWorkMinutes] = useState(DEFAULT_WORK_MINUTES);
   const [firstTierRate, setFirstTierRate] = useState(DEFAULT_FIRST_TIER_RATE);
   const [extraTierRate, setExtraTierRate] = useState(DEFAULT_EXTRA_TIER_RATE);
@@ -231,9 +200,11 @@ export function useWorkCalculator() {
 
   const displayExit = isManualExit ? exitOverride : suggestedExit;
 
+  const countedExit = isManualExit || currentTime === null ? displayExit : latestOf(displayExit, currentTime);
+
   const stats = useMemo(
-    () => calculateWorkStats(entry, lunchStart, lunchEnd, displayExit, workMinutes),
-    [entry, lunchStart, lunchEnd, displayExit, workMinutes],
+    () => calculateWorkStats(entry, lunchStart, lunchEnd, countedExit, workMinutes),
+    [entry, lunchStart, lunchEnd, countedExit, workMinutes],
   );
 
   const issue = useMemo(
@@ -271,6 +242,7 @@ export function useWorkCalculator() {
     setIsManualExit,
     suggestedExit,
     displayExit,
+    currentTime,
     stats,
     issue,
     resetDefaults,

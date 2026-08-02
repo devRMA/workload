@@ -1,4 +1,5 @@
 import { type ClassValue, clsx } from "clsx";
+import { format } from "date-fns";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -27,6 +28,11 @@ export function formatCurrencySimple(value: number): string {
 
 export function formatClockTime(date: Date): string {
   return TIME_FORMATTER.format(date);
+}
+
+export function formatTimeLabel(timestamp: string): string {
+  const parsed = new Date(timestamp);
+  return Number.isNaN(parsed.getTime()) ? "--:--" : format(parsed, "HH:mm");
 }
 
 export function parseCurrency(value: string): number {
