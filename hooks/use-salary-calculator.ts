@@ -8,7 +8,14 @@ import {
   type WorkRegime,
 } from "@/lib/payroll";
 import { amountForPeriod, SALARY_PERIODS, type SalaryPeriod } from "@/lib/salary-period";
-import { readStoredList, readStoredNumber, readStoredOptionalNumber, writeStoredOptionalNumber } from "@/lib/storage";
+import {
+  DAILY_MINUTES_KEY,
+  HOURLY_RATE_KEY,
+  readStoredList,
+  readStoredNumber,
+  readStoredOptionalNumber,
+  writeStoredOptionalNumber,
+} from "@/lib/storage";
 
 export interface ExtraItem {
   id: string;
@@ -27,7 +34,7 @@ const DEFAULT_PERIOD: SalaryPeriod = "hour";
 const STORAGE_KEYS = {
   grossSalary: "grossSalary",
   monthlyHours: "monthlyHours",
-  dailyMinutes: "dailyMinutes",
+  dailyMinutes: DAILY_MINUTES_KEY,
   dependents: "dependents",
   manualInss: "manualInss",
   manualIrrf: "manualIrrf",
@@ -84,33 +91,6 @@ export function useSalaryCalculator(initialSalary = DEFAULT_GROSS_SALARY, initia
     setIsRestored(true);
   }, [initialSalary, initialHours]);
 
-  useEffect(() => {
-    if (!isRestored) return;
-
-    localStorage.setItem(STORAGE_KEYS.grossSalary, grossSalary.toString());
-    localStorage.setItem(STORAGE_KEYS.monthlyHours, monthlyHours.toString());
-    localStorage.setItem(STORAGE_KEYS.dailyMinutes, dailyMinutes.toString());
-    localStorage.setItem(STORAGE_KEYS.dependents, dependents.toString());
-    localStorage.setItem(STORAGE_KEYS.regime, regime);
-    localStorage.setItem(STORAGE_KEYS.period, period);
-    localStorage.setItem(STORAGE_KEYS.extraDeductions, JSON.stringify(extraDeductions));
-    localStorage.setItem(STORAGE_KEYS.extraGains, JSON.stringify(extraGains));
-    writeStoredOptionalNumber(STORAGE_KEYS.manualInss, manualInss);
-    writeStoredOptionalNumber(STORAGE_KEYS.manualIrrf, manualIrrf);
-  }, [
-    isRestored,
-    grossSalary,
-    monthlyHours,
-    dailyMinutes,
-    dependents,
-    regime,
-    period,
-    extraDeductions,
-    extraGains,
-    manualInss,
-    manualIrrf,
-  ]);
-
   const autoInss = useMemo(() => calculateSocialSecurity(grossSalary, regime), [grossSalary, regime]);
   const autoIrrf = useMemo(
     () => calculateIncomeTax(grossSalary, manualInss ?? autoInss, dependents),
@@ -150,6 +130,35 @@ export function useSalaryCalculator(initialSalary = DEFAULT_GROSS_SALARY, initia
     autoIrrf,
     extraDeductions,
     extraGains,
+  ]);
+
+  useEffect(() => {
+    if (!isRestored) return;
+
+    localStorage.setItem(STORAGE_KEYS.grossSalary, grossSalary.toString());
+    localStorage.setItem(STORAGE_KEYS.monthlyHours, monthlyHours.toString());
+    localStorage.setItem(STORAGE_KEYS.dailyMinutes, dailyMinutes.toString());
+    localStorage.setItem(STORAGE_KEYS.dependents, dependents.toString());
+    localStorage.setItem(STORAGE_KEYS.regime, regime);
+    localStorage.setItem(STORAGE_KEYS.period, period);
+    localStorage.setItem(STORAGE_KEYS.extraDeductions, JSON.stringify(extraDeductions));
+    localStorage.setItem(STORAGE_KEYS.extraGains, JSON.stringify(extraGains));
+    writeStoredOptionalNumber(STORAGE_KEYS.manualInss, manualInss);
+    writeStoredOptionalNumber(STORAGE_KEYS.manualIrrf, manualIrrf);
+    localStorage.setItem(HOURLY_RATE_KEY, stats.hourlyRate.toString());
+  }, [
+    isRestored,
+    grossSalary,
+    monthlyHours,
+    dailyMinutes,
+    dependents,
+    regime,
+    period,
+    extraDeductions,
+    extraGains,
+    manualInss,
+    manualIrrf,
+    stats.hourlyRate,
   ]);
 
   const addExtra = (kind: ExtraKind) => {

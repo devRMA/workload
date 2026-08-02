@@ -149,7 +149,7 @@ describe("DaySummary", () => {
   it("invites the reader to calculate the hourly value when it is unknown", () => {
     renderSummary({ firstTierMinutes: 60, extraTierMinutes: 30 });
 
-    expect(screen.getByRole("link", { name: /Calcule o valor da sua hora/ })).toHaveAttribute("href", "/?view=salary");
+    expect(screen.getByRole("link", { name: /Calcule o valor da sua hora/ })).toHaveAttribute("href", "/custo-da-hora");
     expect(screen.queryByText(/R\$/)).toBeNull();
   });
 

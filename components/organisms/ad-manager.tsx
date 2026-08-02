@@ -1,16 +1,24 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { AdBlockModal } from "@/components/molecules/ad-block-modal";
+import { AdBlockNotice } from "@/components/molecules/ad-block-notice";
 import { SideAds } from "@/components/molecules/side-ads";
 import { VideoAdModal } from "@/components/molecules/video-ad-modal";
 
 const SIDE_AD_KEY = "workload_side_ads_last_view";
 const VIDEO_AD_KEY = "workload_video_ad_last_view";
 const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+const VIDEO_AD_DELAY_MS = 120000;
+const REQUIRED_IDLE_MS = 30000;
+const INTERACTION_EVENTS = ["keydown", "pointerdown"] as const;
+const FOCUSED_FORM_FIELD_SELECTOR = "input:focus, textarea:focus, select:focus, [contenteditable]:focus";
+
+function isFormFieldFocused() {
+  return document.querySelector(FOCUSED_FORM_FIELD_SELECTOR) !== null;
+}
 
 export function AdManager() {
-  const [showAdBlockModal, setShowAdBlockModal] = useState(false);
+  const [showAdBlockNotice, setShowAdBlockNotice] = useState(false);
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [canShowSideAds, setCanShowSideAds] = useState(false);
   const [canShowVideoAd, setCanShowVideoAd] = useState(false);
@@ -29,7 +37,7 @@ export function AdManager() {
       setIsAdBlockActive(false);
     } catch (_error) {
       setIsAdBlockActive(true);
-      setShowAdBlockModal(true);
+      setShowAdBlockNotice(true);
     }
   }, [enableAds]);
 
@@ -54,12 +62,34 @@ export function AdManager() {
   }, [checkAdBlock, checkCooldowns]);
 
   useEffect(() => {
-    if (enableAds && canShowVideoAd && !isAdBlockActive) {
-      const timer = setTimeout(() => {
-        setShowVideoModal(true);
-      }, 120000);
-      return () => clearTimeout(timer);
+    if (!enableAds || !canShowVideoAd || isAdBlockActive) return;
+
+    let lastInteractionAt = Date.now();
+    const registerInteraction = () => {
+      lastInteractionAt = Date.now();
+    };
+    for (const eventName of INTERACTION_EVENTS) {
+      window.addEventListener(eventName, registerInteraction);
     }
+
+    let timer: ReturnType<typeof setTimeout>;
+    const openWhenIdle = (delay: number) => {
+      timer = setTimeout(() => {
+        if (Date.now() - lastInteractionAt < REQUIRED_IDLE_MS || isFormFieldFocused()) {
+          openWhenIdle(REQUIRED_IDLE_MS);
+          return;
+        }
+        setShowVideoModal(true);
+      }, delay);
+    };
+    openWhenIdle(VIDEO_AD_DELAY_MS);
+
+    return () => {
+      clearTimeout(timer);
+      for (const eventName of INTERACTION_EVENTS) {
+        window.removeEventListener(eventName, registerInteraction);
+      }
+    };
   }, [canShowVideoAd, isAdBlockActive, enableAds]);
 
   useEffect(() => {
@@ -85,7 +115,7 @@ export function AdManager() {
   };
 
   const handleAdBlockConfirm = () => {
-    setShowAdBlockModal(false);
+    setShowAdBlockNotice(false);
     window.location.reload();
   };
 
@@ -93,9 +123,9 @@ export function AdManager() {
 
   return (
     <>
-      <AdBlockModal
-        isOpen={showAdBlockModal}
-        onClose={() => setShowAdBlockModal(false)}
+      <AdBlockNotice
+        isOpen={showAdBlockNotice}
+        onClose={() => setShowAdBlockNotice(false)}
         onConfirm={handleAdBlockConfirm}
       />
 

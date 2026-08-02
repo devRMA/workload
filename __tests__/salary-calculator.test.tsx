@@ -16,7 +16,7 @@ describe("SalaryCalculator", () => {
     render(<SalaryCalculator />);
 
     expect(screen.getByLabelText("Salário Bruto (R$)")).toHaveValue("0,00");
-    expect(screen.getByText(/0,00 por hora/)).toBeInTheDocument();
+    expect(screen.getByText(/0,00 por minuto/)).toBeInTheDocument();
   });
 
   it("shows the stored salary, the workload and the resulting hourly value", () => {
@@ -110,12 +110,27 @@ describe("SalaryCalculator", () => {
     expect(screen.getByText(/58\.480,37/)).toBeInTheDocument();
   });
 
-  it("summarises net salary, total received and total deductions", () => {
+  it("summarises net salary and total deductions", () => {
     render(<SalaryCalculator />);
 
     expect(screen.getByText("Salário Líquido")).toBeInTheDocument();
-    expect(screen.getByText("Total Recebido")).toBeInTheDocument();
     expect(screen.getByText("Total Descontos")).toBeInTheDocument();
+  });
+
+  it("keeps the total received hidden while it would only repeat the net salary", () => {
+    localStorage.setItem("grossSalary", "5000");
+    render(<SalaryCalculator />);
+
+    expect(screen.queryByText("Total Recebido")).toBeNull();
+  });
+
+  it("shows the total received once there are extra gains to add", () => {
+    localStorage.setItem("grossSalary", "5000");
+    localStorage.setItem("extraGains", JSON.stringify([{ id: "bonus", name: "Bônus", value: 300 }]));
+    render(<SalaryCalculator />);
+
+    expect(screen.getByText("Total Recebido")).toBeInTheDocument();
+    expect(screen.getByText("Líquido + Extras")).toBeInTheDocument();
   });
 
   it("recalculates the hourly value when the salary changes", async () => {
@@ -152,7 +167,17 @@ describe("SalaryCalculator", () => {
     render(<SalaryCalculator />);
 
     expect(screen.queryByRole("alert")).toBeNull();
-    expect(screen.getByText(/20,45 por hora/)).toBeInTheDocument();
+    expect(screen.getByText(/0,34 por minuto/)).toBeInTheDocument();
+  });
+
+  it("spells out the hourly rate once the headline shows another period", async () => {
+    const user = userEvent.setup();
+    localStorage.setItem("grossSalary", "5000");
+    render(<SalaryCalculator />);
+
+    await user.click(screen.getByRole("radio", { name: "Mês" }));
+
+    expect(screen.getByText(/20,45 por hora · R\$ 0,34 por minuto/)).toBeInTheDocument();
   });
 
   it("accepts a new workload", async () => {

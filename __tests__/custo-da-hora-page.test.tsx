@@ -1,6 +1,6 @@
 import { renderToString } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
-import Home, { metadata } from "@/app/page";
+import CostPerHour, { metadata } from "@/app/custo-da-hora/page";
 
 vi.mock("@/lib/analytics", () => ({
   safeGAEvent: vi.fn(),
@@ -18,9 +18,9 @@ vi.mock("@/components/organisms/salary-calculator", () => ({
   SalaryCalculator: () => <p>Painel do custo da hora</p>,
 }));
 
-describe("Home", () => {
+describe("CostPerHour", () => {
   it("renders the whole shell on the server instead of a blank document", () => {
-    const markup = renderToString(<Home />);
+    const markup = renderToString(<CostPerHour />);
 
     expect(markup).toContain("WorkLoad");
     expect(markup).toContain("Jornada");
@@ -29,31 +29,31 @@ describe("Home", () => {
     expect(markup).toContain("--:--:--");
   });
 
-  it("serves the journey panel on the very first frame", () => {
-    const markup = renderToString(<Home />);
+  it("serves the salary panel on the very first frame", () => {
+    const markup = renderToString(<CostPerHour />);
 
-    expect(markup).toContain("Painel da jornada");
-    expect(markup).not.toContain("Painel do custo da hora");
+    expect(markup).toContain("Painel do custo da hora");
+    expect(markup).not.toContain("Painel da jornada");
   });
 
-  it("marks the journey tab as the current page", () => {
-    const markup = renderToString(<Home />);
+  it("links back to the journey route", () => {
+    const markup = renderToString(<CostPerHour />);
 
     expect(markup).toContain('href="/"');
-    expect(markup).toContain('aria-current="page"');
+    expect(markup).toContain('href="/custo-da-hora"');
   });
 });
 
 describe("metadata", () => {
-  it("describes the journey view with its own canonical", () => {
+  it("describes the salary view with its own canonical", () => {
     expect(metadata.title).toEqual({
-      absolute: "Calculadora de Jornada, Horas Extras e Banco de Horas | WorkLoad",
+      absolute: "Calculadora de Valor da Hora e Salário Líquido CLT | WorkLoad",
     });
-    expect(metadata.description).toContain("hora extra");
-    expect(metadata.alternates).toEqual({ canonical: "/" });
+    expect(metadata.description).toContain("salário bruto");
+    expect(metadata.alternates).toEqual({ canonical: "/custo-da-hora" });
     expect(metadata.openGraph).toMatchObject({
-      title: "Calculadora de Jornada, Horas Extras e Banco de Horas",
-      url: "/",
+      title: "Calculadora de Valor da Hora e Salário Líquido CLT",
+      url: "/custo-da-hora",
     });
   });
 });

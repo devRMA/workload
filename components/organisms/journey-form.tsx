@@ -69,15 +69,20 @@ export function JourneyForm({
   return (
     <div className="bg-white dark:bg-neutral-900 rounded-3xl p-6 sm:p-8 shadow-xl shadow-neutral-200/50 dark:shadow-none border border-neutral-200 dark:border-neutral-800">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-        <div className="flex items-center gap-4">
-          <h2 className="text-2xl font-bold">Sua Jornada</h2>
+        <div className="flex items-start gap-4">
+          <div>
+            <h2 className="text-2xl font-bold">Sua Jornada</h2>
+            <p className="text-sm text-neutral-600 dark:text-neutral-400 text-pretty">
+              Informe seus horários para ver quando pode sair e quanto já trabalhou.
+            </p>
+          </div>
           <button
             type="button"
             onClick={() => setShowSettings(!showSettings)}
             aria-label="Configurações da Jornada"
             aria-expanded={showSettings}
             aria-controls={SETTINGS_PANEL_ID}
-            className={`p-3 rounded-xl transition-colors ${showSettings ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400" : "hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-600"}`}
+            className={`p-3 rounded-xl transition-colors ${showSettings ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400" : "hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-600 dark:text-neutral-400"}`}
           >
             <Settings
               className={`w-5 h-5 transition-transform duration-500 ${showSettings ? "rotate-90" : ""}`}
@@ -85,40 +90,45 @@ export function JourneyForm({
             />
           </button>
         </div>
-        <fieldset className="flex items-center gap-1 bg-neutral-100 dark:bg-neutral-800 p-1.5 rounded-2xl">
-          <legend className="sr-only">Modo de cálculo da saída</legend>
-          {EXIT_MODES.map(({ label, isManual }) => (
-            <label
-              key={label}
-              className="relative cursor-pointer px-6 py-3.5 rounded-xl text-xs font-bold text-neutral-600 transition-colors has-checked:bg-white dark:has-checked:bg-neutral-700 has-checked:shadow-md has-checked:text-emerald-700 dark:has-checked:text-emerald-400 focus-within:ring-2 focus-within:ring-emerald-500"
-            >
-              <input
-                type="radio"
-                name="exit-mode"
-                value={label}
-                checked={isManualExit === isManual}
-                onChange={() => onManualExitChange(isManual)}
-                className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-              />
-              {label}
-            </label>
-          ))}
-        </fieldset>
+        <div className="space-y-2 sm:text-right">
+          <fieldset className="flex items-center gap-1 bg-neutral-100 dark:bg-neutral-800 p-1.5 rounded-2xl">
+            <legend className="sr-only">Modo de cálculo da saída</legend>
+            {EXIT_MODES.map(({ label, isManual }) => (
+              <label
+                key={label}
+                className="relative cursor-pointer px-6 py-3.5 rounded-xl text-xs font-bold text-neutral-600 dark:text-neutral-300 transition-colors has-checked:bg-white dark:has-checked:bg-neutral-700 has-checked:shadow-md has-checked:text-emerald-700 dark:has-checked:text-emerald-400 focus-within:ring-2 focus-within:ring-emerald-500"
+              >
+                <input
+                  type="radio"
+                  name="exit-mode"
+                  value={label}
+                  checked={isManualExit === isManual}
+                  onChange={() => onManualExitChange(isManual)}
+                  className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                />
+                {label}
+              </label>
+            ))}
+          </fieldset>
+          <p className="text-xs text-neutral-600 dark:text-neutral-400 text-pretty">
+            {isManualExit ? "Você informa o horário que bateu na saída." : "Calculamos sua saída a partir da jornada."}
+          </p>
+        </div>
       </div>
 
       <CollapsiblePanel id={SETTINGS_PANEL_ID} isOpen={showSettings} className="mb-8">
         <div className="bg-neutral-50 dark:bg-neutral-800/30 p-6 rounded-2xl border border-neutral-100 dark:border-neutral-800/50 space-y-6">
-          <div className="flex items-center justify-between gap-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
             <div className="flex-1">
               <Label htmlFor="daily-journey" className="font-bold mb-2">
                 <Zap className="w-4 h-4 text-emerald-500" aria-hidden="true" />
                 Tempo de Trabalho Diário
               </Label>
-              <p className="text-xs text-neutral-600 mb-4">
-                Define o tempo total de trabalho esperado por dia para o cálculo de banco de horas.
+              <p className="text-xs text-neutral-600 dark:text-neutral-400 text-pretty">
+                Define o tempo total de trabalho esperado por dia. Vale também para o cálculo do valor da sua hora.
               </p>
             </div>
-            <div className="w-32">
+            <div className="w-full sm:w-32">
               <MaskedInput
                 id="daily-journey"
                 placeholder="08:48"
@@ -147,7 +157,7 @@ export function JourneyForm({
               label="Adicional acima de 2h (%)"
               type="number"
               min={0}
-              labelIcon={<Percent className="w-4 h-4 text-rose-500" aria-hidden="true" />}
+              labelIcon={<Percent className="w-4 h-4 text-orange-600" aria-hidden="true" />}
               value={extraTierRate}
               onChange={(event) => onExtraTierRateChange(Number(event.target.value))}
             />
@@ -210,7 +220,7 @@ export function JourneyForm({
           type="button"
           aria-label="Resetar Horários"
           onClick={() => setIsConfirmingReset(true)}
-          className="flex items-center gap-2 -mx-2 px-2 py-3 text-sm font-medium text-neutral-600 hover:text-emerald-500 transition-colors"
+          className="flex items-center gap-2 -mx-2 px-2 py-3 text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-emerald-500 dark:hover:text-emerald-400 transition-colors"
         >
           <RotateCcw className="w-4 h-4" aria-hidden="true" />
           Resetar Horários

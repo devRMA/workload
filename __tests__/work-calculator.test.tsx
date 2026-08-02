@@ -198,12 +198,20 @@ describe("WorkCalculator", () => {
   });
 
   it("prices the overtime once the salary tab knows the hourly value", () => {
-    localStorage.setItem("grossSalary", "5000");
+    localStorage.setItem("hourlyRate", "20");
     vi.setSystemTime(new Date(`${DAY}T19:00:00`));
     render(<WorkCalculator />);
 
     expect(screen.queryByRole("link", { name: /Calcule o valor da sua hora/ })).toBeNull();
-    expect(screen.getByText(/36,81/)).toBeInTheDocument();
+    expect(screen.getByText(/36,00/)).toBeInTheDocument();
+  });
+
+  it("ignores a zeroed hourly value instead of pricing the day at nothing", () => {
+    localStorage.setItem("hourlyRate", "0");
+    vi.setSystemTime(new Date(`${DAY}T19:00:00`));
+    render(<WorkCalculator />);
+
+    expect(screen.getByRole("link", { name: /Calcule o valor da sua hora/ })).toBeInTheDocument();
   });
 
   it("offers the salary tab while the hourly value is unknown", () => {

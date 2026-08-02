@@ -9,6 +9,9 @@ interface SideAdsProps {
   onClose: () => void;
 }
 
+const CLOSE_BUTTON_CLASSES =
+  "absolute -top-3 z-50 bg-white dark:bg-neutral-950 border rounded-full p-1.5 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 transition-opacity";
+
 export function SideAds({ onClose }: SideAdsProps) {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -17,16 +20,13 @@ export function SideAds({ onClose }: SideAdsProps) {
       setIsVisible(true);
     }, 2000);
 
-    const hideTimer = setTimeout(() => {
-      setIsVisible(false);
-      onClose();
-    }, 45000);
+    return () => clearTimeout(timer);
+  }, []);
 
-    return () => {
-      clearTimeout(timer);
-      clearTimeout(hideTimer);
-    };
-  }, [onClose]);
+  const closeAds = () => {
+    setIsVisible(false);
+    onClose();
+  };
 
   return (
     <AnimatePresence>
@@ -41,13 +41,11 @@ export function SideAds({ onClose }: SideAdsProps) {
             <div className="relative group bg-card border rounded-2xl p-1 shadow-xl">
               <button
                 type="button"
-                onClick={() => {
-                  setIsVisible(false);
-                  onClose();
-                }}
-                className="absolute -top-3 -right-3 z-50 bg-white dark:bg-neutral-950 border rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={closeAds}
+                aria-label="Fechar anúncio do lado esquerdo"
+                className={`${CLOSE_BUTTON_CLASSES} -right-3`}
               >
-                <X size={14} />
+                <X size={14} aria-hidden="true" />
               </button>
               <div className="text-[10px] text-center text-neutral-500 dark:text-neutral-400 mb-1 uppercase tracking-tighter">
                 Espaço do Apoiador
@@ -65,13 +63,11 @@ export function SideAds({ onClose }: SideAdsProps) {
             <div className="relative group bg-card border rounded-2xl p-1 shadow-xl">
               <button
                 type="button"
-                onClick={() => {
-                  setIsVisible(false);
-                  onClose();
-                }}
-                className="absolute -top-3 -left-3 z-50 bg-white dark:bg-neutral-950 border rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={closeAds}
+                aria-label="Fechar anúncio do lado direito"
+                className={`${CLOSE_BUTTON_CLASSES} -left-3`}
               >
-                <X size={14} />
+                <X size={14} aria-hidden="true" />
               </button>
               <div className="text-[10px] text-center text-neutral-500 dark:text-neutral-400 mb-1 uppercase tracking-tighter">
                 Espaço do Apoiador

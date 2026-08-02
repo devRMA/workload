@@ -3,15 +3,12 @@
 import { Clock, DollarSign } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useEffect, useRef } from "react";
 import { buttonClasses } from "@/components/atoms/button";
 import { SalaryCalculator } from "@/components/organisms/salary-calculator";
 import { WorkCalculator } from "@/components/organisms/work-calculator";
 import { safeGAEvent } from "@/lib/analytics";
-
-export type CalculatorView = "work" | "salary";
-
-const DEFAULT_VIEW: CalculatorView = "work";
+import { type CalculatorView, VIEW_PATHS } from "@/lib/calculator-view";
 
 const VIEW_TABS: readonly { view: CalculatorView; label: string; icon: typeof Clock }[] = [
   { view: "work", label: "Jornada", icon: Clock },
@@ -25,11 +22,16 @@ const PANEL_TRANSITION = {
   transition: { duration: 0.4, ease: [0.23, 1, 0.32, 1] },
 } as const;
 
-export function toCalculatorView(rawView: string | null): CalculatorView {
-  return rawView === "salary" ? "salary" : DEFAULT_VIEW;
-}
-
 export function CalculatorViews({ activeView }: { activeView: CalculatorView }) {
+  const mainRef = useRef<HTMLDivElement>(null);
+  const renderedView = useRef(activeView);
+
+  useEffect(() => {
+    if (renderedView.current === activeView) return;
+    renderedView.current = activeView;
+    mainRef.current?.focus();
+  }, [activeView]);
+
   return (
     <>
       <nav
@@ -40,7 +42,7 @@ export function CalculatorViews({ activeView }: { activeView: CalculatorView }) 
           {VIEW_TABS.map(({ view, label, icon: Icon }) => (
             <li key={view}>
               <Link
-                href={`/?view=${view}`}
+                href={VIEW_PATHS[view]}
                 scroll={false}
                 aria-current={activeView === view ? "page" : undefined}
                 onClick={() => safeGAEvent("switch_tab", { tab: view })}
@@ -55,6 +57,7 @@ export function CalculatorViews({ activeView }: { activeView: CalculatorView }) 
       </nav>
 
       <div
+        ref={mainRef}
         id="main-content"
         tabIndex={-1}
         className="pt-24 pb-28 sm:pt-32 sm:pb-32 px-4 sm:px-6 lg:px-8 outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
@@ -64,11 +67,18 @@ export function CalculatorViews({ activeView }: { activeView: CalculatorView }) 
             {activeView === "work" ? <WorkCalculator /> : <SalaryCalculator />}
           </motion.div>
         </AnimatePresence>
+
+        <footer className="mx-auto mt-12 max-w-3xl space-y-2 text-center text-xs leading-relaxed text-neutral-600 dark:text-neutral-400 text-pretty">
+          <p>
+            Tudo o que você digita fica salvo apenas neste navegador. Nada é enviado para nenhum servidor, e ninguém
+            além de você vê seus horários ou seu salário.
+          </p>
+          <p>
+            Os valores são uma estimativa para você se organizar — não substituem seu holerite nem valem como registro
+            oficial de ponto.
+          </p>
+        </footer>
       </div>
     </>
   );
-}
-
-export function CalculatorViewsFromUrl() {
-  return <CalculatorViews activeView={toCalculatorView(useSearchParams().get("view"))} />;
 }

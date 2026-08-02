@@ -5,7 +5,8 @@ import { AdManager } from "@/components/organisms/ad-manager";
 const MOCK_ADSENSE_ID = "ca-pub-123456789";
 const SIDE_AD_KEY = "workload_side_ads_last_view";
 const VIDEO_AD_KEY = "workload_video_ad_last_view";
-const _ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+const VIDEO_AD_DELAY_MS = 120000;
+const REQUIRED_IDLE_MS = 30000;
 
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
@@ -15,6 +16,17 @@ Object.defineProperty(window, "location", {
   configurable: true,
   value: { ...window.location, reload: mockReload },
 });
+
+const enableAdsEnv = () => {
+  vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
+  vi.stubEnv("NEXT_PUBLIC_ENABLE_ADS", "true");
+};
+
+const advanceBy = (milliseconds: number) => {
+  act(() => {
+    vi.advanceTimersByTime(milliseconds);
+  });
+};
 
 describe("AdManager", () => {
   beforeEach(() => {
@@ -32,83 +44,103 @@ describe("AdManager", () => {
   });
 
   it("checks cooldowns in localStorage on mount", () => {
-    vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
-    vi.stubEnv("NEXT_PUBLIC_ENABLE_ADS", "true");
+    enableAdsEnv();
     const spy = vi.spyOn(Storage.prototype, "getItem");
     render(<AdManager />);
     expect(spy).toHaveBeenCalledWith(SIDE_AD_KEY);
     expect(spy).toHaveBeenCalledWith(VIDEO_AD_KEY);
   });
 
-  it("shows side ads after 2 seconds when no previous view exists", async () => {
-    vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
-    vi.stubEnv("NEXT_PUBLIC_ENABLE_ADS", "true");
+  it("shows side ads after 2 seconds when no previous view exists", () => {
+    enableAdsEnv();
     render(<AdManager />);
 
     expect(screen.queryByText("Espaço do Apoiador")).toBeNull();
 
-    act(() => {
-      vi.advanceTimersByTime(2000);
-    });
+    advanceBy(2000);
 
     expect(screen.getAllByText("Espaço do Apoiador")).toHaveLength(2);
   });
 
-  it("shows video modal after 30 seconds", async () => {
-    vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
-    vi.stubEnv("NEXT_PUBLIC_ENABLE_ADS", "true");
+  it("shows the video modal once the user has been idle for the whole delay", () => {
+    enableAdsEnv();
     render(<AdManager />);
 
     expect(screen.queryByText("Vídeo da Semana")).toBeNull();
 
-    act(() => {
-      vi.advanceTimersByTime(120000);
-    });
+    advanceBy(VIDEO_AD_DELAY_MS);
 
     expect(screen.getByText("Vídeo da Semana")).toBeDefined();
   });
 
+  it("reschedules the video modal while the user is still interacting", () => {
+    enableAdsEnv();
+    render(<AdManager />);
+
+    advanceBy(VIDEO_AD_DELAY_MS - 10000);
+    fireEvent.keyDown(document.body, { key: "a" });
+    advanceBy(10000);
+
+    expect(screen.queryByText("Vídeo da Semana")).toBeNull();
+
+    advanceBy(REQUIRED_IDLE_MS);
+
+    expect(screen.getByText("Vídeo da Semana")).toBeDefined();
+  });
+
+  it("reschedules the video modal while a form field holds the focus", () => {
+    enableAdsEnv();
+    const formField = document.createElement("input");
+    document.body.appendChild(formField);
+    formField.focus();
+
+    render(<AdManager />);
+
+    advanceBy(VIDEO_AD_DELAY_MS);
+    expect(screen.queryByText("Vídeo da Semana")).toBeNull();
+
+    formField.blur();
+    advanceBy(REQUIRED_IDLE_MS);
+
+    expect(screen.getByText("Vídeo da Semana")).toBeDefined();
+    formField.remove();
+  });
+
   it("hides side ads when viewed less than a week ago", () => {
-    vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
-    vi.stubEnv("NEXT_PUBLIC_ENABLE_ADS", "true");
+    enableAdsEnv();
     localStorage.setItem(SIDE_AD_KEY, Date.now().toString());
     render(<AdManager />);
 
-    act(() => {
-      vi.advanceTimersByTime(2000);
-    });
+    advanceBy(2000);
 
     expect(screen.queryByText("Espaço do Apoiador")).toBeNull();
   });
 
   it("hides video ad when viewed less than a week ago", () => {
-    vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
-    vi.stubEnv("NEXT_PUBLIC_ENABLE_ADS", "true");
+    enableAdsEnv();
     localStorage.setItem(VIDEO_AD_KEY, Date.now().toString());
     render(<AdManager />);
 
-    act(() => {
-      vi.advanceTimersByTime(120000);
-    });
+    advanceBy(VIDEO_AD_DELAY_MS);
 
     expect(screen.queryByText("Vídeo da Semana")).toBeNull();
   });
 
-  it("shows adblock modal when fetch fails", async () => {
-    vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
-    vi.stubEnv("NEXT_PUBLIC_ENABLE_ADS", "true");
+  it("shows the adblock notice without blocking the page when fetch fails", async () => {
+    enableAdsEnv();
     mockFetch.mockRejectedValueOnce(new Error("blocked"));
 
-    render(<AdManager />);
+    const { container } = render(<AdManager />);
 
     await vi.waitFor(() => {
       expect(screen.getByText("Opa! Uma ajudinha?")).toBeDefined();
     });
+    expect(container.querySelector("dialog[open]")).toBeNull();
+    expect(document.body.style.overflow).toBe("");
   });
 
-  it("closes the adblock modal without reloading when dismissed", async () => {
-    vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
-    vi.stubEnv("NEXT_PUBLIC_ENABLE_ADS", "true");
+  it("closes the adblock notice without reloading when dismissed", async () => {
+    enableAdsEnv();
     mockFetch.mockRejectedValueOnce(new Error("blocked"));
 
     render(<AdManager />);
@@ -119,12 +151,12 @@ describe("AdManager", () => {
 
     fireEvent.click(screen.getByText("Continuar com AdBlock ativo"));
 
+    expect(screen.queryByText("Opa! Uma ajudinha?")).toBeNull();
     expect(mockReload).not.toHaveBeenCalled();
   });
 
-  it("reloads the page and closes the modal when confirming adblock is disabled", async () => {
-    vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
-    vi.stubEnv("NEXT_PUBLIC_ENABLE_ADS", "true");
+  it("reloads the page and closes the notice when confirming adblock is disabled", async () => {
+    enableAdsEnv();
     mockFetch.mockRejectedValueOnce(new Error("blocked"));
 
     render(<AdManager />);
@@ -138,37 +170,28 @@ describe("AdManager", () => {
     expect(mockReload).toHaveBeenCalledOnce();
   });
 
-  it("persists the side ads cooldown and hides them when closed early", () => {
-    vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
-    vi.stubEnv("NEXT_PUBLIC_ENABLE_ADS", "true");
+  it("persists the side ads cooldown and hides them when closed", () => {
+    enableAdsEnv();
     render(<AdManager />);
 
-    act(() => {
-      vi.advanceTimersByTime(2000);
-    });
+    advanceBy(2000);
     expect(screen.getAllByText("Espaço do Apoiador")).toHaveLength(2);
 
-    const closeButtons = screen.getAllByRole("button");
-    fireEvent.click(closeButtons[0]);
+    fireEvent.click(screen.getByRole("button", { name: "Fechar anúncio do lado esquerdo" }));
 
     expect(localStorage.getItem(SIDE_AD_KEY)).not.toBeNull();
     expect(screen.queryByText("Espaço do Apoiador")).toBeNull();
   });
 
   it("marks the video ad as watched and closes it once playback completes", () => {
-    vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
-    vi.stubEnv("NEXT_PUBLIC_ENABLE_ADS", "true");
+    enableAdsEnv();
     render(<AdManager />);
 
-    act(() => {
-      vi.advanceTimersByTime(120000);
-    });
+    advanceBy(VIDEO_AD_DELAY_MS);
     expect(screen.getByText("Vídeo da Semana")).toBeDefined();
 
     fireEvent.click(screen.getByText("Ver vídeo e apoiar o projeto"));
-    act(() => {
-      vi.advanceTimersByTime(15000);
-    });
+    advanceBy(15000);
 
     fireEvent.click(screen.getByRole("button", { name: "Fechar vídeo" }));
 

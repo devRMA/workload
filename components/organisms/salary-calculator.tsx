@@ -60,6 +60,10 @@ export function SalaryCalculator() {
 
   const [showDetails, setShowDetails] = useState(false);
   const hasMonthlyHours = monthlyHours > 0;
+  const supportingRate =
+    period === "hour"
+      ? `${formatCurrency(stats.minuteRate)} por minuto`
+      : `${formatCurrency(stats.hourlyRate)} por hora · ${formatCurrency(stats.minuteRate)} por minuto`;
 
   return (
     <CalculatorLayout
@@ -71,7 +75,12 @@ export function SalaryCalculator() {
               <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-2xl">
                 <Calculator className="w-6 h-6 text-blue-600 dark:text-blue-400" aria-hidden="true" />
               </div>
-              <h2 className="text-2xl font-bold">Custo da Hora</h2>
+              <div>
+                <h2 className="text-2xl font-bold">Custo da Hora</h2>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400 text-pretty">
+                  Descubra quanto vale cada hora do seu trabalho, já com os descontos.
+                </p>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
@@ -98,7 +107,7 @@ export function SalaryCalculator() {
               <DurationField
                 id="jornada-diaria"
                 label="Jornada Diária"
-                hint="Horas e minutos por dia. Ex.: 08:48"
+                hint="A mesma jornada diária usada na aba Jornada."
                 icon={<Sun className="w-5 h-5" aria-hidden="true" />}
                 minutes={dailyMinutes}
                 onMinutesChange={setDailyMinutes}
@@ -150,20 +159,22 @@ export function SalaryCalculator() {
             </CollapsiblePanel>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" aria-live="polite">
             <StatBox
               label="Salário Líquido"
               value={formatCurrency(stats.netSalary)}
               icon={<Wallet className="w-4 h-4" aria-hidden="true" />}
               variant="default"
             />
-            <StatBox
-              label="Total Recebido"
-              value={formatCurrency(stats.totalValue)}
-              subValue="Líquido + Extras"
-              icon={<TrendingUp className="w-4 h-4" aria-hidden="true" />}
-              variant="success"
-            />
+            {stats.totalExtraGains > 0 ? (
+              <StatBox
+                label="Total Recebido"
+                value={formatCurrency(stats.totalValue)}
+                subValue="Líquido + Extras"
+                icon={<TrendingUp className="w-4 h-4" aria-hidden="true" />}
+                variant="success"
+              />
+            ) : null}
             <StatBox
               label="Total Descontos"
               value={formatCurrency(stats.inss + stats.irrf + stats.totalExtraDeductions)}
@@ -197,9 +208,7 @@ export function SalaryCalculator() {
           }
         >
           <p className="mt-4 text-xl font-medium">
-            {hasMonthlyHours
-              ? `${formatCurrency(stats.hourlyRate)} por hora · ${formatCurrency(stats.minuteRate)} por minuto`
-              : "Informe a carga horária mensal para calcular"}
+            {hasMonthlyHours ? supportingRate : "Informe a carga horária mensal para calcular"}
           </p>
           <div className="mt-6">
             <PeriodSelector value={period} onChange={setPeriod} />

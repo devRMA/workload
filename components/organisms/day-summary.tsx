@@ -1,5 +1,6 @@
 import { AlertTriangle, Coffee, MoonStar, Sunrise, Sunset, Zap } from "lucide-react";
 import Link from "next/link";
+import { VIEW_PATHS } from "@/lib/calculator-view";
 import type { ComplianceWarning } from "@/lib/compliance";
 import type { DayBreakdown, DaySegmentKind } from "@/lib/day-breakdown";
 import { formatHoursAndMinutes, formatSignedHoursAndMinutes } from "@/lib/duration";
@@ -191,7 +192,7 @@ export function DaySummary({
 
         {hourlyRate === null ? (
           <Link
-            href="/?view=salary"
+            href={VIEW_PATHS.salary}
             scroll={false}
             className="block w-full rounded-2xl border border-dashed border-neutral-300 dark:border-neutral-700 p-3 text-center text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:border-emerald-500 hover:text-emerald-600 transition-colors"
           >

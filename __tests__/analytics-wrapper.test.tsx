@@ -1,6 +1,7 @@
-import { render } from "@testing-library/react";
+import { act, render } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AnalyticsWrapper } from "@/components/organisms/analytics-wrapper";
+import { CONSENT_CHANGED_EVENT } from "@/lib/consent";
 
 const CONSENT_KEY = "workload_cookie_consent";
 
@@ -42,5 +43,29 @@ describe("AnalyticsWrapper", () => {
     localStorage.setItem(CONSENT_KEY, JSON.stringify({ telemetry: true }));
     const { getByTestId } = render(<AnalyticsWrapper />);
     expect(getByTestId("google-analytics")).toHaveAttribute("data-ga-id", "GA-TEST-ID");
+  });
+
+  it("loads analytics as soon as consent is granted, without a reload", () => {
+    vi.stubEnv("NEXT_PUBLIC_GA_ID", "GA-TEST-ID");
+    const { container, queryByTestId } = render(<AnalyticsWrapper />);
+    expect(container).toBeEmptyDOMElement();
+
+    localStorage.setItem(CONSENT_KEY, JSON.stringify({ telemetry: true }));
+    act(() => {
+      window.dispatchEvent(new Event(CONSENT_CHANGED_EVENT));
+    });
+
+    expect(queryByTestId("google-analytics")).toBeInTheDocument();
+  });
+
+  it("stops listening for consent changes once unmounted", () => {
+    vi.stubEnv("NEXT_PUBLIC_GA_ID", "GA-TEST-ID");
+    const removeEventListener = vi.spyOn(window, "removeEventListener");
+    const { unmount } = render(<AnalyticsWrapper />);
+
+    unmount();
+
+    expect(removeEventListener).toHaveBeenCalledWith(CONSENT_CHANGED_EVENT, expect.any(Function));
+    removeEventListener.mockRestore();
   });
 });

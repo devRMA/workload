@@ -1,5 +1,7 @@
 const CONSENT_KEY = "workload_cookie_consent";
 
+export const CONSENT_CHANGED_EVENT = "workload:consent-changed";
+
 export function readTelemetryConsent(): boolean | null {
   try {
     const raw = localStorage.getItem(CONSENT_KEY);
