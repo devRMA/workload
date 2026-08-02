@@ -1,4 +1,4 @@
-import type { ElementType, ReactNode } from "react";
+import type { CSSProperties, ElementType, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 const TONE_CLASSES = {
@@ -6,6 +6,8 @@ const TONE_CLASSES = {
   rose: "bg-rose-700 shadow-rose-500/20 lg:shadow-rose-500/30",
   blue: "bg-blue-600 shadow-blue-500/30",
 } as const;
+
+const VALUE_INLINE_SIZE_CQI = 208;
 
 interface HeroPanelProps {
   icon: ElementType;
@@ -37,8 +39,15 @@ export function HeroPanel({ icon: Icon, label, value, tone, badge, footer, child
           </div>
           {badge}
         </div>
-        <div className="space-y-4 text-center">
-          <p className="text-4xl sm:text-6xl xl:text-8xl font-black tracking-tighter tabular-nums break-words">
+        <div className="@container space-y-4 text-center">
+          <p
+            className="font-black tracking-tighter tabular-nums whitespace-nowrap text-[length:var(--hero-value-size)]"
+            style={
+              {
+                "--hero-value-size": `clamp(1.5rem, ${VALUE_INLINE_SIZE_CQI / value.length}cqi, 6rem)`,
+              } as CSSProperties
+            }
+          >
             {value}
           </p>
           {children}

@@ -30,6 +30,19 @@ describe("HeroPanel", () => {
     expect(screen.getByText("Resumo Financeiro")).toBeInTheDocument();
   });
 
+  it("shrinks the font as the value gets longer so it never wraps", () => {
+    const readCqi = (element: HTMLElement) => Number.parseFloat(/([\d.]+)cqi/.exec(element.outerHTML)?.[1] ?? "");
+
+    const { rerender } = render(<HeroPanel icon={Clock} label="Valor" value="R$ 25,00" tone="blue" />);
+    const shortValueCqi = readCqi(screen.getByText("R$ 25,00"));
+
+    rerender(<HeroPanel icon={Clock} label="Valor" value="R$ 926.150,68" tone="blue" />);
+    const longValueCqi = readCqi(screen.getByText("R$ 926.150,68"));
+
+    expect(shortValueCqi).toBeGreaterThan(0);
+    expect(longValueCqi).toBeLessThan(shortValueCqi);
+  });
+
   it("omits the footer separator when there is no footer", () => {
     render(<HeroPanel icon={Clock} label="HORA EXTRA" value="00:10:00" tone="rose" />);
 
