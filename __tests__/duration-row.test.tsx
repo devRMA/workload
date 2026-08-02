@@ -17,9 +17,9 @@ describe("DurationRow", () => {
     expect(screen.getByText("0h 0m")).toBeInTheDocument();
   });
 
-  it("rounds fractional minutes", () => {
+  it("rounds fractional minutes up into the next hour", () => {
     render(<DurationRow icon={Zap} iconClassName="text-indigo-500" label="Adic. Noturno" minutes={59.6} />);
 
-    expect(screen.getByText("0h 60m")).toBeInTheDocument();
+    expect(screen.getByText("1h 0m")).toBeInTheDocument();
   });
 });

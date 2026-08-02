@@ -17,6 +17,13 @@ describe("splitHoursAndMinutes", () => {
     expect(splitHoursAndMinutes(528)).toEqual({ hours: 8, minutes: 48 });
     expect(splitHoursAndMinutes(90.4)).toEqual({ hours: 1, minutes: 30 });
   });
+
+  it("carries a rounded-up remainder into the hour instead of reporting 60 minutes", () => {
+    expect(splitHoursAndMinutes(59.6)).toEqual({ hours: 1, minutes: 0 });
+    expect(splitHoursAndMinutes(119.6)).toEqual({ hours: 2, minutes: 0 });
+    expect(formatHoursAndMinutes(59.6)).toBe("1h 0m");
+    expect(formatPaddedDuration(59.6)).toBe("01:00");
+  });
 });
 
 describe("formatHoursAndMinutes", () => {

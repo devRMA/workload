@@ -7,9 +7,11 @@ function pad(value: number): string {
 }
 
 export function splitHoursAndMinutes(minutes: number): { hours: number; minutes: number } {
+  const wholeMinutes = Math.round(minutes);
+
   return {
-    hours: Math.floor(minutes / MINUTES_PER_HOUR),
-    minutes: Math.round(minutes % MINUTES_PER_HOUR),
+    hours: Math.floor(wholeMinutes / MINUTES_PER_HOUR),
+    minutes: wholeMinutes % MINUTES_PER_HOUR,
   };
 }
 
