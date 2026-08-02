@@ -3,6 +3,10 @@ import { Clock } from "lucide-react";
 import { describe, expect, it } from "vitest";
 import { HeroPanel } from "@/components/molecules/hero-panel";
 
+function readValueCqi(element: HTMLElement): number {
+  return Number.parseFloat(/([\d.]+)cqi/.exec(element.style.getPropertyValue("--hero-value-size"))?.[1] ?? "");
+}
+
 describe("HeroPanel", () => {
   it("renders the label and the highlighted value", () => {
     render(<HeroPanel icon={Clock} label="FALTAM" value="01:23:45" tone="emerald" />);
@@ -31,16 +35,21 @@ describe("HeroPanel", () => {
   });
 
   it("shrinks the font as the value gets longer so it never wraps", () => {
-    const readCqi = (element: HTMLElement) => Number.parseFloat(/([\d.]+)cqi/.exec(element.outerHTML)?.[1] ?? "");
-
     const { rerender } = render(<HeroPanel icon={Clock} label="Valor" value="R$ 25,00" tone="blue" />);
-    const shortValueCqi = readCqi(screen.getByText("R$ 25,00"));
+    const shortValueCqi = readValueCqi(screen.getByText("R$ 25,00"));
 
     rerender(<HeroPanel icon={Clock} label="Valor" value="R$ 926.150,68" tone="blue" />);
-    const longValueCqi = readCqi(screen.getByText("R$ 926.150,68"));
+    const longValueCqi = readValueCqi(screen.getByText("R$ 926.150,68"));
 
     expect(shortValueCqi).toBeGreaterThan(0);
     expect(longValueCqi).toBeLessThan(shortValueCqi);
+  });
+
+  it("still asks for a finite size when there is no value to show", () => {
+    const { container } = render(<HeroPanel icon={Clock} label="Valor" value="" tone="blue" />);
+    const valueElement = container.querySelector<HTMLElement>("p.font-black");
+
+    expect(readValueCqi(valueElement as HTMLElement)).toBeGreaterThan(0);
   });
 
   it("omits the footer separator when there is no footer", () => {

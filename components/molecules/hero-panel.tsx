@@ -44,7 +44,7 @@ export function HeroPanel({ icon: Icon, label, value, tone, badge, footer, child
             className="font-black tracking-tighter tabular-nums whitespace-nowrap text-[length:var(--hero-value-size)]"
             style={
               {
-                "--hero-value-size": `clamp(1.5rem, ${VALUE_INLINE_SIZE_CQI / value.length}cqi, 6rem)`,
+                "--hero-value-size": `clamp(1.5rem, ${VALUE_INLINE_SIZE_CQI / Math.max(1, value.length)}cqi, 6rem)`,
               } as CSSProperties
             }
           >
