@@ -12,7 +12,15 @@ describe("SalaryCalculator", () => {
     localStorage.clear();
   });
 
+  it("starts with an empty salary waiting to be filled in", () => {
+    render(<SalaryCalculator />);
+
+    expect(screen.getByLabelText("Salário Bruto (R$)")).toHaveValue("0,00");
+    expect(screen.getByText(/0,00 por hora/)).toBeInTheDocument();
+  });
+
   it("shows the stored salary, the workload and the resulting hourly value", () => {
+    localStorage.setItem("grossSalary", "5000");
     render(<SalaryCalculator />);
 
     expect(screen.getByRole("heading", { name: "Custo da Hora" })).toBeInTheDocument();
@@ -22,23 +30,20 @@ describe("SalaryCalculator", () => {
     expect(screen.getByText("Resumo Financeiro")).toBeInTheDocument();
   });
 
-  it("defaults to the CLT regime and offers the public service ones", () => {
+  it("starts on CLT with the regime options tucked away", () => {
     render(<SalaryCalculator />);
 
-    expect(screen.getByRole("radio", { name: /^CLT/ })).toBeChecked();
-    expect(screen.getByRole("radio", { name: /Empregado Público/ })).toBeInTheDocument();
-    expect(screen.getByRole("radio", { name: /Estatutário/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Alterar/ })).toHaveTextContent("CLT");
+    expect(screen.queryByRole("radio", { name: /Estatutário/ })).toBeNull();
   });
 
-  it("contributes the capped amount for CLT and empregado público alike", async () => {
+  it("caps the contribution at the general regime ceiling for CLT", async () => {
     const user = userEvent.setup();
     localStorage.setItem("grossSalary", "20000");
     render(<SalaryCalculator />);
 
     await user.click(screen.getByRole("button", { name: /Impostos e Descontos/ }));
-    expect(screen.getByLabelText("INSS (R$)")).toHaveAttribute("placeholder", "988,09");
 
-    await user.click(screen.getByRole("radio", { name: /Empregado Público/ }));
     expect(screen.getByLabelText("INSS (R$)")).toHaveAttribute("placeholder", "988,09");
   });
 
@@ -47,6 +52,7 @@ describe("SalaryCalculator", () => {
     localStorage.setItem("grossSalary", "20000");
     render(<SalaryCalculator />);
 
+    await user.click(screen.getByRole("button", { name: /Alterar/ }));
     await user.click(screen.getByRole("radio", { name: /Estatutário/ }));
     await user.click(screen.getByRole("button", { name: /Impostos e Descontos/ }));
 
@@ -81,6 +87,7 @@ describe("SalaryCalculator", () => {
 
   it("derives each period from the monthly net and the daily journey", async () => {
     const user = userEvent.setup();
+    localStorage.setItem("grossSalary", "5000");
     render(<SalaryCalculator />);
 
     await user.click(screen.getByRole("radio", { name: "Dia" }));
@@ -95,6 +102,7 @@ describe("SalaryCalculator", () => {
 
   it("counts thirteen paid months in the yearly view", async () => {
     const user = userEvent.setup();
+    localStorage.setItem("grossSalary", "5000");
     render(<SalaryCalculator />);
 
     await user.click(screen.getByRole("radio", { name: "Ano" }));
@@ -140,6 +148,7 @@ describe("SalaryCalculator", () => {
   });
 
   it("keeps the hourly value visible once the workload is known", () => {
+    localStorage.setItem("grossSalary", "5000");
     render(<SalaryCalculator />);
 
     expect(screen.queryByRole("alert")).toBeNull();

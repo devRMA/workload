@@ -12,7 +12,7 @@ interface IncomeTaxBracket extends IncomeTaxRate {
   readonly ceiling: number;
 }
 
-export type WorkRegime = "clt" | "empregado-publico" | "estatutario";
+export type WorkRegime = "clt" | "estatutario";
 
 interface WorkRegimeInfo {
   readonly value: WorkRegime;
@@ -26,17 +26,10 @@ export const WORK_REGIME_INFO: readonly WorkRegimeInfo[] = [
   {
     value: "clt",
     label: "CLT",
-    summary: "Carteira assinada na iniciativa privada",
-    who: "Quem tem contrato regido pela CLT em empresa privada: carteira assinada, FGTS, aviso prévio e férias com 1/3.",
+    summary: "Carteira assinada, inclusive em estatais",
+    who: "Quem tem contrato regido pela CLT, seja em empresa privada ou em empresa pública e sociedade de economia mista (Correios, Caixa, Petrobras): carteira assinada, FGTS, aviso prévio e férias com 1/3.",
     impact:
-      "INSS pelo INSS/RGPS, com alíquotas progressivas de 7,5% a 14% e teto de contribuição em R$ 8.475,55 — acima disso o desconto trava em R$ 988,09.",
-  },
-  {
-    value: "empregado-publico",
-    label: "Empregado Público",
-    summary: "Concursado de empresa pública, sob CLT",
-    who: "Quem passou em concurso para empresa pública ou sociedade de economia mista (Correios, Caixa, Petrobras). O vínculo continua sendo CLT.",
-    impact: "Desconto de INSS idêntico ao do CLT: mesmas faixas, mesmo teto de R$ 988,09.",
+      "INSS pelo RGPS, com alíquotas progressivas de 7,5% a 14% e teto de contribuição em R$ 8.475,55 — acima disso o desconto trava em R$ 988,09.",
   },
   {
     value: "estatutario",
@@ -67,7 +60,6 @@ const CIVIL_SERVICE_BRACKETS: readonly ProgressiveBracket[] = [
 
 const BRACKETS_BY_REGIME: Record<WorkRegime, readonly ProgressiveBracket[]> = {
   clt: GENERAL_REGIME_BRACKETS,
-  "empregado-publico": GENERAL_REGIME_BRACKETS,
   estatutario: CIVIL_SERVICE_BRACKETS,
 };
 
@@ -89,6 +81,10 @@ const REDUCTION_SLOPE = 0.133145;
 
 export function sanitizeAmount(value: number): number {
   return Number.isFinite(value) && value > 0 ? value : 0;
+}
+
+export function overtimePay(minutes: number, hourlyRate: number, ratePercent: number): number {
+  return (minutes / 60) * hourlyRate * (1 + ratePercent / 100);
 }
 
 function roundToCents(value: number): number {

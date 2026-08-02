@@ -1,118 +1,62 @@
 "use client";
 
-import { format } from "date-fns";
-import { Clock, LogOut } from "lucide-react";
-import { motion } from "motion/react";
+import { Clock, LogIn } from "lucide-react";
 import { useMemo } from "react";
-import { useCurrentTime } from "@/hooks/use-current-time";
+import { useSalaryCalculator } from "@/hooks/use-salary-calculator";
 import { useWorkCalculator } from "@/hooks/use-work-calculator";
 import { safeGAEvent } from "@/lib/analytics";
-import { formatClock, minutesToSeconds } from "@/lib/duration";
-import { formatClockTime } from "@/lib/utils";
+import { findComplianceWarnings } from "@/lib/compliance";
+import { buildDayBreakdown } from "@/lib/day-breakdown";
+import { formatClock, formatSignedHoursAndMinutes } from "@/lib/duration";
+import { formatClockTime, formatTimeLabel } from "@/lib/utils";
+import { ProgressRing } from "../atoms/progress-ring";
 import { CopyButton } from "../molecules/copy-button";
 import { HeroPanel } from "../molecules/hero-panel";
 import { CalculatorLayout } from "../templates/calculator-layout";
+import { DaySummary } from "./day-summary";
 import { JourneyForm } from "./journey-form";
-import { WorkSummary } from "./work-summary";
 
 const PLACEHOLDER_CLOCK = "--:--:--";
-const PLACEHOLDER_TIME = "--:--";
 
 interface TimerData {
-  label: string;
-  time: string;
+  statusLabel: string;
+  statusTime: string;
   isOvertime: boolean;
-  progress: number;
-  entryLabel: string;
-  exitLabel: string;
-}
-
-function safeFormat(dateString: string, formatString: string): string {
-  const parsed = new Date(dateString);
-  if (Number.isNaN(parsed.getTime())) return PLACEHOLDER_TIME;
-  return format(parsed, formatString);
-}
-
-function toProgress(elapsed: number, total: number): number {
-  if (total <= 0) return 0;
-  return Math.min(100, Math.max(0, (elapsed / total) * 100));
 }
 
 interface TimerInput {
   currentTime: Date | null;
   displayExit: string;
-  entry: string;
-  workMinutes: number;
   isManualExit: boolean;
   balanceMinutes: number;
-  balanceSign: number;
-  totalWorkedMinutes: number;
 }
 
-export function calculateTimerData({
-  currentTime,
-  displayExit,
-  entry,
-  workMinutes,
-  isManualExit,
-  balanceMinutes,
-  balanceSign,
-  totalWorkedMinutes,
-}: TimerInput): TimerData {
-  const labels = {
-    entryLabel: safeFormat(entry, "HH:mm"),
-    exitLabel: safeFormat(displayExit, "HH:mm"),
-  };
-
+export function calculateTimerData({ currentTime, displayExit, isManualExit, balanceMinutes }: TimerInput): TimerData {
   const exitDate = new Date(displayExit);
   if (Number.isNaN(exitDate.getTime()))
-    return {
-      ...labels,
-      label: "Aguardando...",
-      time: "00:00:00",
-      isOvertime: false,
-      progress: 0,
-    };
+    return { statusLabel: "aguardando horários", statusTime: PLACEHOLDER_CLOCK, isOvertime: false };
 
   if (isManualExit)
     return {
-      ...labels,
-      label: "BALANÇO FINAL",
-      time: `${balanceSign < 0 ? "-" : "+"}${formatClock(minutesToSeconds(Math.abs(balanceMinutes)))}`,
-      isOvertime: balanceSign > 0,
-      progress: toProgress(totalWorkedMinutes, workMinutes),
+      statusLabel: "balanço do dia",
+      statusTime: formatSignedHoursAndMinutes(balanceMinutes),
+      isOvertime: balanceMinutes > 0,
     };
 
-  if (currentTime === null)
-    return {
-      ...labels,
-      label: "FALTAM",
-      time: PLACEHOLDER_CLOCK,
-      isOvertime: false,
-      progress: 0,
-    };
+  if (currentTime === null) return { statusLabel: "faltam", statusTime: PLACEHOLDER_CLOCK, isOvertime: false };
 
   const remainingSeconds = Math.floor((exitDate.getTime() - currentTime.getTime()) / 1000);
-  const isOvertime = remainingSeconds < 0;
-  const time = formatClock(Math.abs(remainingSeconds));
-  const label = isOvertime ? "HORA EXTRA" : "FALTAM";
+  if (remainingSeconds < 0)
+    return {
+      statusLabel: "hora extra",
+      statusTime: `+${formatClock(Math.abs(remainingSeconds))}`,
+      isOvertime: true,
+    };
 
-  const entryDate = new Date(entry);
-  if (Number.isNaN(entryDate.getTime())) return { ...labels, label, time, isOvertime, progress: 0 };
-
-  const elapsedSeconds = Math.floor((currentTime.getTime() - entryDate.getTime()) / 1000);
-
-  return {
-    ...labels,
-    label,
-    time,
-    isOvertime,
-    progress: toProgress(elapsedSeconds, minutesToSeconds(workMinutes)),
-  };
+  return { statusLabel: "faltam", statusTime: formatClock(remainingSeconds), isOvertime: false };
 }
 
 export function WorkCalculator() {
-  const currentTime = useCurrentTime();
   const {
     workMinutes,
     setWorkMinutes,
@@ -132,27 +76,49 @@ export function WorkCalculator() {
     setIsManualExit,
     suggestedExit,
     displayExit,
+    currentTime,
     stats,
     issue,
     resetDefaults,
   } = useWorkCalculator();
+  const { stats: salaryStats } = useSalaryCalculator();
 
-  const balanceSign = Math.sign(stats.balance);
+  const breakdown = useMemo(
+    () =>
+      buildDayBreakdown({
+        entry,
+        lunchStart,
+        lunchEnd,
+        exit: displayExit,
+        expectedMinutes: workMinutes,
+        isManualExit,
+        now: currentTime,
+      }),
+    [entry, lunchStart, lunchEnd, displayExit, workMinutes, isManualExit, currentTime],
+  );
 
   const timerData = useMemo(
-    () =>
-      calculateTimerData({
-        currentTime,
-        displayExit,
-        entry,
-        workMinutes,
-        isManualExit,
-        balanceMinutes: stats.balance,
-        balanceSign,
-        totalWorkedMinutes: stats.totalWorked,
-      }),
-    [currentTime, displayExit, entry, workMinutes, isManualExit, stats, balanceSign],
+    () => calculateTimerData({ currentTime, displayExit, isManualExit, balanceMinutes: stats.balance }),
+    [currentTime, displayExit, isManualExit, stats.balance],
   );
+
+  const warnings = useMemo(
+    () =>
+      findComplianceWarnings({
+        overtimeMinutes: stats.firstTierMinutes + stats.extraTierMinutes,
+        workedMinutes: breakdown.workedMinutes,
+        lunchMinutes: breakdown.lunchMinutes,
+      }),
+    [stats.firstTierMinutes, stats.extraTierMinutes, breakdown.workedMinutes, breakdown.lunchMinutes],
+  );
+
+  const exitLabel = formatTimeLabel(displayExit);
+  const isInDebt = isManualExit && stats.balance < 0;
+  const exitDescription = isManualExit
+    ? "foi o horário que você registrou"
+    : breakdown.overtimeMinutes > 0
+      ? "sua jornada já fechou"
+      : "é quando sua jornada fecha";
 
   const handleManualToggle = (manual: boolean) => {
     if (manual && !isManualExit) setExitOverride(suggestedExit);
@@ -198,14 +164,17 @@ export function WorkCalculator() {
             issue={issue}
           />
           {issue ? null : (
-            <WorkSummary
+            <DaySummary
+              breakdown={breakdown}
+              times={{ entry, lunchStart, lunchEnd, exit: displayExit }}
               balanceMinutes={stats.balance}
-              balanceSign={balanceSign}
               firstTierMinutes={stats.firstTierMinutes}
               extraTierMinutes={stats.extraTierMinutes}
               nightMinutes={stats.nightMinutes}
               firstTierRate={firstTierRate}
               extraTierRate={extraTierRate}
+              hourlyRate={salaryStats.hourlyRate > 0 ? salaryStats.hourlyRate : null}
+              warnings={warnings}
             />
           )}
         </>
@@ -213,50 +182,39 @@ export function WorkCalculator() {
       aside={
         <HeroPanel
           icon={Clock}
-          label={timerData.label}
-          value={timerData.time}
-          tone={timerData.isOvertime ? "rose" : "emerald"}
+          label={isManualExit ? "Saída Real" : "Saída Prevista"}
+          value={exitLabel}
+          tone={isInDebt ? "rose" : "emerald"}
           badge={
             <span className="bg-white/20 px-3 py-1 lg:px-4 lg:py-1.5 rounded-full text-xs lg:text-sm font-bold tabular-nums">
               {currentTime === null ? PLACEHOLDER_CLOCK : formatClockTime(currentTime)}
             </span>
           }
+          media={
+            <ProgressRing progressPercent={breakdown.progressPercent} overtimePercent={breakdown.overtimePercent}>
+              <span className="text-xs font-bold uppercase tracking-wider text-white/80">{timerData.statusLabel}</span>
+              <span className="text-2xl font-black tabular-nums">{timerData.statusTime}</span>
+            </ProgressRing>
+          }
           footer={
             <div className="flex items-center justify-between gap-4">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <LogOut className="w-4 h-4 lg:w-5 lg:h-5" aria-hidden="true" />
-                  <span className="text-xs lg:text-sm uppercase font-bold lg:font-medium">
-                    Saída {isManualExit ? "Real" : "Sugerida"}
-                  </span>
-                </div>
-                <p className="text-3xl lg:text-5xl font-black">{timerData.exitLabel}</p>
+              <div className="flex items-center gap-2">
+                <LogIn className="w-4 h-4 lg:w-5 lg:h-5" aria-hidden="true" />
+                <span className="text-xs lg:text-sm font-bold tabular-nums">Entrada às {formatTimeLabel(entry)}</span>
               </div>
               <CopyButton
-                value={timerData.exitLabel}
-                label="Copiar horário"
+                value={exitLabel}
+                label="Copiar horário de saída"
                 onCopied={() =>
                   safeGAEvent("copy_to_clipboard", {
-                    value: timerData.exitLabel,
+                    value: exitLabel,
                   })
                 }
               />
             </div>
           }
         >
-          <div className="space-y-1.5 lg:space-y-2">
-            <div className="h-1.5 lg:h-2 w-full bg-white/20 rounded-full overflow-hidden">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${timerData.progress}%` }}
-                className="h-full bg-white"
-              />
-            </div>
-            <div className="flex justify-between text-xs font-bold">
-              <span>ENTRADA {timerData.entryLabel}</span>
-              <span>SAÍDA {timerData.exitLabel}</span>
-            </div>
-          </div>
+          <p className="text-sm font-medium text-white/80">{exitDescription}</p>
         </HeroPanel>
       }
     />

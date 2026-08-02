@@ -7,15 +7,17 @@ describe("useSalaryCalculator", () => {
     localStorage.clear();
   });
 
-  it("starts from the default salary and monthly hours", () => {
+  it("starts with an empty salary and the default monthly hours", () => {
     const { result } = renderHook(() => useSalaryCalculator());
 
-    expect(result.current.grossSalary).toBe(5000);
+    expect(result.current.grossSalary).toBe(0);
     expect(result.current.monthlyHours).toBe(220);
+    expect(result.current.stats.netSalary).toBe(0);
+    expect(result.current.stats.hourlyRate).toBe(0);
   });
 
   it("derives net salary and rates from the current tax tables", () => {
-    const { result } = renderHook(() => useSalaryCalculator());
+    const { result } = renderHook(() => useSalaryCalculator(5000));
 
     expect(result.current.autoInss).toBe(501.51);
     expect(result.current.autoIrrf).toBe(0);
@@ -44,7 +46,7 @@ describe("useSalaryCalculator", () => {
 
     const { result } = renderHook(() => useSalaryCalculator());
 
-    expect(result.current.grossSalary).toBe(5000);
+    expect(result.current.grossSalary).toBe(0);
     expect(result.current.monthlyHours).toBe(220);
   });
 
@@ -176,7 +178,7 @@ describe("useSalaryCalculator", () => {
   });
 
   it("honours manual INSS and IRRF overrides", () => {
-    const { result } = renderHook(() => useSalaryCalculator());
+    const { result } = renderHook(() => useSalaryCalculator(5000));
 
     act(() => {
       result.current.setManualInss(0);

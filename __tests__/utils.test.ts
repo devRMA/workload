@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cn, formatClockTime, formatCurrency, formatCurrencySimple, parseCurrency } from "@/lib/utils";
+import { cn, formatClockTime, formatCurrency, formatCurrencySimple, formatTimeLabel, parseCurrency } from "@/lib/utils";
 
 describe("cn", () => {
   it("merges class names", () => {
@@ -73,5 +73,20 @@ describe("formatClockTime", () => {
 
   it("keeps midnight and single digits padded", () => {
     expect(formatClockTime(new Date(2026, 7, 2, 0, 5, 9))).toBe("00:05:09");
+  });
+});
+
+describe("formatTimeLabel", () => {
+  it("keeps only the hour and the minute of a timestamp", () => {
+    expect(formatTimeLabel("2026-08-02T14:33")).toBe("14:33");
+  });
+
+  it("pads midnight to two digits", () => {
+    expect(formatTimeLabel("2026-08-02T00:05")).toBe("00:05");
+  });
+
+  it("falls back to a placeholder when the timestamp is not a real moment", () => {
+    expect(formatTimeLabel("")).toBe("--:--");
+    expect(formatTimeLabel("nao-e-uma-data")).toBe("--:--");
   });
 });

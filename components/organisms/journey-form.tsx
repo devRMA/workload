@@ -194,7 +194,7 @@ export function JourneyForm({
           errorId={ISSUE_BANNER_ID}
         />
         <DateTimeInput
-          label="Saída Real"
+          label={isManualExit ? "Saída Real" : "Saída Sugerida"}
           icon={LogOut}
           id="saida-real"
           value={exitValue}

@@ -60,7 +60,17 @@ describe("JourneyForm", () => {
     expect(screen.getByLabelText("Entrada")).toBeInTheDocument();
     expect(screen.getByLabelText("Saída Almoço")).toBeInTheDocument();
     expect(screen.getByLabelText("Volta Almoço")).toBeInTheDocument();
+    expect(screen.getByLabelText("Saída Sugerida")).toBeInTheDocument();
+  });
+
+  it("renames the exit field once the exit stops being suggested", async () => {
+    const user = userEvent.setup();
+    render(<JourneyHarness />);
+
+    await user.click(screen.getByRole("radio", { name: "MANUAL" }));
+
     expect(screen.getByLabelText("Saída Real")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Saída Sugerida")).toBeNull();
   });
 
   it("stays quiet while the journey makes sense", () => {
@@ -88,7 +98,7 @@ describe("JourneyForm", () => {
     expect(lunchEndField).toHaveAttribute("aria-invalid", "true");
     expect(lunchEndField).toHaveAttribute("aria-describedby", banner.id);
     expect(screen.getByLabelText("Entrada")).not.toHaveAttribute("aria-invalid");
-    expect(screen.getByLabelText("Saída Real")).not.toHaveAttribute("aria-invalid");
+    expect(screen.getByLabelText("Saída Sugerida")).not.toHaveAttribute("aria-invalid");
   });
 
   it("keeps the settings panel collapsed until requested", async () => {

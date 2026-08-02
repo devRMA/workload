@@ -30,144 +30,64 @@ function setClipboard(clipboard: unknown) {
 
 describe("calculateTimerData", () => {
   const baseInput = {
-    currentTime: new Date("2025-01-06T10:00:00"),
+    currentTime: new Date(`${DAY}T10:00:00`),
     displayExit: SUGGESTED_EXIT,
-    entry: ENTRY,
-    workMinutes: 528,
     isManualExit: false,
     balanceMinutes: 0,
-    balanceSign: 0,
-    totalWorkedMinutes: 528,
   };
 
   it("counts down to the exit", () => {
-    const timer = calculateTimerData(baseInput);
-
-    expect(timer).toMatchObject({
-      label: "FALTAM",
-      time: "07:48:00",
+    expect(calculateTimerData(baseInput)).toEqual({
+      statusLabel: "faltam",
+      statusTime: "07:48:00",
       isOvertime: false,
-      entryLabel: "08:00",
-      exitLabel: "17:48",
     });
-    expect(timer.progress).toBeCloseTo((120 / 528) * 100);
   });
 
   it("counts up once the exit has passed", () => {
-    const timer = calculateTimerData({
-      ...baseInput,
-      currentTime: new Date("2025-01-06T18:48:00"),
-    });
-
-    expect(timer).toMatchObject({
-      label: "HORA EXTRA",
-      time: "01:00:00",
+    expect(calculateTimerData({ ...baseInput, currentTime: new Date(`${DAY}T18:48:00`) })).toEqual({
+      statusLabel: "hora extra",
+      statusTime: "+01:00:00",
       isOvertime: true,
     });
-    expect(timer.progress).toBe(100);
   });
 
   it("waits for the client clock before counting", () => {
-    const timer = calculateTimerData({ ...baseInput, currentTime: null });
-
-    expect(timer).toMatchObject({
-      label: "FALTAM",
-      time: "--:--:--",
-      progress: 0,
+    expect(calculateTimerData({ ...baseInput, currentTime: null })).toEqual({
+      statusLabel: "faltam",
+      statusTime: "--:--:--",
+      isOvertime: false,
     });
   });
 
-  it("shows the final balance in manual mode", () => {
-    const timer = calculateTimerData({
-      ...baseInput,
-      isManualExit: true,
-      balanceMinutes: 75,
-      balanceSign: 1,
+  it("waits when the exit is not a real moment", () => {
+    expect(calculateTimerData({ ...baseInput, displayExit: "" })).toEqual({
+      statusLabel: "aguardando horários",
+      statusTime: "--:--:--",
+      isOvertime: false,
     });
+  });
 
-    expect(timer).toMatchObject({
-      label: "BALANÇO FINAL",
-      time: "+01:15:00",
+  it("shows the day balance in manual mode", () => {
+    expect(calculateTimerData({ ...baseInput, isManualExit: true, balanceMinutes: 75 })).toEqual({
+      statusLabel: "balanço do dia",
+      statusTime: "+1h 15m",
       isOvertime: true,
-      progress: 100,
     });
   });
 
-  it("shows a negative final balance in manual mode", () => {
-    const timer = calculateTimerData({
-      ...baseInput,
-      isManualExit: true,
-      balanceMinutes: -30,
-      balanceSign: -1,
-    });
-
-    expect(timer).toMatchObject({
-      label: "BALANÇO FINAL",
-      time: "-00:30:00",
+  it("shows a negative day balance in manual mode", () => {
+    expect(calculateTimerData({ ...baseInput, isManualExit: true, balanceMinutes: -30 })).toEqual({
+      statusLabel: "balanço do dia",
+      statusTime: "-0h 30m",
       isOvertime: false,
     });
   });
 
   it("treats an exactly balanced day as on target, not overtime", () => {
-    const timer = calculateTimerData({
-      ...baseInput,
-      isManualExit: true,
-      balanceMinutes: 0,
-      balanceSign: 0,
-    });
-
-    expect(timer).toMatchObject({
-      label: "BALANÇO FINAL",
-      time: "+00:00:00",
+    expect(calculateTimerData({ ...baseInput, isManualExit: true, balanceMinutes: 0 })).toMatchObject({
+      statusTime: "+0h 0m",
       isOvertime: false,
-    });
-  });
-
-  it("never lets the manual progress leave the 0-100 range", () => {
-    const overworked = calculateTimerData({
-      ...baseInput,
-      isManualExit: true,
-      totalWorkedMinutes: 900,
-    });
-    expect(overworked.progress).toBe(100);
-
-    const withoutJourney = calculateTimerData({
-      ...baseInput,
-      isManualExit: true,
-      workMinutes: 0,
-    });
-    expect(withoutJourney.progress).toBe(0);
-  });
-
-  it("never lets the countdown progress leave the 0-100 range", () => {
-    const withoutJourney = calculateTimerData({ ...baseInput, workMinutes: 0 });
-    expect(withoutJourney.progress).toBe(0);
-
-    const beforeEntry = calculateTimerData({
-      ...baseInput,
-      currentTime: new Date("2025-01-06T06:00:00"),
-    });
-    expect(beforeEntry.progress).toBe(0);
-  });
-
-  it("waits when the exit is not a real moment", () => {
-    const timer = calculateTimerData({ ...baseInput, displayExit: "" });
-
-    expect(timer).toMatchObject({
-      label: "Aguardando...",
-      time: "00:00:00",
-      progress: 0,
-      exitLabel: "--:--",
-    });
-  });
-
-  it("keeps the countdown without progress when the entry is unusable", () => {
-    const timer = calculateTimerData({ ...baseInput, entry: "invalido" });
-
-    expect(timer).toMatchObject({
-      label: "FALTAM",
-      progress: 0,
-      entryLabel: "--:--",
     });
   });
 });
@@ -185,25 +105,45 @@ describe("WorkCalculator", () => {
     vi.useRealTimers();
   });
 
-  it("renders the journey form and the countdown side by side", () => {
+  it("renders the journey form, the countdown and the day summary side by side", () => {
     render(<WorkCalculator />);
 
     expect(screen.getByRole("heading", { name: "Sua Jornada" })).toBeInTheDocument();
-    expect(screen.getByText("FALTAM")).toBeInTheDocument();
-    expect(screen.getByText("Saída Sugerida")).toBeInTheDocument();
-    expect(screen.getAllByText("17:48").length).toBeGreaterThan(0);
+    expect(screen.getByRole("heading", { name: "Seu Dia" })).toBeInTheDocument();
+    expect(screen.getByText("faltam")).toBeInTheDocument();
+    expect(screen.getByText("07:48:00")).toBeInTheDocument();
+    expect(screen.getByText("Saída Prevista")).toBeInTheDocument();
+    expect(screen.getByText("é quando sua jornada fecha")).toBeInTheDocument();
+    expect(screen.getByText("Entrada às 08:00")).toBeInTheDocument();
   });
 
-  it("shows the day balance and the overtime tiers", () => {
+  it("counts the day only up to the current moment", () => {
     render(<WorkCalculator />);
 
-    expect(screen.getByRole("heading", { name: "Balanço do Dia" })).toBeInTheDocument();
-    expect(screen.getByText("+0h 0m")).toBeInTheDocument();
-    expect(screen.getByText("Extra 50%")).toBeInTheDocument();
-    expect(screen.getByText("Extra 100%")).toBeInTheDocument();
+    expect(screen.getByText("08:00 → agora")).toBeInTheDocument();
+    expect(screen.getByText("Trabalhado até agora")).toBeInTheDocument();
+    expect(screen.getAllByText("2h 0m")).toHaveLength(2);
+    expect(screen.getByText("6h 48m")).toBeInTheDocument();
   });
 
-  it("replaces the day balance with an explanation when the journey is out of order", async () => {
+  it("keeps counting overtime after the suggested exit has passed", () => {
+    vi.setSystemTime(new Date(`${DAY}T19:00:00`));
+    render(<WorkCalculator />);
+
+    expect(screen.getByText("hora extra")).toBeInTheDocument();
+    expect(screen.getByText("+01:12:00")).toBeInTheDocument();
+    expect(screen.getByText("sua jornada já fechou")).toBeInTheDocument();
+    expect(screen.getByText("+1h 12m")).toBeInTheDocument();
+  });
+
+  it("warns when the overtime passes the legal daily limit", () => {
+    vi.setSystemTime(new Date(`${DAY}T20:30:00`));
+    render(<WorkCalculator />);
+
+    expect(screen.getByText("Você passou de 2h extras hoje")).toBeInTheDocument();
+  });
+
+  it("replaces the day summary with an explanation when the journey is out of order", async () => {
     const user = userEvent.setup();
     render(<WorkCalculator />);
 
@@ -212,7 +152,7 @@ describe("WorkCalculator", () => {
     await user.type(lunchStartTimeField, "0700");
 
     expect(screen.getByRole("alert")).toHaveTextContent("A saída para o almoço precisa vir depois da entrada.");
-    expect(screen.queryByRole("heading", { name: "Balanço do Dia" })).toBeNull();
+    expect(screen.queryByRole("heading", { name: "Seu Dia" })).toBeNull();
   });
 
   it("copies the exit time and tracks the event", async () => {
@@ -221,43 +161,55 @@ describe("WorkCalculator", () => {
     setClipboard({ writeText });
     render(<WorkCalculator />);
 
-    await user.click(screen.getByRole("button", { name: "Copiar horário" }));
+    await user.click(screen.getByRole("button", { name: "Copiar horário de saída" }));
 
     expect(writeText).toHaveBeenCalledWith("17:48");
-    expect(safeGAEvent).toHaveBeenCalledWith("copy_to_clipboard", {
-      value: "17:48",
-    });
+    expect(safeGAEvent).toHaveBeenCalledWith("copy_to_clipboard", { value: "17:48" });
     setClipboard(undefined);
   });
 
-  it("switches to the final balance when manual mode is chosen", async () => {
+  it("switches to the day balance when manual mode is chosen", async () => {
     const user = userEvent.setup();
     render(<WorkCalculator />);
 
     await user.click(screen.getByRole("radio", { name: "MANUAL" }));
 
-    expect(safeGAEvent).toHaveBeenCalledWith("toggle_manual_mode", {
-      value: "manual",
-    });
-    expect(screen.getByText("BALANÇO FINAL")).toBeInTheDocument();
+    expect(safeGAEvent).toHaveBeenCalledWith("toggle_manual_mode", { value: "manual" });
+    expect(screen.getByText("balanço do dia")).toBeInTheDocument();
+    expect(screen.getByText("foi o horário que você registrou")).toBeInTheDocument();
     expect(screen.getAllByText("Saída Real").length).toBeGreaterThan(0);
 
     await user.click(screen.getByRole("radio", { name: "AUTO" }));
 
-    expect(safeGAEvent).toHaveBeenCalledWith("toggle_manual_mode", {
-      value: "auto",
-    });
+    expect(safeGAEvent).toHaveBeenCalledWith("toggle_manual_mode", { value: "auto" });
   });
 
-  it("turns manual as soon as the real exit is edited", async () => {
+  it("turns manual as soon as the exit is edited, and mourns the missing hours", async () => {
     const user = userEvent.setup();
-    render(<WorkCalculator />);
+    const { container } = render(<WorkCalculator />);
 
-    const exitTimeField = screen.getByLabelText("Hora para Saída Real");
+    const exitTimeField = screen.getByLabelText("Hora para Saída Sugerida");
     await user.clear(exitTimeField);
-    await user.type(exitTimeField, "1900");
+    await user.type(exitTimeField, "1600");
 
     expect(screen.getByRole("radio", { name: "MANUAL" })).toBeChecked();
+    expect(screen.getAllByText("-1h 48m")).toHaveLength(2);
+    expect(container.querySelector(".bg-rose-700")).toBeInTheDocument();
+  });
+
+  it("prices the overtime once the salary tab knows the hourly value", () => {
+    localStorage.setItem("grossSalary", "5000");
+    vi.setSystemTime(new Date(`${DAY}T19:00:00`));
+    render(<WorkCalculator />);
+
+    expect(screen.queryByRole("link", { name: /Calcule o valor da sua hora/ })).toBeNull();
+    expect(screen.getByText(/36,81/)).toBeInTheDocument();
+  });
+
+  it("offers the salary tab while the hourly value is unknown", () => {
+    render(<WorkCalculator />);
+
+    expect(screen.getByRole("link", { name: /Calcule o valor da sua hora/ })).toBeInTheDocument();
   });
 
   it("restores the defaults and tracks the reset", async () => {
