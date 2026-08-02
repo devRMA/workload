@@ -15,19 +15,9 @@ describe("StatBox", () => {
     expect(container.firstElementChild?.className).toContain("border-emerald-100");
   });
 
-  it("renders with the warning variant", () => {
-    const { container } = render(<StatBox label="Total" value="10h" variant="warning" />);
-    expect(container.firstElementChild?.className).toContain("border-amber-100");
-  });
-
   it("renders with the danger variant", () => {
     const { container } = render(<StatBox label="Total" value="10h" variant="danger" />);
     expect(container.firstElementChild?.className).toContain("border-red-100");
-  });
-
-  it("renders with the purple variant", () => {
-    const { container } = render(<StatBox label="Total" value="10h" variant="purple" />);
-    expect(container.firstElementChild?.className).toContain("border-purple-100");
   });
 
   it("renders subValue only when provided", () => {

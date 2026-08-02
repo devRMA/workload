@@ -11,8 +11,7 @@ const STATUS_MESSAGES: Record<CopyStatus, string> = {
   failed: "Não foi possível copiar",
 };
 
-const STATUS_RESET_MS: Record<CopyStatus, number> = {
-  idle: 0,
+const STATUS_RESET_MS: Record<Exclude<CopyStatus, "idle">, number> = {
   copied: 2000,
   failed: 4000,
 };

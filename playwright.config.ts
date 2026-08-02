@@ -27,7 +27,6 @@ export default defineConfig({
       ],
     },
   },
-  testIgnore: [],
   testMatch: "**/*.spec.ts",
   projects: [
     {
