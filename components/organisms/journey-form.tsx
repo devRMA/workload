@@ -2,6 +2,7 @@
 
 import { Coffee, LogIn, LogOut, Percent, RotateCcw, Settings, Zap } from "lucide-react";
 import { useState } from "react";
+import { formatPaddedDuration, parsePaddedDuration } from "@/lib/duration";
 import { Button } from "../atoms/button";
 import { Label } from "../atoms/label";
 import { MaskedInput } from "../atoms/masked-input";
@@ -20,17 +21,6 @@ const EXIT_MODES = [
   { label: "AUTO", isManual: false },
   { label: "MANUAL", isManual: true },
 ] as const;
-
-function formatDuration(minutes: number): string {
-  const hours = Math.floor(minutes / MINUTES_PER_HOUR);
-  const remainingMinutes = minutes % MINUTES_PER_HOUR;
-  return `${hours.toString().padStart(2, "0")}:${remainingMinutes.toString().padStart(2, "0")}`;
-}
-
-function parseDuration(duration: string): number {
-  const [hours, minutes] = duration.split(":").map(Number);
-  return hours * MINUTES_PER_HOUR + minutes;
-}
 
 function isRealDuration(duration: string): boolean {
   const [hours, minutes] = duration.split(":").map(Number);
@@ -135,11 +125,11 @@ export function JourneyForm({
               <MaskedInput
                 id="daily-journey"
                 placeholder="08:48"
-                value={formatDuration(workMinutes)}
+                value={formatPaddedDuration(workMinutes)}
                 separator=":"
                 groupSizes={DURATION_GROUPS}
                 isValid={isRealDuration}
-                onCommit={(duration) => onWorkMinutesChange(parseDuration(duration))}
+                onCommit={(duration) => onWorkMinutesChange(parsePaddedDuration(duration))}
                 className="h-12 rounded-xl text-center text-lg font-bold focus-visible:ring-emerald-500"
               />
             </div>

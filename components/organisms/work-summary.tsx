@@ -1,14 +1,6 @@
 import { MoonStar, TrendingDown, TrendingUp, Zap } from "lucide-react";
+import { formatSignedHoursAndMinutes } from "@/lib/duration";
 import { DurationRow } from "../molecules/duration-row";
-
-const MINUTES_PER_HOUR = 60;
-
-function formatBalance(minutes: number): string {
-  const absoluteMinutes = Math.abs(minutes);
-  const hours = Math.floor(absoluteMinutes / MINUTES_PER_HOUR);
-  const remainingMinutes = absoluteMinutes % MINUTES_PER_HOUR;
-  return `${minutes < 0 ? "-" : "+"}${hours}h ${remainingMinutes}m`;
-}
 
 interface WorkSummaryProps {
   balanceMinutes: number;
@@ -51,7 +43,7 @@ export function WorkSummary({
             <p
               className={`text-4xl font-black tracking-tight tabular-nums ${isPositiveBalance ? "text-emerald-700 dark:text-emerald-400" : "text-rose-500"}`}
             >
-              {formatBalance(balanceMinutes)}
+              {formatSignedHoursAndMinutes(balanceMinutes)}
             </p>
             <p className="text-sm text-neutral-500 dark:text-neutral-400">
               {isPositiveBalance ? "Horas extras acumuladas" : "Horas em débito hoje"}

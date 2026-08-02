@@ -19,6 +19,8 @@ export function AdManager() {
   const enableAds = process.env.NEXT_PUBLIC_ENABLE_ADS === "true";
 
   const checkAdBlock = useCallback(async () => {
+    if (!enableAds) return;
+
     try {
       await fetch("https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js", {
         method: "HEAD",
@@ -29,7 +31,7 @@ export function AdManager() {
       setIsAdBlockActive(true);
       setShowAdBlockModal(true);
     }
-  }, []);
+  }, [enableAds]);
 
   const checkCooldowns = useCallback(() => {
     if (!enableAds) return;

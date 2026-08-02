@@ -31,7 +31,7 @@ export default function Home() {
     <>
       <script
         type="application/ld+json"
-        // biome-ignore lint/security/noDangerouslySetInnerHtml: SEO
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: safe only while every field below is a static literal — escape the payload before injecting anything user, API or CMS supplied
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",

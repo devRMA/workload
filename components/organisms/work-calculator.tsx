@@ -7,6 +7,7 @@ import { useMemo } from "react";
 import { useCurrentTime } from "@/hooks/use-current-time";
 import { useWorkCalculator } from "@/hooks/use-work-calculator";
 import { safeGAEvent } from "@/lib/analytics";
+import { formatClock, minutesToSeconds } from "@/lib/duration";
 import { formatClockTime } from "@/lib/utils";
 import { CopyButton } from "../molecules/copy-button";
 import { HeroPanel } from "../molecules/hero-panel";
@@ -14,8 +15,6 @@ import { CalculatorLayout } from "../templates/calculator-layout";
 import { JourneyForm } from "./journey-form";
 import { WorkSummary } from "./work-summary";
 
-const SECONDS_PER_HOUR = 3600;
-const SECONDS_PER_MINUTE = 60;
 const PLACEHOLDER_CLOCK = "--:--:--";
 const PLACEHOLDER_TIME = "--:--";
 
@@ -37,13 +36,6 @@ function safeFormat(dateString: string, formatString: string): string {
 function toProgress(elapsed: number, total: number): number {
   if (total <= 0) return 0;
   return Math.min(100, Math.max(0, (elapsed / total) * 100));
-}
-
-function formatClock(totalSeconds: number): string {
-  const hours = Math.floor(totalSeconds / SECONDS_PER_HOUR);
-  const minutes = Math.floor((totalSeconds % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE);
-  const seconds = Math.floor(totalSeconds % SECONDS_PER_MINUTE);
-  return [hours, minutes, seconds].map((part) => part.toString().padStart(2, "0")).join(":");
 }
 
 interface TimerInput {
@@ -86,7 +78,7 @@ export function calculateTimerData({
     return {
       ...labels,
       label: "BALANÇO FINAL",
-      time: `${balanceSign < 0 ? "-" : "+"}${formatClock(Math.abs(balanceMinutes) * SECONDS_PER_MINUTE)}`,
+      time: `${balanceSign < 0 ? "-" : "+"}${formatClock(minutesToSeconds(Math.abs(balanceMinutes)))}`,
       isOvertime: balanceSign > 0,
       progress: toProgress(totalWorkedMinutes, workMinutes),
     };
@@ -115,7 +107,7 @@ export function calculateTimerData({
     label,
     time,
     isOvertime,
-    progress: toProgress(elapsedSeconds, workMinutes * SECONDS_PER_MINUTE),
+    progress: toProgress(elapsedSeconds, minutesToSeconds(workMinutes)),
   };
 }
 

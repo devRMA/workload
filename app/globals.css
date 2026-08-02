@@ -1,5 +1,3 @@
-/* biome-ignore-all lint/complexity/noImportantStyles: a universal selector loses to every utility class, so the reduced-motion reset below cannot take effect without it */
-
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
@@ -13,6 +11,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  /* biome-ignore-start lint/complexity/noImportantStyles: a universal selector loses to every utility class, so this reset cannot take effect without it */
   *,
   *::before,
   *::after {
@@ -21,4 +20,5 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+  /* biome-ignore-end lint/complexity/noImportantStyles: scoped to the reduced-motion reset */
 }

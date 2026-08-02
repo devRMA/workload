@@ -1,13 +1,6 @@
 import type { ElementType } from "react";
+import { formatHoursAndMinutes } from "@/lib/duration";
 import { cn } from "@/lib/utils";
-
-const MINUTES_PER_HOUR = 60;
-
-function formatHoursAndMinutes(minutes: number): string {
-  const hours = Math.floor(minutes / MINUTES_PER_HOUR);
-  const remainingMinutes = Math.round(minutes % MINUTES_PER_HOUR);
-  return `${hours}h ${remainingMinutes}m`;
-}
 
 interface DurationRowProps {
   icon: ElementType;

@@ -1,36 +1,31 @@
-export function safeGAEvent(eventName: string, params?: Record<string, string | number>) {
+type EventParams = Record<string, string | number>;
+
+interface AnalyticsWindow {
+  dataLayer?: unknown[];
+  gtag?: (command: "event", eventName: string, params?: EventParams) => void;
+}
+
+const MAX_RETRIES = 10;
+const RETRY_INTERVAL_MS = 500;
+
+export function safeGAEvent(eventName: string, params?: EventParams) {
   if (typeof window === "undefined") return;
 
   const send = () => {
-    const dataLayer = (window as Record<string, unknown>).dataLayer as Array<Record<string, unknown>> | undefined;
+    const { dataLayer, gtag } = window as Window & AnalyticsWindow;
+    if (!dataLayer) return false;
 
-    if (dataLayer) {
-      if (params) {
-        (
-          window as Record<string, unknown> & {
-            gtag?: (...args: unknown[]) => void;
-          }
-        ).gtag?.("event", eventName, params);
-      } else {
-        (
-          window as Record<string, unknown> & {
-            gtag?: (...args: unknown[]) => void;
-          }
-        ).gtag?.("event", eventName);
-      }
-      return true;
-    }
-    return false;
+    if (params) gtag?.("event", eventName, params);
+    else gtag?.("event", eventName);
+
+    return true;
   };
 
-  if (!send()) {
-    const maxRetries = 10;
-    let retries = 0;
-    const interval = setInterval(() => {
-      retries++;
-      if (send() || retries >= maxRetries) {
-        clearInterval(interval);
-      }
-    }, 500);
-  }
+  if (send()) return;
+
+  let retries = 0;
+  const interval = setInterval(() => {
+    retries += 1;
+    if (send() || retries >= MAX_RETRIES) clearInterval(interval);
+  }, RETRY_INTERVAL_MS);
 }

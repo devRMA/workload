@@ -96,6 +96,7 @@ describe("AdManager", () => {
 
   it("shows adblock modal when fetch fails", async () => {
     vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
+    vi.stubEnv("NEXT_PUBLIC_ENABLE_ADS", "true");
     mockFetch.mockRejectedValueOnce(new Error("blocked"));
 
     render(<AdManager />);
@@ -107,6 +108,7 @@ describe("AdManager", () => {
 
   it("closes the adblock modal without reloading when dismissed", async () => {
     vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
+    vi.stubEnv("NEXT_PUBLIC_ENABLE_ADS", "true");
     mockFetch.mockRejectedValueOnce(new Error("blocked"));
 
     render(<AdManager />);
@@ -122,6 +124,7 @@ describe("AdManager", () => {
 
   it("reloads the page and closes the modal when confirming adblock is disabled", async () => {
     vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
+    vi.stubEnv("NEXT_PUBLIC_ENABLE_ADS", "true");
     mockFetch.mockRejectedValueOnce(new Error("blocked"));
 
     render(<AdManager />);
@@ -171,5 +174,18 @@ describe("AdManager", () => {
 
     expect(localStorage.getItem(VIDEO_AD_KEY)).not.toBeNull();
     expect(screen.queryByText("Vídeo da Semana")).toBeNull();
+  });
+
+  it("never nags about adblock while ads are switched off", async () => {
+    vi.stubEnv("NEXT_PUBLIC_ADSENSE_ID", MOCK_ADSENSE_ID);
+    vi.stubEnv("NEXT_PUBLIC_ENABLE_ADS", "false");
+    mockFetch.mockRejectedValueOnce(new Error("blocked"));
+
+    render(<AdManager />);
+
+    await vi.waitFor(() => {
+      expect(mockFetch).not.toHaveBeenCalled();
+    });
+    expect(screen.queryByText("Opa! Uma ajudinha?")).toBeNull();
   });
 });
