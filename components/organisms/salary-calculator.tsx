@@ -1,19 +1,8 @@
 "use client";
 
-import {
-  Briefcase,
-  Calculator,
-  ChevronDown,
-  ChevronUp,
-  Clock,
-  Sun,
-  TrendingDown,
-  TrendingUp,
-  Wallet,
-} from "lucide-react";
+import { Calculator, ChevronDown, ChevronUp, Clock, Sun, TrendingDown, TrendingUp, Wallet } from "lucide-react";
 import { useState } from "react";
 import { useSalaryCalculator } from "@/hooks/use-salary-calculator";
-import type { WorkRegime } from "@/lib/payroll";
 import { SALARY_PERIOD_LABELS } from "@/lib/salary-period";
 import { formatCurrency, parseCurrency } from "@/lib/utils";
 import { CollapsiblePanel } from "../molecules/collapsible-panel";
@@ -21,18 +10,12 @@ import { CurrencyField } from "../molecules/currency-field";
 import { FormField } from "../molecules/form-field";
 import { HeroPanel } from "../molecules/hero-panel";
 import { PeriodSelector } from "../molecules/period-selector";
-import { SelectField } from "../molecules/select-field";
+import { RegimeField } from "../molecules/regime-field";
 import { StatBox } from "../molecules/stat-box";
 import { CalculatorLayout } from "../templates/calculator-layout";
 import { TaxDetailsPanel } from "./tax-details-panel";
 
 const DETAILS_PANEL_ID = "tax-details";
-
-const REGIME_OPTIONS: readonly { value: WorkRegime; label: string }[] = [
-  { value: "clt", label: "CLT" },
-  { value: "empregado-publico", label: "Empregado Público" },
-  { value: "estatutario", label: "Estatutário" },
-];
 
 export function SalaryCalculator() {
   const {
@@ -81,19 +64,13 @@ export function SalaryCalculator() {
               <CurrencyField
                 id="salario-bruto"
                 label="Salário Bruto (R$)"
+                className="sm:col-span-2"
                 icon={<span className="font-bold text-blue-500">R$</span>}
                 placeholder="0,00"
                 value={grossSalary}
                 onValueChange={(rawValue) => setGrossSalary(parseCurrency(rawValue))}
               />
-              <SelectField
-                id="regime-trabalho"
-                label="Regime de Trabalho"
-                labelIcon={<Briefcase className="w-4 h-4" aria-hidden="true" />}
-                value={regime}
-                options={REGIME_OPTIONS}
-                onValueChange={setRegime}
-              />
+              <RegimeField className="sm:col-span-2" value={regime} onChange={setRegime} />
               <FormField
                 id="horas-mensais"
                 label="Carga Horária Mensal"
@@ -121,10 +98,19 @@ export function SalaryCalculator() {
               onClick={() => setShowDetails(!showDetails)}
               aria-expanded={showDetails}
               aria-controls={DETAILS_PANEL_ID}
-              className="w-full flex items-center justify-between p-4 rounded-2xl border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors"
+              className="w-full flex items-center justify-between gap-4 p-4 rounded-2xl border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
             >
-              <span className="font-medium">Impostos e Descontos</span>
-              {showDetails ? <ChevronUp aria-hidden="true" /> : <ChevronDown aria-hidden="true" />}
+              <span className="flex flex-col items-start gap-0.5 text-left">
+                <span className="font-medium">Impostos e Descontos</span>
+                <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                  INSS, IRRF, dependentes, descontos e ganhos extras
+                </span>
+              </span>
+              {showDetails ? (
+                <ChevronUp className="shrink-0" aria-hidden="true" />
+              ) : (
+                <ChevronDown className="shrink-0" aria-hidden="true" />
+              )}
             </button>
 
             <CollapsiblePanel id={DETAILS_PANEL_ID} isOpen={showDetails} className="mt-6">
@@ -150,21 +136,21 @@ export function SalaryCalculator() {
             <StatBox
               label="Salário Líquido"
               value={formatCurrency(stats.netSalary)}
-              icon={<Wallet className="w-4 h-4" />}
+              icon={<Wallet className="w-4 h-4" aria-hidden="true" />}
               variant="default"
             />
             <StatBox
               label="Total Recebido"
               value={formatCurrency(stats.totalValue)}
               subValue="Líquido + Extras"
-              icon={<TrendingUp className="w-4 h-4" />}
+              icon={<TrendingUp className="w-4 h-4" aria-hidden="true" />}
               variant="success"
             />
             <StatBox
               label="Total Descontos"
               value={formatCurrency(stats.inss + stats.irrf + stats.totalExtraDeductions)}
               subValue="INSS + IRRF + Outros"
-              icon={<TrendingDown className="w-4 h-4" />}
+              icon={<TrendingDown className="w-4 h-4" aria-hidden="true" />}
               variant="danger"
             />
           </div>

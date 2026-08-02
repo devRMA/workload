@@ -25,10 +25,9 @@ describe("SalaryCalculator", () => {
   it("defaults to the CLT regime and offers the public service ones", () => {
     render(<SalaryCalculator />);
 
-    const regime = screen.getByLabelText("Regime de Trabalho");
-    expect(regime).toHaveValue("clt");
-    expect(screen.getByRole("option", { name: "Empregado Público" })).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: "Estatutário" })).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: /^CLT/ })).toBeChecked();
+    expect(screen.getByRole("radio", { name: /Empregado Público/ })).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: /Estatutário/ })).toBeInTheDocument();
   });
 
   it("contributes the capped amount for CLT and empregado público alike", async () => {
@@ -39,7 +38,7 @@ describe("SalaryCalculator", () => {
     await user.click(screen.getByRole("button", { name: /Impostos e Descontos/ }));
     expect(screen.getByLabelText("INSS (R$)")).toHaveAttribute("placeholder", "988,09");
 
-    await user.selectOptions(screen.getByLabelText("Regime de Trabalho"), "empregado-publico");
+    await user.click(screen.getByRole("radio", { name: /Empregado Público/ }));
     expect(screen.getByLabelText("INSS (R$)")).toHaveAttribute("placeholder", "988,09");
   });
 
@@ -48,7 +47,7 @@ describe("SalaryCalculator", () => {
     localStorage.setItem("grossSalary", "20000");
     render(<SalaryCalculator />);
 
-    await user.selectOptions(screen.getByLabelText("Regime de Trabalho"), "estatutario");
+    await user.click(screen.getByRole("radio", { name: /Estatutário/ }));
     await user.click(screen.getByRole("button", { name: /Impostos e Descontos/ }));
 
     expect(screen.getByLabelText("INSS (R$)")).toHaveAttribute("placeholder", "2.768,85");
@@ -145,9 +144,7 @@ describe("SalaryCalculator", () => {
     const user = userEvent.setup();
     render(<SalaryCalculator />);
 
-    const detailsToggle = screen.getByRole("button", {
-      name: "Impostos e Descontos",
-    });
+    const detailsToggle = screen.getByRole("button", { name: /^Impostos e Descontos/ });
     expect(detailsToggle).toHaveAttribute("aria-expanded", "false");
     expect(screen.queryByLabelText("INSS (R$)")).toBeNull();
 
@@ -163,7 +160,7 @@ describe("SalaryCalculator", () => {
     const user = userEvent.setup();
     render(<SalaryCalculator />);
 
-    await user.click(screen.getByRole("button", { name: "Impostos e Descontos" }));
+    await user.click(screen.getByRole("button", { name: /^Impostos e Descontos/ }));
     await user.click(screen.getByRole("button", { name: "Adicionar desconto" }));
 
     expect(screen.getByPlaceholderText("Nome (ex: Plano de Saúde)")).toBeInTheDocument();
