@@ -91,12 +91,12 @@ export function JourneyForm({
           </button>
         </div>
         <div className="space-y-2 sm:text-right">
-          <fieldset className="flex items-center gap-1 bg-neutral-100 dark:bg-neutral-800 p-1.5 rounded-2xl">
+          <fieldset className="grid grid-cols-2 gap-1 bg-neutral-100 dark:bg-neutral-800 p-1.5 rounded-2xl sm:ml-auto sm:inline-grid sm:w-fit">
             <legend className="sr-only">Modo de cálculo da saída</legend>
             {EXIT_MODES.map(({ label, isManual }) => (
               <label
                 key={label}
-                className="relative cursor-pointer px-6 py-3.5 rounded-xl text-xs font-bold text-neutral-600 dark:text-neutral-300 transition-colors has-checked:bg-white dark:has-checked:bg-neutral-700 has-checked:shadow-md has-checked:text-emerald-700 dark:has-checked:text-emerald-400 focus-within:ring-2 focus-within:ring-emerald-500"
+                className="relative cursor-pointer px-6 py-3.5 rounded-xl text-center text-xs font-bold text-neutral-600 dark:text-neutral-300 transition-colors has-checked:bg-white dark:has-checked:bg-neutral-700 has-checked:shadow-md has-checked:text-emerald-700 dark:has-checked:text-emerald-400 focus-within:ring-2 focus-within:ring-emerald-500"
               >
                 <input
                   type="radio"
