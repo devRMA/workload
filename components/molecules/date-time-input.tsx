@@ -2,8 +2,9 @@
 
 import { format, isValid, parse } from "date-fns";
 import * as React from "react";
+import { isRealDuration } from "@/lib/duration";
 import { cn } from "@/lib/utils";
-import { MaskedInput } from "../atoms/masked-input";
+import { MaskedInput } from "../molecules/masked-input";
 
 const BR_DATE_GROUPS = [2, 2, 4] as const;
 const TIME_GROUPS = [2, 2] as const;
@@ -27,11 +28,6 @@ const fromBRDate = (brDate: string) => {
 const isRealBRDate = (brDate: string) => {
   const parsed = parse(brDate, BR_DATE_FORMAT, new Date());
   return isValid(parsed) && format(parsed, BR_DATE_FORMAT) === brDate;
-};
-
-const isRealTime = (time: string) => {
-  const [hours, minutes] = time.split(":").map(Number);
-  return hours >= 0 && hours < 24 && minutes >= 0 && minutes < 60;
 };
 
 const INVALID_FIELD_CLASSES = "border-rose-500 dark:border-rose-500 focus-visible:ring-rose-500";
@@ -101,7 +97,7 @@ export function DateTimeInput({
             value={timePart || ""}
             separator=":"
             groupSizes={TIME_GROUPS}
-            isValid={isRealTime}
+            isValid={isRealDuration}
             onCommit={handleTimeCommit}
             className={fieldClasses}
             {...errorProps}

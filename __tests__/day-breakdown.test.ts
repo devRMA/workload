@@ -44,6 +44,7 @@ describe("buildDayBreakdown", () => {
       morningMinutes: 0,
       lunchMinutes: 0,
       afternoonMinutes: 0,
+      nightMinutes: 0,
       nightBonusMinutes: 0,
       workedMinutes: 0,
       expectedMinutes: 0,

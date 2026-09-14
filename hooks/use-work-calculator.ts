@@ -1,9 +1,9 @@
 import { addDays, addMinutes, differenceInCalendarDays, differenceInMinutes, format, isValid } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
 import { useCurrentTime } from "@/hooks/use-current-time";
+import { buildDayBreakdown } from "@/lib/day-breakdown";
 import { findJourneyIssue } from "@/lib/journey";
-import { countNightMinutes, nightBonusMinutes, nightEquivalentMinutes } from "@/lib/night-shift";
-import { readStoredFlag, readStoredNumber } from "@/lib/storage";
+import { DAILY_MINUTES_KEY, readStoredFlag, readStoredNumber } from "@/lib/storage";
 
 const MINUTES_PER_HOUR = 60;
 const FIRST_TIER_LIMIT_MINUTES = 120;
@@ -16,7 +16,7 @@ const DEFAULT_EXTRA_TIER_RATE = 100;
 const TIMESTAMP_FORMAT = "yyyy-MM-dd'T'HH:mm";
 
 const STORAGE_KEYS = {
-  workMinutes: "workMinutes",
+  workMinutes: DAILY_MINUTES_KEY,
   entry: "entry",
   lunchStart: "lunchStart",
   lunchEnd: "lunchEnd",
@@ -35,18 +35,6 @@ export interface WorkStats {
   totalWorked: number;
 }
 
-const EMPTY_STATS: WorkStats = {
-  balance: 0,
-  nightMinutes: 0,
-  firstTierMinutes: 0,
-  extraTierMinutes: 0,
-  totalWorked: 0,
-};
-
-function isChronological(...dates: readonly Date[]): boolean {
-  return dates.every((date, index) => isValid(date) && (index === 0 || dates[index - 1] <= date));
-}
-
 function splitOvertime(
   overtimeMinutes: number,
   isWeekend: boolean,
@@ -61,6 +49,10 @@ function splitOvertime(
   };
 }
 
+function breakdownOf(entry: string, lunchStart: string, lunchEnd: string, exit: string, expectedMinutes: number) {
+  return buildDayBreakdown({ entry, lunchStart, lunchEnd, exit, expectedMinutes, isManualExit: true, now: null });
+}
+
 export function calculateWorkStats(
   entry: string,
   lunchStart: string,
@@ -68,35 +60,15 @@ export function calculateWorkStats(
   displayExit: string,
   workMinutes: number,
 ): WorkStats {
-  if (findJourneyIssue({ entry, lunchStart, lunchEnd, exit: displayExit })) return EMPTY_STATS;
-
-  const entryDate = new Date(entry);
-  const lunchStartDate = new Date(lunchStart);
-  const lunchEndDate = new Date(lunchEnd);
-  const exitDate = new Date(displayExit);
-
-  const workedBeforeLunch = differenceInMinutes(lunchStartDate, entryDate);
-  const workedAfterLunch = differenceInMinutes(exitDate, lunchEndDate);
-  const workedMinutes = workedBeforeLunch + workedAfterLunch;
-
-  const nightMinutesWorked = countNightMinutes(entryDate, exitDate, lunchStartDate, lunchEndDate);
-  const totalWorked = workedMinutes + nightBonusMinutes(nightMinutesWorked);
-  const balance = totalWorked - workMinutes;
-  const dayOfWeek = entryDate.getDay();
+  const breakdown = breakdownOf(entry, lunchStart, lunchEnd, displayExit, workMinutes);
+  const dayOfWeek = new Date(entry).getDay();
 
   return {
-    balance,
-    nightMinutes: nightEquivalentMinutes(nightMinutesWorked),
-    totalWorked,
-    ...splitOvertime(Math.max(0, balance), dayOfWeek === 0 || dayOfWeek === 6),
+    balance: breakdown.workedMinutes - breakdown.expectedMinutes,
+    nightMinutes: breakdown.nightMinutes,
+    totalWorked: breakdown.workedMinutes,
+    ...splitOvertime(breakdown.overtimeMinutes, dayOfWeek === 0 || dayOfWeek === 6),
   };
-}
-
-function creditedMinutes(entryDate: Date, lunchStartDate: Date, lunchEndDate: Date, exitDate: Date): number {
-  const worked = differenceInMinutes(lunchStartDate, entryDate) + differenceInMinutes(exitDate, lunchEndDate);
-  const nightWorked = countNightMinutes(entryDate, exitDate, lunchStartDate, lunchEndDate);
-
-  return worked + nightBonusMinutes(nightWorked);
 }
 
 export function calculateSuggestedExit(
@@ -109,17 +81,20 @@ export function calculateSuggestedExit(
   const lunchStartDate = new Date(lunchStart);
   const lunchEndDate = new Date(lunchEnd);
 
-  if (!isChronological(entryDate, lunchStartDate, lunchEndDate)) return "";
+  if (findJourneyIssue({ entry, lunchStart, lunchEnd, exit: lunchEnd })) return "";
+
+  const creditedUntil = (exit: Date) =>
+    breakdownOf(entry, lunchStart, lunchEnd, format(exit, TIMESTAMP_FORMAT), workMinutes).workedMinutes;
 
   const workedBeforeLunch = differenceInMinutes(lunchStartDate, entryDate);
   let exitDate = addMinutes(lunchEndDate, Math.max(0, workMinutes - workedBeforeLunch));
-  let surplus = creditedMinutes(entryDate, lunchStartDate, lunchEndDate, exitDate) - workMinutes;
+  let surplus = creditedUntil(exitDate) - workMinutes;
 
   for (let pass = 0; pass < EXIT_REFINEMENT_PASSES && surplus !== 0; pass += 1) {
     const candidate = addMinutes(exitDate, -surplus);
     if (candidate < lunchEndDate) break;
 
-    const candidateSurplus = creditedMinutes(entryDate, lunchStartDate, lunchEndDate, candidate) - workMinutes;
+    const candidateSurplus = creditedUntil(candidate) - workMinutes;
     if (Math.abs(candidateSurplus) >= Math.abs(surplus)) break;
 
     exitDate = candidate;

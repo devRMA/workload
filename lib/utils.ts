@@ -6,6 +6,18 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export const PLACEHOLDER_CLOCK = "--:--:--";
+
+const NON_DIGITS = /\D/g;
+
+export function digitsOnly(text: string): string {
+  return text.replace(NON_DIGITS, "");
+}
+
+export function countDigits(text: string): number {
+  return digitsOnly(text).length;
+}
+
 const CURRENCY_FORMATTER = new Intl.NumberFormat("pt-BR", {
   style: "currency",
   currency: "BRL",
@@ -40,7 +52,6 @@ export function formatIsoDate(isoDate: string): string {
 }
 
 export function parseCurrency(value: string): number {
-  const digitsOnly = value.replace(/\D/g, "");
-  const parsed = Number(digitsOnly) / 100;
+  const parsed = Number(digitsOnly(value)) / 100;
   return Number.isFinite(parsed) ? parsed : 0;
 }

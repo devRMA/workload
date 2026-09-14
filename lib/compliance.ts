@@ -11,7 +11,7 @@ const MINIMUM_SHORT_BREAK_MINUTES = 15;
 const MINIMUM_LUNCH_MINUTES = 60;
 const MINIMUM_REST_BETWEEN_SHIFTS_MINUTES = 660;
 
-export interface ComplianceInput {
+interface ComplianceInput {
   overtimeMinutes: number;
   workedMinutes: number;
   lunchMinutes: number;

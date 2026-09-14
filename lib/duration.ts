@@ -14,7 +14,7 @@ export function isRealDuration(duration: string): boolean {
   return hours >= 0 && hours < HOURS_PER_DAY && minutes >= 0 && minutes < MINUTES_PER_HOUR;
 }
 
-export function splitHoursAndMinutes(minutes: number): { hours: number; minutes: number } {
+function splitHoursAndMinutes(minutes: number): { hours: number; minutes: number } {
   const wholeMinutes = Math.round(minutes);
 
   return {
@@ -47,10 +47,6 @@ export function formatClock(totalSeconds: number): string {
   const minutes = Math.floor((totalSeconds % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE);
   const seconds = Math.floor(totalSeconds % SECONDS_PER_MINUTE);
   return [hours, minutes, seconds].map(pad).join(":");
-}
-
-export function minutesToSeconds(minutes: number): number {
-  return minutes * SECONDS_PER_MINUTE;
 }
 
 export function minutesToHours(minutes: number): number {
