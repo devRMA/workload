@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <CalculatorPage>
+    <CalculatorPage view="work">
       <CalculatorViews activeView="work" />
     </CalculatorPage>
   );
