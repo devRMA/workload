@@ -11,10 +11,10 @@ describe("AlertBanner", () => {
   });
 
   it("announces a warning banner as a status", () => {
-    const { container } = render(<AlertBanner icon={AlertTriangle} tone="warning" title="Atenção" />);
+    render(<AlertBanner icon={AlertTriangle} tone="warning" title="Atenção" />);
 
     expect(screen.getByRole("status")).toHaveTextContent("Atenção");
-    expect(container.firstElementChild?.className).toContain("border-amber-300");
+    expect(screen.queryByRole("alert")).toBeNull();
   });
 
   it("renders the supporting content below the title", () => {

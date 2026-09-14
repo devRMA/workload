@@ -17,19 +17,19 @@ interface ExtraEntryListProps {
 export function ExtraEntryList({ listId, label, addLabel, addButtonClassName, onAdd, children }: ExtraEntryListProps) {
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
-        <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">{label}</p>
+      <div className="flex items-center justify-between mb-md">
+        <p className="text-label text-ink-muted">{label}</p>
         <Button
           variant="outline"
           size="sm"
           aria-label={addLabel}
           onClick={onAdd}
-          className={cn("gap-2", addButtonClassName)}
+          className={cn("gap-xs", addButtonClassName)}
         >
           <PlusCircle className="w-4 h-4" aria-hidden="true" /> Adicionar
         </Button>
       </div>
-      <div id={listId} className="space-y-3">
+      <div id={listId} className="space-y-sm">
         {children}
       </div>
     </div>

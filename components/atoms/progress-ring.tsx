@@ -20,9 +20,16 @@ function dashOffsetFor(percent: number): number {
 
 export function ProgressRing({ progressPercent, overtimePercent, className, children }: ProgressRingProps) {
   return (
-    <div className={cn("relative mx-auto aspect-square w-full max-w-[15rem]", className)}>
+    <div className={cn("relative mx-auto aspect-square w-full max-w-60", className)}>
       <svg viewBox={`0 0 ${VIEWBOX} ${VIEWBOX}`} className="h-full w-full -rotate-90" aria-hidden="true">
-        <circle cx={CENTER} cy={CENTER} r={RADIUS} fill="none" strokeWidth={STROKE_WIDTH} className="stroke-white/20" />
+        <circle
+          cx={CENTER}
+          cy={CENTER}
+          r={RADIUS}
+          fill="none"
+          strokeWidth={STROKE_WIDTH}
+          className="stroke-ink-onfill/20"
+        />
         <circle
           cx={CENTER}
           cy={CENTER}
@@ -32,7 +39,7 @@ export function ProgressRing({ progressPercent, overtimePercent, className, chil
           strokeLinecap="round"
           strokeDasharray={CIRCUMFERENCE}
           strokeDashoffset={dashOffsetFor(progressPercent)}
-          className="stroke-white transition-[stroke-dashoffset] duration-700 ease-out"
+          className="stroke-ink-onfill transition-[stroke-dashoffset] duration-(--duration-data) ease-out"
         />
         {overtimePercent > 0 ? (
           <circle
@@ -44,11 +51,11 @@ export function ProgressRing({ progressPercent, overtimePercent, className, chil
             strokeLinecap="round"
             strokeDasharray={CIRCUMFERENCE}
             strokeDashoffset={dashOffsetFor(overtimePercent)}
-            className="stroke-amber-300 transition-[stroke-dashoffset] duration-700 ease-out"
+            className="stroke-overtime-arc transition-[stroke-dashoffset] duration-(--duration-data) ease-out"
           />
         ) : null}
       </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 px-6 text-center">
+      <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 px-lg text-center">
         {children}
       </div>
     </div>

@@ -1,6 +1,30 @@
 import { type ClassValue, clsx } from "clsx";
 import { format } from "date-fns";
-import { twMerge } from "tailwind-merge";
+import { extendTailwindMerge } from "tailwind-merge";
+
+const TYPE_STEPS = [
+  "numeral",
+  "display",
+  "title",
+  "metric",
+  "heading",
+  "input",
+  "body",
+  "body-sm",
+  "label",
+  "caption",
+  "overline",
+] as const;
+
+// Without this, tailwind-merge reads our type steps as colours and a `text-label`
+// passed by a caller silently deletes the component's own `text-ink-onfill`.
+const twMerge = extendTailwindMerge({
+  extend: {
+    classGroups: {
+      "font-size": [{ text: [...TYPE_STEPS] }],
+    },
+  },
+});
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

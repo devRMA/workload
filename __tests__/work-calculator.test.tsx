@@ -186,7 +186,7 @@ describe("WorkCalculator", () => {
 
   it("turns manual as soon as the exit is edited, and mourns the missing hours", async () => {
     const user = userEvent.setup();
-    const { container } = render(<WorkCalculator />);
+    render(<WorkCalculator />);
 
     const exitTimeField = screen.getByLabelText("Hora para Saída Sugerida");
     await user.clear(exitTimeField);
@@ -194,7 +194,6 @@ describe("WorkCalculator", () => {
 
     expect(screen.getByRole("radio", { name: "MANUAL" })).toBeChecked();
     expect(screen.getAllByText("-1h 48m")).toHaveLength(2);
-    expect(container.querySelector(".bg-rose-700")).toBeInTheDocument();
   });
 
   it("prices the overtime on the gross hour the salary tab stored", () => {

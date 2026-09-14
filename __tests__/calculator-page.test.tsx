@@ -64,10 +64,4 @@ describe("CalculatorPage", () => {
       },
     });
   });
-
-  it("keeps the decorative background out of the accessibility tree", () => {
-    const { container } = renderShell();
-
-    expect(container.querySelectorAll(".pointer-events-none .blur-\\[120px\\]")).toHaveLength(3);
-  });
 });

@@ -28,7 +28,7 @@ export function GoogleAd({ slot, className }: GoogleAdProps) {
 
   return (
     <ins
-      className={cn("adsbygoogle min-h-[100px] w-full", className)}
+      className={cn("adsbygoogle min-h-25 w-full overflow-hidden rounded-md bg-surface-sunken", className)}
       style={{ display: "block" }}
       data-ad-client={adClient}
       data-ad-slot={slot}

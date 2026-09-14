@@ -7,7 +7,9 @@ import type * as React from "react";
 export function ThemeProvider({ children, ...props }: React.ComponentProps<typeof NextThemesProvider>) {
   return (
     <NextThemesProvider {...props}>
-      <MotionConfig reducedMotion="user">{children}</MotionConfig>
+      <MotionConfig reducedMotion="user" transition={{ type: "spring", bounce: 0, duration: 0.35 }}>
+        {children}
+      </MotionConfig>
     </NextThemesProvider>
   );
 }

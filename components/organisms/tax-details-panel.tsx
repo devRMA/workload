@@ -46,8 +46,8 @@ export function TaxDetailsPanel({
   const toManualAmount = (rawValue: string) => (rawValue ? parseCurrency(rawValue) : null);
 
   return (
-    <div className="space-y-6 bg-neutral-50 dark:bg-neutral-800/30 p-6 rounded-2xl">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+    <div className="space-y-lg bg-surface-sunken p-lg rounded-lg border border-line">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-lg">
         <Field id="dependentes" label="Dependentes">
           <Input
             id="dependentes"
@@ -63,7 +63,7 @@ export function TaxDetailsPanel({
         <Field id="inss-manual" label="INSS (R$)">
           <CurrencyInput
             id="inss-manual"
-            icon={<span className="font-bold text-red-500">R$</span>}
+            icon={<span className="font-semibold text-negative-ink">R$</span>}
             placeholder={formatCurrencySimple(autoInss)}
             value={manualInss}
             onValueChange={(rawValue) => onManualInssChange(toManualAmount(rawValue))}
@@ -72,7 +72,7 @@ export function TaxDetailsPanel({
         <Field id="irrf-manual" label="IRRF (R$)">
           <CurrencyInput
             id="irrf-manual"
-            icon={<span className="font-bold text-red-500">R$</span>}
+            icon={<span className="font-semibold text-negative-ink">R$</span>}
             placeholder={formatCurrencySimple(autoIrrf)}
             value={manualIrrf}
             onValueChange={(rawValue) => onManualIrrfChange(toManualAmount(rawValue))}
@@ -109,7 +109,6 @@ export function TaxDetailsPanel({
         listId="extra-gains-list"
         label="Ganhos Extras (Líquido)"
         addLabel="Adicionar ganho"
-        addButtonClassName="text-emerald-600 border-emerald-200 hover:bg-emerald-50"
         onAdd={() => {
           onAddExtra("gain");
           safeGAEvent("add_gain");

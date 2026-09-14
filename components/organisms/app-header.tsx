@@ -25,29 +25,27 @@ export function AppHeader() {
   }, []);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl border-b border-neutral-200 dark:border-neutral-800">
-      <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 h-20 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-indigo-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-            <Wallet className="text-white w-6 h-6" aria-hidden="true" />
+    <header className="fixed inset-x-0 top-0 z-50 bg-chrome backdrop-blur-chrome backdrop-saturate-(--saturate-chrome) border-b border-line">
+      <div className="max-w-app mx-auto px-md sm:px-lg lg:px-xl h-(--header-height) flex items-center justify-between">
+        <div className="flex items-center gap-sm">
+          <div className="w-10 h-10 rounded-md bg-accent flex items-center justify-center">
+            <Wallet className="text-ink-onfill" size={24} strokeWidth={1.75} aria-hidden="true" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight md:text-2xl">WorkLoad</h1>
-            <p className="hidden sm:block text-xs text-neutral-600 dark:text-neutral-400">
+            <h1 className="text-title">WorkLoad</h1>
+            <p className="hidden sm:block text-caption text-ink-subtle">
               Sua jornada de trabalho, clara e no seu controle
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-md">
           <div
             aria-hidden="true"
-            className="hidden md:flex items-center gap-2 px-4 py-2 bg-neutral-100 dark:bg-neutral-800 rounded-xl text-sm font-bold"
+            className="hidden md:flex items-center gap-xs bg-surface-sunken rounded-sm px-md py-xs text-label numeric text-ink-muted"
           >
-            <Clock className="w-4 h-4 text-indigo-500" aria-hidden="true" />
-            <span className="tabular-nums">
-              {currentTime === null ? PLACEHOLDER_CLOCK : formatClockTime(currentTime)}
-            </span>
+            <Clock className="w-4 h-4 text-accent-ink" aria-hidden="true" />
+            <span>{currentTime === null ? PLACEHOLDER_CLOCK : formatClockTime(currentTime)}</span>
           </div>
           <Button
             variant="ghost"

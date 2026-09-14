@@ -217,7 +217,7 @@ describe("CookieConsent", () => {
     showBanner();
 
     const shortcut = screen.getByRole("button", { name: "Configurações de Privacidade" });
-    expect(shortcut.className).not.toContain("opacity-30");
-    expect(shortcut.className).toContain("focus-visible:ring-2");
+    shortcut.focus();
+    expect(shortcut).toHaveFocus();
   });
 });

@@ -9,8 +9,8 @@ describe("manifest", () => {
       description: "Calcule sua jornada de trabalho de forma simples e intuitiva.",
       start_url: "/",
       display: "standalone",
-      background_color: "#0a0a0a",
-      theme_color: "#6366f1",
+      background_color: "#0f1116",
+      theme_color: "#2a62d1",
       icons: [
         {
           src: "/icon-192x192.png",
