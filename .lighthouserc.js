@@ -2,7 +2,7 @@ module.exports = {
   ci: {
     collect: {
       url: [process.env.PLAYWRIGHT_TEST_BASE_URL || "http://localhost:3000/"],
-      startServerCommand: process.env.PLAYWRIGHT_TEST_BASE_URL ? undefined : "npm run start",
+      startServerCommand: process.env.PLAYWRIGHT_TEST_BASE_URL ? undefined : "pnpm start",
       numberOfRuns: 3,
       settings: {
         preset: "desktop",
