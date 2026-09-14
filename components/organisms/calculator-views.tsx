@@ -64,7 +64,7 @@ export function CalculatorViews({ activeView }: { activeView: CalculatorView }) 
         tabIndex={-1}
         className="pt-[calc(var(--header-height)+var(--spacing-xl))] pb-3xl px-md sm:px-lg lg:px-xl outline-none"
       >
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait" initial={false}>
           <motion.div key={activeView} {...PANEL_TRANSITION}>
             {activeView === "work" ? <WorkCalculator /> : <SalaryCalculator />}
           </motion.div>
