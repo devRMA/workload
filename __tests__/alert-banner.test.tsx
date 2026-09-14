@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { AlertTriangle } from "lucide-react";
 import { describe, expect, it } from "vitest";
-import { AlertBanner } from "@/components/molecules/alert-banner";
+import { AlertBanner } from "@/components/atoms/alert-banner";
 
 describe("AlertBanner", () => {
   it("announces a danger banner as an alert", () => {

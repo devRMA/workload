@@ -4,10 +4,11 @@ import { Users } from "lucide-react";
 import type { ExtraItem, ExtraKind } from "@/hooks/use-salary-calculator";
 import { safeGAEvent } from "@/lib/analytics";
 import { formatCurrencySimple, parseCurrency } from "@/lib/utils";
-import { CurrencyField } from "../molecules/currency-field";
+import { Input } from "../atoms/input";
+import { CurrencyInput } from "../molecules/currency-input";
 import { ExtraEntryList } from "../molecules/extra-entry-list";
 import { ExtraEntryRow } from "../molecules/extra-entry-row";
-import { FormField } from "../molecules/form-field";
+import { Field } from "../molecules/field";
 
 type ExtraField = "name" | "value";
 
@@ -47,33 +48,36 @@ export function TaxDetailsPanel({
   return (
     <div className="space-y-6 bg-neutral-50 dark:bg-neutral-800/30 p-6 rounded-2xl">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <FormField
-          id="dependentes"
-          label="Dependentes"
-          type="number"
-          min={0}
-          step={1}
-          icon={<Users className="w-5 h-5" aria-hidden="true" />}
-          placeholder="0"
-          value={dependents || ""}
-          onChange={(event) => onDependentsChange(Number(event.target.value))}
-        />
-        <CurrencyField
-          id="inss-manual"
-          label="INSS (R$)"
-          icon={<span className="font-bold text-red-500">R$</span>}
-          placeholder={formatCurrencySimple(autoInss)}
-          value={manualInss}
-          onValueChange={(rawValue) => onManualInssChange(toManualAmount(rawValue))}
-        />
-        <CurrencyField
-          id="irrf-manual"
-          label="IRRF (R$)"
-          icon={<span className="font-bold text-red-500">R$</span>}
-          placeholder={formatCurrencySimple(autoIrrf)}
-          value={manualIrrf}
-          onValueChange={(rawValue) => onManualIrrfChange(toManualAmount(rawValue))}
-        />
+        <Field id="dependentes" label="Dependentes">
+          <Input
+            id="dependentes"
+            type="number"
+            min={0}
+            step={1}
+            icon={<Users className="w-5 h-5" aria-hidden="true" />}
+            placeholder="0"
+            value={dependents || ""}
+            onChange={(event) => onDependentsChange(Number(event.target.value))}
+          />
+        </Field>
+        <Field id="inss-manual" label="INSS (R$)">
+          <CurrencyInput
+            id="inss-manual"
+            icon={<span className="font-bold text-red-500">R$</span>}
+            placeholder={formatCurrencySimple(autoInss)}
+            value={manualInss}
+            onValueChange={(rawValue) => onManualInssChange(toManualAmount(rawValue))}
+          />
+        </Field>
+        <Field id="irrf-manual" label="IRRF (R$)">
+          <CurrencyInput
+            id="irrf-manual"
+            icon={<span className="font-bold text-red-500">R$</span>}
+            placeholder={formatCurrencySimple(autoIrrf)}
+            value={manualIrrf}
+            onValueChange={(rawValue) => onManualIrrfChange(toManualAmount(rawValue))}
+          />
+        </Field>
       </div>
 
       <ExtraEntryList

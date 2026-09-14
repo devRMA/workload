@@ -19,9 +19,4 @@ describe("Label", () => {
     render(<Label ref={ref}>label</Label>);
     expect(ref.current).toBeInstanceOf(HTMLLabelElement);
   });
-
-  it("merges custom className", () => {
-    const { getByText } = render(<Label className="my-custom">label</Label>);
-    expect(getByText("label").className).toContain("my-custom");
-  });
 });

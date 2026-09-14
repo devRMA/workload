@@ -8,7 +8,7 @@ import { nightPremiumPay } from "@/lib/night-shift";
 import { overtimePay } from "@/lib/payroll";
 import { cn, formatCurrency, formatTimeLabel } from "@/lib/utils";
 import { restDayPayOnOvertime, splitMonthDays } from "@/lib/weekly-rest";
-import { AlertBanner } from "../molecules/alert-banner";
+import { AlertBanner } from "../atoms/alert-banner";
 
 const SEGMENT_BAR_CLASSES: Record<DaySegmentKind, string> = {
   morning: "bg-emerald-400",

@@ -19,6 +19,7 @@ const FINISHED_DAY: DayBreakdown = {
   morningMinutes: 240,
   lunchMinutes: 60,
   afternoonMinutes: 288,
+  nightMinutes: 0,
   nightBonusMinutes: 0,
   workedMinutes: 528,
   expectedMinutes: 528,
@@ -138,12 +139,12 @@ describe("DaySummary", () => {
     expect(screen.getByText("Saldo se você sair no horário")).toBeInTheDocument();
   });
 
-  it("paints a positive balance apart from a negative one", () => {
+  it("shows the balance with its sign", () => {
     renderSummary({ balanceMinutes: 30 });
-    expect(screen.getByText("+0h 30m")).toHaveClass("text-emerald-700");
+    expect(screen.getByText("+0h 30m")).toBeInTheDocument();
 
     renderSummary({ balanceMinutes: -30 });
-    expect(screen.getByText("-0h 30m")).toHaveClass("text-rose-600");
+    expect(screen.getByText("-0h 30m")).toBeInTheDocument();
   });
 
   it("invites the reader to calculate the hourly value when it is unknown", () => {

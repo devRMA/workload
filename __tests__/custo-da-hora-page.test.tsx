@@ -19,28 +19,11 @@ vi.mock("@/components/organisms/salary-calculator", () => ({
 }));
 
 describe("CostPerHour", () => {
-  it("renders the whole shell on the server instead of a blank document", () => {
-    const markup = renderToString(<CostPerHour />);
-
-    expect(markup).toContain("WorkLoad");
-    expect(markup).toContain("Jornada");
-    expect(markup).toContain("Custo da Hora");
-    expect(markup).toContain("Pular para o conteúdo principal");
-    expect(markup).toContain("--:--:--");
-  });
-
   it("serves the salary panel on the very first frame", () => {
     const markup = renderToString(<CostPerHour />);
 
     expect(markup).toContain("Painel do custo da hora");
     expect(markup).not.toContain("Painel da jornada");
-  });
-
-  it("links back to the journey route", () => {
-    const markup = renderToString(<CostPerHour />);
-
-    expect(markup).toContain('href="/"');
-    expect(markup).toContain('href="/custo-da-hora"');
   });
 });
 

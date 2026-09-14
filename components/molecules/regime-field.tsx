@@ -5,7 +5,7 @@ import { useState } from "react";
 import { labelClasses } from "@/components/atoms/label";
 import { WORK_REGIME_INFO, type WorkRegime } from "@/lib/payroll";
 import { cn } from "@/lib/utils";
-import { CollapsiblePanel } from "./collapsible-panel";
+import { CollapsiblePanel } from "../atoms/collapsible-panel";
 
 const OPTIONS_PANEL_ID = "regime-options";
 

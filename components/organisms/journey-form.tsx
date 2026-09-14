@@ -2,16 +2,15 @@
 
 import { AlertTriangle, Coffee, LogIn, LogOut, Percent, RotateCcw, Settings, Zap } from "lucide-react";
 import { useState } from "react";
-import { DURATION_GROUP_SIZES, formatPaddedDuration, isRealDuration, parsePaddedDuration } from "@/lib/duration";
 import type { JourneyIssue } from "@/lib/journey";
+import { AlertBanner } from "../atoms/alert-banner";
 import { Button } from "../atoms/button";
-import { Label } from "../atoms/label";
-import { MaskedInput } from "../atoms/masked-input";
+import { CollapsiblePanel } from "../atoms/collapsible-panel";
+import { Input } from "../atoms/input";
 import { ModalDialog } from "../atoms/modal-dialog";
-import { AlertBanner } from "../molecules/alert-banner";
-import { CollapsiblePanel } from "../molecules/collapsible-panel";
 import { DateTimeInput } from "../molecules/date-time-input";
-import { FormField } from "../molecules/form-field";
+import { DurationField } from "../molecules/duration-field";
+import { Field } from "../molecules/field";
 
 const SETTINGS_PANEL_ID = "journey-settings";
 const RESET_DIALOG_TITLE_ID = "journey-reset-title";
@@ -118,51 +117,46 @@ export function JourneyForm({
 
       <CollapsiblePanel id={SETTINGS_PANEL_ID} isOpen={showSettings} className="mb-8">
         <div className="bg-neutral-50 dark:bg-neutral-800/30 p-6 rounded-2xl border border-neutral-100 dark:border-neutral-800/50 space-y-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-            <div className="flex-1">
-              <Label htmlFor="daily-journey" className="font-bold mb-2">
-                <Zap className="w-4 h-4 text-emerald-500" aria-hidden="true" />
-                Tempo de Trabalho Diário
-              </Label>
-              <p className="text-xs text-neutral-600 dark:text-neutral-400 text-pretty">
-                Define o tempo total de trabalho esperado por dia. Vale também para o cálculo do valor da sua hora.
-              </p>
-            </div>
-            <div className="w-full sm:w-32">
-              <MaskedInput
-                id="daily-journey"
-                placeholder="08:48"
-                value={formatPaddedDuration(workMinutes)}
-                separator=":"
-                groupSizes={DURATION_GROUP_SIZES}
-                isValid={isRealDuration}
-                onCommit={(duration) => onWorkMinutesChange(parsePaddedDuration(duration))}
-                className="h-12 rounded-xl text-center text-lg font-bold focus-visible:ring-emerald-500"
-              />
-            </div>
-          </div>
+          <DurationField
+            id="daily-journey"
+            label="Tempo de Trabalho Diário"
+            labelIcon={<Zap className="w-4 h-4 text-emerald-500" aria-hidden="true" />}
+            hint="Define o tempo total de trabalho esperado por dia. Vale também para o cálculo do valor da sua hora."
+            minutes={workMinutes}
+            onMinutesChange={onWorkMinutesChange}
+          />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <FormField
+            <Field
               id="first-tier-rate"
               label="Adicional até 2h extras (%)"
-              type="number"
-              min={0}
               hint="O piso legal é 50% sobre a hora normal (art. 7º, XVI, da CF; art. 59, §1º, da CLT)."
               labelIcon={<Percent className="w-4 h-4 text-amber-500" aria-hidden="true" />}
-              value={firstTierRate}
-              onChange={(event) => onFirstTierRateChange(Number(event.target.value))}
-            />
-            <FormField
+            >
+              <Input
+                id="first-tier-rate"
+                type="number"
+                min={0}
+                aria-describedby="first-tier-rate-hint"
+                value={firstTierRate}
+                onChange={(event) => onFirstTierRateChange(Number(event.target.value))}
+              />
+            </Field>
+            <Field
               id="extra-tier-rate"
               label="Adicional acima de 2h (%)"
-              type="number"
-              min={0}
               hint="Não existe lei que dobre o adicional depois da 2ª hora: o piso continua sendo 50%. Só use 100% se a sua convenção coletiva previr esse degrau."
               labelIcon={<Percent className="w-4 h-4 text-orange-600" aria-hidden="true" />}
-              value={extraTierRate}
-              onChange={(event) => onExtraTierRateChange(Number(event.target.value))}
-            />
+            >
+              <Input
+                id="extra-tier-rate"
+                type="number"
+                min={0}
+                aria-describedby="extra-tier-rate-hint"
+                value={extraTierRate}
+                onChange={(event) => onExtraTierRateChange(Number(event.target.value))}
+              />
+            </Field>
           </div>
         </div>
       </CollapsiblePanel>

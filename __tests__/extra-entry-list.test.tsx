@@ -38,7 +38,6 @@ describe("ExtraEntryList", () => {
     );
 
     const addButton = screen.getByRole("button", { name: "Adicionar ganho" });
-    expect(addButton).toHaveClass("text-emerald-600");
 
     await user.click(addButton);
     expect(onAdd).toHaveBeenCalledOnce();

@@ -3,8 +3,8 @@
 import { Trash2 } from "lucide-react";
 import { parseCurrency } from "@/lib/utils";
 import { Button } from "../atoms/button";
-import { CurrencyInput } from "../atoms/currency-input";
 import { Input } from "../atoms/input";
+import { CurrencyInput } from "../molecules/currency-input";
 
 const COMPACT_FIELD_CLASSES = "h-12 rounded-xl text-sm";
 
