@@ -4,3 +4,8 @@ export const VIEW_PATHS: Record<CalculatorView, string> = {
   work: "/",
   salary: "/custo-da-hora",
 };
+
+export const VIEW_HEADINGS: Record<CalculatorView, string> = {
+  work: "Calculadora de jornada de trabalho, horas extras e banco de horas",
+  salary: "Calculadora de valor da hora e salário líquido CLT",
+};

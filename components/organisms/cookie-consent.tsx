@@ -43,7 +43,7 @@ export function CookieConsent() {
             exit={{ y: 100, opacity: 0 }}
             className="fixed bottom-[max(var(--spacing-lg),env(safe-area-inset-bottom))] left-lg right-lg z-60 mx-auto max-w-4xl"
           >
-            <div className="overflow-hidden rounded-2xl border border-line bg-chrome backdrop-blur-chrome shadow-raised edge-lit">
+            <div className="overflow-hidden rounded-2xl border border-line bg-surface-raised shadow-raised edge-lit">
               <div className="flex flex-col md:flex-row items-center gap-lg p-lg md:p-xl">
                 <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-md bg-accent-soft text-accent-ink">
                   <Cookie size={32} aria-hidden="true" />
