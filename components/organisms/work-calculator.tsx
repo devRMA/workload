@@ -2,7 +2,7 @@
 
 import { Clock, LogIn } from "lucide-react";
 import { useMemo } from "react";
-import { useHourlyRate } from "@/hooks/use-hourly-rate";
+import { useGrossHourlyRate } from "@/hooks/use-gross-hourly-rate";
 import { useWorkCalculator } from "@/hooks/use-work-calculator";
 import { safeGAEvent } from "@/lib/analytics";
 import { findComplianceWarnings } from "@/lib/compliance";
@@ -78,10 +78,11 @@ export function WorkCalculator() {
     displayExit,
     currentTime,
     stats,
+    minutesSincePreviousShift,
     issue,
     resetDefaults,
   } = useWorkCalculator();
-  const hourlyRate = useHourlyRate();
+  const hourlyRate = useGrossHourlyRate();
 
   const breakdown = useMemo(
     () =>
@@ -108,8 +109,15 @@ export function WorkCalculator() {
         overtimeMinutes: stats.firstTierMinutes + stats.extraTierMinutes,
         workedMinutes: breakdown.workedMinutes,
         lunchMinutes: breakdown.lunchMinutes,
+        minutesSincePreviousShift,
       }),
-    [stats.firstTierMinutes, stats.extraTierMinutes, breakdown.workedMinutes, breakdown.lunchMinutes],
+    [
+      stats.firstTierMinutes,
+      stats.extraTierMinutes,
+      breakdown.workedMinutes,
+      breakdown.lunchMinutes,
+      minutesSincePreviousShift,
+    ],
   );
 
   const exitLabel = formatTimeLabel(displayExit);
@@ -173,7 +181,7 @@ export function WorkCalculator() {
               nightMinutes={stats.nightMinutes}
               firstTierRate={firstTierRate}
               extraTierRate={extraTierRate}
-              hourlyRate={hourlyRate}
+              grossHourlyRate={hourlyRate}
               warnings={warnings}
             />
           )}

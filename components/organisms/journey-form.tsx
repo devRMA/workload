@@ -148,6 +148,7 @@ export function JourneyForm({
               label="Adicional até 2h extras (%)"
               type="number"
               min={0}
+              hint="O piso legal é 50% sobre a hora normal (art. 7º, XVI, da CF; art. 59, §1º, da CLT)."
               labelIcon={<Percent className="w-4 h-4 text-amber-500" aria-hidden="true" />}
               value={firstTierRate}
               onChange={(event) => onFirstTierRateChange(Number(event.target.value))}
@@ -157,6 +158,7 @@ export function JourneyForm({
               label="Adicional acima de 2h (%)"
               type="number"
               min={0}
+              hint="Não existe lei que dobre o adicional depois da 2ª hora: o piso continua sendo 50%. Só use 100% se a sua convenção coletiva previr esse degrau."
               labelIcon={<Percent className="w-4 h-4 text-orange-600" aria-hidden="true" />}
               value={extraTierRate}
               onChange={(event) => onExtraTierRateChange(Number(event.target.value))}
