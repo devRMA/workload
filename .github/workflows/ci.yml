@@ -130,8 +130,22 @@ jobs:
       - name: Run Playwright
         run: pnpm e2e
 
+      # Lighthouse measures this application, not AdSense. The e2e build above
+      # runs with ads on so the suite can assert their behaviour, and in that
+      # build the third-party cookie alone costs five points of best-practices
+      # no change to our code can win back.
+      - name: Rebuild without third-party scripts
+        env:
+          NEXT_PUBLIC_GA_ID: ""
+          NEXT_PUBLIC_ENABLE_ADS: "false"
+          NEXT_PUBLIC_ADSENSE_ID: ""
+        run: pnpm build
+
       - name: Run Lighthouse CI
         env:
+          NEXT_PUBLIC_GA_ID: ""
+          NEXT_PUBLIC_ENABLE_ADS: "false"
+          NEXT_PUBLIC_ADSENSE_ID: ""
           LHCI_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: pnpm exec lhci autorun
 
