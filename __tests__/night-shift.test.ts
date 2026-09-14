@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { countNightMinutes, nightBonusMinutes, nightEquivalentMinutes } from "@/lib/night-shift";
+import { countNightMinutes, nightBonusMinutes, nightEquivalentMinutes, nightPremiumPay } from "@/lib/night-shift";
 
 const MONDAY = "2025-01-06";
 const TUESDAY = "2025-01-07";
@@ -98,5 +98,19 @@ describe("nightBonusMinutes", () => {
 
   it("credits nothing when no night minute was worked", () => {
     expect(nightBonusMinutes(0)).toBe(0);
+  });
+});
+
+describe("nightPremiumPay", () => {
+  it("adds twenty percent on top of every night hour worked", () => {
+    expect(nightPremiumPay(480, 13.6364)).toBeCloseTo(21.82, 2);
+  });
+
+  it("prices a fraction of a night hour proportionally", () => {
+    expect(nightPremiumPay(30, 20)).toBe(2);
+  });
+
+  it("pays nothing without a night minute", () => {
+    expect(nightPremiumPay(0, 20)).toBe(0);
   });
 });

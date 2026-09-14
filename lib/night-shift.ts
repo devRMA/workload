@@ -1,9 +1,11 @@
 import { differenceInMinutes } from "date-fns";
 
+// CLT art. 73: caput (adicional de 20%), §1º (hora ficta de 52min30s), §2º (janela 22h-05h).
 const NIGHT_SHIFT_START_HOUR = 22;
 const NIGHT_SHIFT_END_HOUR = 5;
 const NIGHT_HOUR_MINUTES = 52.5;
 const MINUTES_PER_HOUR = 60;
+const NIGHT_PREMIUM_RATE = 0.2;
 
 function overlapInMinutes(firstStart: Date, firstEnd: Date, secondStart: Date, secondEnd: Date): number {
   const start = Math.max(firstStart.getTime(), secondStart.getTime());
@@ -40,4 +42,8 @@ export function nightEquivalentMinutes(nightMinutesWorked: number): number {
 
 export function nightBonusMinutes(nightMinutesWorked: number): number {
   return nightEquivalentMinutes(nightMinutesWorked) - nightMinutesWorked;
+}
+
+export function nightPremiumPay(nightMinutes: number, hourlyRate: number): number {
+  return (nightMinutes / MINUTES_PER_HOUR) * hourlyRate * NIGHT_PREMIUM_RATE;
 }

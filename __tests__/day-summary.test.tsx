@@ -43,7 +43,7 @@ const BASE_PROPS: DaySummaryProps = {
   nightMinutes: 0,
   firstTierRate: 50,
   extraTierRate: 100,
-  hourlyRate: null,
+  grossHourlyRate: null,
   warnings: [],
 };
 
@@ -153,16 +153,37 @@ describe("DaySummary", () => {
     expect(screen.queryByText(/R\$/)).toBeNull();
   });
 
-  it("prices both overtime tiers once the hourly value is known", () => {
-    renderSummary({ firstTierMinutes: 60, extraTierMinutes: 30, nightMinutes: 45, hourlyRate: 20 });
+  it("prices both overtime tiers once the gross hourly value is known", () => {
+    renderSummary({ firstTierMinutes: 60, extraTierMinutes: 30, nightMinutes: 45, grossHourlyRate: 20 });
 
     expect(screen.getByText("Extra 50%")).toBeInTheDocument();
     expect(screen.getByText(/30,00/)).toBeInTheDocument();
     expect(screen.getByText("Extra 100%")).toBeInTheDocument();
     expect(screen.getByText(/20,00/)).toBeInTheDocument();
-    expect(screen.getByText("Adicional noturno")).toBeInTheDocument();
     expect(screen.getByText("0h 45m")).toBeInTheDocument();
     expect(screen.queryByRole("link")).toBeNull();
+  });
+
+  it("pays the night premium of twenty percent as money, not as a duration", () => {
+    renderSummary({ nightMinutes: 480, grossHourlyRate: 13.6364 });
+
+    expect(screen.getByText("Adicional noturno 20%")).toBeInTheDocument();
+    expect(screen.getByText("8h 0m")).toBeInTheDocument();
+    expect(screen.getByText(/21,82/)).toBeInTheDocument();
+  });
+
+  it("adds the DSR over the habitual overtime and says what it assumes", () => {
+    renderSummary({ firstTierMinutes: 120, grossHourlyRate: 13.6364 });
+
+    expect(screen.getByText("DSR sobre os extras")).toBeInTheDocument();
+    expect(screen.getByText(/Súmula 172 do TST/)).toBeInTheDocument();
+    expect(screen.getByText(/feriados não entram/)).toBeInTheDocument();
+  });
+
+  it("leaves the DSR out of a day without any variable pay", () => {
+    renderSummary({ grossHourlyRate: 20 });
+
+    expect(screen.queryByText("DSR sobre os extras")).toBeNull();
   });
 
   it("renders the compliance warnings it is given", () => {

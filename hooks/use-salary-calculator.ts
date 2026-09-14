@@ -10,7 +10,8 @@ import {
 import { amountForPeriod, SALARY_PERIODS, type SalaryPeriod } from "@/lib/salary-period";
 import {
   DAILY_MINUTES_KEY,
-  HOURLY_RATE_KEY,
+  GROSS_SALARY_KEY,
+  MONTHLY_HOURS_KEY,
   readStoredList,
   readStoredNumber,
   readStoredOptionalNumber,
@@ -32,8 +33,8 @@ const DEFAULT_REGIME: WorkRegime = "clt";
 const DEFAULT_PERIOD: SalaryPeriod = "hour";
 
 const STORAGE_KEYS = {
-  grossSalary: "grossSalary",
-  monthlyHours: "monthlyHours",
+  grossSalary: GROSS_SALARY_KEY,
+  monthlyHours: MONTHLY_HOURS_KEY,
   dailyMinutes: DAILY_MINUTES_KEY,
   dependents: "dependents",
   manualInss: "manualInss",
@@ -145,7 +146,6 @@ export function useSalaryCalculator(initialSalary = DEFAULT_GROSS_SALARY, initia
     localStorage.setItem(STORAGE_KEYS.extraGains, JSON.stringify(extraGains));
     writeStoredOptionalNumber(STORAGE_KEYS.manualInss, manualInss);
     writeStoredOptionalNumber(STORAGE_KEYS.manualIrrf, manualIrrf);
-    localStorage.setItem(HOURLY_RATE_KEY, stats.hourlyRate.toString());
   }, [
     isRestored,
     grossSalary,
@@ -158,7 +158,6 @@ export function useSalaryCalculator(initialSalary = DEFAULT_GROSS_SALARY, initia
     extraGains,
     manualInss,
     manualIrrf,
-    stats.hourlyRate,
   ]);
 
   const addExtra = (kind: ExtraKind) => {
