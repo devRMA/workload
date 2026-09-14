@@ -26,23 +26,26 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: "24"
-          cache: "npm"
+          cache: "pnpm"
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Biome (Lint & Format)
-        run: npx @biomejs/biome ci .
+        run: pnpm exec biome ci .
 
       - name: TypeScript check
-        run: npm run typecheck
+        run: pnpm typecheck
 
       - name: Run Vitest
-        run: npm run test:coverage
+        run: pnpm test:coverage
 
       - name: Upload coverage
         uses: actions/upload-artifact@v7
@@ -83,51 +86,54 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: "24"
-          cache: "npm"
+          cache: "pnpm"
 
       - name: Cache Next.js
         uses: actions/cache@v5
         with:
           path: |
             ${{ github.workspace }}/.next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
           restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Cache Playwright browsers
         uses: actions/cache@v5
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-chromium-webkit-${{ hashFiles('package-lock.json') }}
+          key: playwright-${{ runner.os }}-chromium-webkit-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: |
             playwright-${{ runner.os }}-chromium-webkit-
 
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps chromium webkit
+        run: pnpm exec playwright install --with-deps chromium webkit
 
       - name: Install Playwright system deps only
         if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: npx playwright install-deps chromium webkit
+        run: pnpm exec playwright install-deps chromium webkit
 
       - name: Build Next.js
-        run: npm run build
+        run: pnpm build
 
       - name: Run Playwright
-        run: npm run e2e
+        run: pnpm e2e
 
       - name: Run Lighthouse CI
         env:
           LHCI_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx lhci autorun
+        run: pnpm exec lhci autorun
 
       - name: E2E Tests Report
         uses: dorny/test-reporter@1cc81a5edf733718d4850df304aaa21c05cd7280 # v3

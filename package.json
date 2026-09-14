@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "format": "biome format --write .",
@@ -16,41 +16,41 @@
     "e2e": "playwright test",
     "e2e:ui": "playwright test --ui",
     "e2e:report": "playwright show-report",
-    "check": "npm run lint && npm run typecheck && npm run test",
-    "clean": "next clean"
+    "check": "npm run lint && npm run typecheck && npm run test"
   },
   "engines": {
     "node": ">=24"
   },
   "dependencies": {
-    "@next/third-parties": "^16.2.4",
+    "@next/third-parties": "^16.3.5",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
-    "lucide-react": "^0.553.0",
-    "motion": "^12.23.24",
-    "next": "^15.4.9",
+    "lucide-react": "^1.45.0",
+    "motion": "^13.2.0",
+    "next": "^16.3.5",
     "next-themes": "^0.4.6",
-    "postcss": "^8.5.6",
-    "react": "^19.2.1",
-    "react-dom": "^19.2.1",
-    "tailwind-merge": "^3.5.0"
+    "postcss": "^8.5.28",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "tailwind-merge": "^3.7.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.4.12",
+    "@biomejs/biome": "2.5.13",
     "@lhci/cli": "^0.15.1",
-    "@playwright/test": "^1.59.1",
-    "@tailwindcss/postcss": "4.1.11",
-    "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.2",
-    "@testing-library/user-event": "^14.6.1",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "@vitejs/plugin-react": "^6.0.1",
-    "@vitest/coverage-v8": "^4.1.5",
-    "jsdom": "^29.0.2",
-    "tailwindcss": "4.1.11",
+    "@playwright/test": "^1.63.0",
+    "@tailwindcss/postcss": "4.3.3",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
+    "@types/node": "^24.13.4",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "@vitest/coverage-v8": "^5.0.0",
+    "jsdom": "^30.0.1",
+    "tailwindcss": "4.3.3",
     "typescript": "5.9.3",
-    "vitest": "^4.1.5"
-  }
+    "vitest": "^5.0.0"
+  },
+  "packageManager": "pnpm@12.4.1"
 }
