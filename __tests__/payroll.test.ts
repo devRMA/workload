@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { calculateIncomeTax, calculateSocialSecurity, overtimePay, sanitizeAmount } from "@/lib/payroll";
+import {
+  calculateIncomeTax,
+  calculateSocialSecurity,
+  grossHourlyRate,
+  isRealAmount,
+  overtimePay,
+  sanitizeAmount,
+  WORK_REGIME_INFO,
+} from "@/lib/payroll";
 
 describe("sanitizeAmount", () => {
   it("keeps positive finite amounts untouched", () => {
@@ -14,9 +22,51 @@ describe("sanitizeAmount", () => {
   });
 });
 
+describe("isRealAmount", () => {
+  it("accepts a positive finite amount and rejects everything else", () => {
+    expect(isRealAmount(1234.56)).toBe(true);
+    expect(isRealAmount(0)).toBe(false);
+    expect(isRealAmount(-1)).toBe(false);
+    expect(isRealAmount(Number.NaN)).toBe(false);
+  });
+});
+
+describe("grossHourlyRate", () => {
+  it("divides the gross salary by the declared monthly divisor", () => {
+    expect(grossHourlyRate(3000, 220)).toBeCloseTo(13.6364, 4);
+    expect(grossHourlyRate(3000, 200)).toBe(15);
+  });
+
+  it("has no rate without a divisor or without a salary", () => {
+    expect(grossHourlyRate(3000, 0)).toBe(0);
+    expect(grossHourlyRate(-3000, 220)).toBe(0);
+  });
+});
+
+describe("WORK_REGIME_INFO", () => {
+  it("quotes the ceiling and the maximum discount from the table instead of hardcoding them", () => {
+    const clt = WORK_REGIME_INFO.find(({ value }) => value === "clt");
+
+    expect(clt?.impact).toContain("8.475,55");
+    expect(clt?.impact).toContain("988,09");
+    expect(clt?.impact).toContain("2026");
+  });
+
+  it("says the estatutário table is the federal one", () => {
+    const civilService = WORK_REGIME_INFO.find(({ value }) => value === "estatutario");
+
+    expect(civilService?.impact).toContain("RPPS federal");
+    expect(civilService?.impact).toContain("estadual ou municipal");
+  });
+});
+
 describe("overtimePay", () => {
   it("pays an hour with the legal fifty percent on top", () => {
     expect(overtimePay(60, 20, 50)).toBe(30);
+  });
+
+  it("prices two extra hours on the gross rate, not on the net one", () => {
+    expect(overtimePay(120, grossHourlyRate(3000, 220), 50)).toBeCloseTo(40.91, 2);
   });
 
   it("doubles the hour on the higher tier", () => {
