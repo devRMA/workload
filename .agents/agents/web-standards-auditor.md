@@ -84,6 +84,28 @@ The budget in `.lighthouserc.js` does not move — lowering it to fit a preview 
 
 **If a single item names the app's own origin, it is a finding again** — and `performance`, `accessibility`, LCP, INP and CLS are always scored against the budget, on every host.
 
+### The control build, when `performance` or a Web Vital misses
+
+Settled at `0006`'s G9 so it is not re-litigated either. `performance` and the vitals stay scored — there is no host carve-out for them, and `0006` proved why: the production custom domain fails the same budget with the same phase shape, so exempting the preview would have hidden a real defect on the domain users load.
+
+What you owe instead is **attribution to the artifact**, and the proof is an A/B, not an argument. When `categories:performance`, LCP, INP or CLS misses on the preview, before you write the verdict, re-collect **in the same session, on the same runner** against a **control build**: the previous spec's G9 deployment alias (`reports/audit-preview.md` records it), and the production domain. Same route, same number of runs, same unmodified `.lighthouserc.js`.
+
+Read it this way, and say which one in the report:
+
+- **The control build passes and the spec's build fails** → it is this spec's regression. Reject, and the finding is real and attributable. This is the case the gate exists for.
+- **The control build fails the same way** → the metric is not a function of the artifact under review. Report it with both tables, state that it is not attributable to this diff, and route it to `tech-lead` for assignment to the spec that owns the phase. It is still a finding — it is just not *this* spec's verdict.
+
+Deployment aliases and git-branch aliases are **not** an explanation on their own: at `0006` they served the same build with identical transport (200, no redirect, `X-Vercel-Cache: HIT`, TTFB inside 0.1 s of each other) and scored identically. Check the headers if you suspect it, but do not assert it without them.
+
+Two more habits this ruling buys, both cheap:
+
+- **Attribute the metric to its phases and compare LCP to `interactive`.** An `largest-contentful-paint` that equals `audits.interactive.numericValue` to the millisecond is not a network or a bundle problem — it is an LCP element with no server-rendered content, gated on hydration. Say so by name; it changes the destination of the finding.
+- **A lab number is not the field.** When the lab score is the whole finding, add one real-browser reading (a `PerformanceObserver` on `largest-contentful-paint` under CDP CPU throttling, no network simulation) so the report says what a user actually sees as well as what the simulation computes.
+
+### Where Lighthouse output goes
+
+`lhci` writes `lhr-*.report.html`, `lhr-*.report.json` and `manifest.json` into `.lighthouseci/`, which is gitignored. Leave them there, or copy them into the spec's `.specs/NNNN-*/evidence/`, also gitignored. **Never point `--upload.outputDir` at the repository root**, and copy the LHRs you cite into the spec's `evidence/` **before** the next `lhci collect`, which wipes `.lighthouseci/` on start.
+
 ## Output contract — `.specs/NNNN-slug/reports/audit.md` (and `audit-preview.md`)
 
 - **Verdict** — `pass` or `reject`, first line.
