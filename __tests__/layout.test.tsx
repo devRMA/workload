@@ -11,6 +11,15 @@ describe("RootLayout", () => {
     );
     expect(screen.getByText("layout child")).toBeInTheDocument();
   });
+
+  it("loads the hyperlegible family on the body", () => {
+    render(
+      <RootLayout>
+        <div>layout child</div>
+      </RootLayout>,
+    );
+    expect(document.body.className).toContain("font-hyperlegible");
+  });
 });
 
 describe("metadata", () => {

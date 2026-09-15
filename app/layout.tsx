@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Atkinson_Hyperlegible_Next } from "next/font/google";
 import "./globals.css";
 import { AdManager } from "@/components/organisms/ad-manager";
 import { AnalyticsWrapper } from "@/components/organisms/analytics-wrapper";
 import { CookieConsent } from "@/components/organisms/cookie-consent";
 import { ThemeProvider } from "@/components/templates/theme-provider";
 
-const inter = Inter({ subsets: ["latin"], display: "swap", variable: "--font-inter" });
+const hyperlegible = Atkinson_Hyperlegible_Next({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-hyperlegible",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://workload.devrma.com"),
@@ -58,7 +62,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossOrigin="anonymous" />
       </head>
-      <body className={inter.variable} suppressHydrationWarning>
+      <body className={hyperlegible.variable} suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           {children}
           <AdManager />

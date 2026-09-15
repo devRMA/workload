@@ -7,7 +7,7 @@ afterEach(() => {
 });
 
 vi.mock("next/font/google", () => ({
-  Inter: () => ({ className: "font-inter" }),
+  Atkinson_Hyperlegible_Next: () => ({ className: "font-hyperlegible", variable: "font-hyperlegible" }),
 }));
 
 HTMLDialogElement.prototype.showModal = function showModal(this: HTMLDialogElement) {
