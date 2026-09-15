@@ -5,7 +5,7 @@ applies-to: tech-lead
 domain: plan
 spec: 0005
 created: 2026-09-15
-confirmed: 0
+confirmed: 1
 ---
 
 ## What happened
