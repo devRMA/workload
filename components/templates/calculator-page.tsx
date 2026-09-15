@@ -17,7 +17,7 @@ export function CalculatorPage({ view, children }: { view: CalculatorView; child
       >
         Pular para o conteúdo principal
       </a>
-      <main className="min-h-screen bg-canvas text-ink">
+      <main className="min-h-dvh bg-canvas text-ink">
         <AppHeader heading={VIEW_HEADINGS[view]} />
 
         {children}
