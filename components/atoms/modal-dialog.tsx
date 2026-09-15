@@ -47,7 +47,7 @@ export function ModalDialog({ isOpen, onClose, labelledBy, className, children }
       aria-modal="true"
       aria-labelledby={labelledBy}
       onClose={onClose}
-      className="fixed inset-0 m-0 hidden h-full max-h-full w-full max-w-full items-center justify-center bg-transparent p-md open:flex backdrop:bg-scrim backdrop:backdrop-blur-(--blur-scrim)"
+      className="fixed inset-0 m-0 hidden h-full max-h-full w-full max-w-full items-center justify-center bg-transparent p-4 open:flex backdrop:bg-scrim backdrop:backdrop-blur-(--blur-scrim)"
     >
       {isOpen && (
         <div className={cn("relative max-h-full overflow-y-auto overscroll-contain", className)}>{children}</div>

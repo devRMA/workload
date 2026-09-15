@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { CalculatorPage } from "@/components/templates/calculator-page";
-import type { CalculatorView } from "@/lib/calculator-view";
+import { type CalculatorView, VIEW_HEADINGS } from "@/lib/calculator-view";
 
 vi.mock("@/lib/analytics", () => ({
   safeGAEvent: vi.fn(),
@@ -36,7 +36,7 @@ describe("CalculatorPage", () => {
     expect(
       screen.getByRole("heading", {
         level: 1,
-        name: "Calculadora de jornada de trabalho, horas extras e banco de horas",
+        name: "Calculadora de jornada de trabalho, horas extras e saldo do dia",
       }),
     ).toBeInTheDocument();
     expect(screen.getByRole("main")).toContainElement(screen.getByText("Conteúdo da calculadora"));
@@ -64,6 +64,16 @@ describe("CalculatorPage", () => {
     expect(graph[0].name).toContain("horas extras");
     expect(graph[1]).toMatchObject({ "@type": "BreadcrumbList" });
     expect(graph[1].itemListElement).toHaveLength(1);
+  });
+
+  it("emits the same descriptor in the JSON-LD name as in the h1", () => {
+    const { container } = renderShell("work");
+    const graph = JSON.parse(container.querySelector('script[type="application/ld+json"]')?.textContent ?? "")[
+      "@graph"
+    ];
+
+    expect(graph[0].name).toBe(`WorkLoad: ${VIEW_HEADINGS.work}`);
+    expect(screen.getByRole("heading", { level: 1, name: VIEW_HEADINGS.work })).toBeInTheDocument();
   });
 
   it("gives the hourly cost route a distinct application and a two-step breadcrumb", () => {

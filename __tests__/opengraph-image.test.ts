@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { VIEW_HEADINGS } from "@/lib/calculator-view";
 
 vi.mock("@/lib/og-image", () => ({
   OG_IMAGE_SIZE: { width: 1200, height: 630 },
@@ -30,5 +31,13 @@ describe("opengraph images", () => {
     expect(journey.contentType).toBe("image/png");
     expect(journey.default()).toEqual({ view: "work" });
     expect(hourlyCost.default()).toEqual({ view: "salary" });
+  });
+
+  it("emits the same descriptor as the JSON-LD name on both networks", async () => {
+    const openGraph = await import("@/app/opengraph-image");
+    const twitter = await import("@/app/twitter-image");
+
+    expect(openGraph.alt).toBe(`WorkLoad: ${VIEW_HEADINGS.work}`);
+    expect(openGraph.alt).toBe(twitter.alt);
   });
 });

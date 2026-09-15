@@ -1,6 +1,6 @@
 "use client";
 
-import { Users } from "lucide-react";
+import { IconUsers } from "@tabler/icons-react";
 import type { ExtraItem, ExtraKind } from "@/hooks/use-salary-calculator";
 import { safeGAEvent } from "@/lib/analytics";
 import { formatCurrencySimple, parseCurrency } from "@/lib/utils";
@@ -46,15 +46,15 @@ export function TaxDetailsPanel({
   const toManualAmount = (rawValue: string) => (rawValue ? parseCurrency(rawValue) : null);
 
   return (
-    <div className="space-y-lg bg-surface-sunken p-lg rounded-lg border border-line">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-lg">
+    <div className="space-y-6 bg-surface-sunken p-6 rounded-lg border border-line">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <Field id="dependentes" label="Dependentes">
           <Input
             id="dependentes"
             type="number"
             min={0}
             step={1}
-            icon={<Users className="w-5 h-5" aria-hidden="true" />}
+            icon={<IconUsers className="w-5 h-5" aria-hidden="true" />}
             placeholder="0"
             value={dependents || ""}
             onChange={(event) => onDependentsChange(Number(event.target.value))}

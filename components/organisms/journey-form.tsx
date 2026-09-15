@@ -1,6 +1,15 @@
 "use client";
 
-import { AlertTriangle, Coffee, LogIn, LogOut, Percent, RotateCcw, Settings, Zap } from "lucide-react";
+import {
+  IconAlertTriangle,
+  IconBolt,
+  IconCoffee,
+  IconLogin,
+  IconLogout,
+  IconPercentage,
+  IconRotate,
+  IconSettings,
+} from "@tabler/icons-react";
 import { useState } from "react";
 import type { JourneyIssue } from "@/lib/journey";
 import { AlertBanner } from "../atoms/alert-banner";
@@ -66,9 +75,9 @@ export function JourneyForm({
   const [isConfirmingReset, setIsConfirmingReset] = useState(false);
 
   return (
-    <div className="bg-surface rounded-xl p-lg sm:p-xl shadow-card border border-line">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-md mb-xl">
-        <div className="flex items-start gap-md">
+    <div className="bg-surface rounded-xl p-6 sm:p-8 shadow-card border border-line">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <div className="flex items-start gap-4">
           <div>
             <h2 className="text-title">Sua Jornada</h2>
             <p className="text-body-sm text-ink-muted text-pretty">
@@ -83,13 +92,13 @@ export function JourneyForm({
             aria-controls={SETTINGS_PANEL_ID}
             className={`rounded-md p-3 transition-colors duration-(--duration-fast) ease-standard ring-focus ${showSettings ? "bg-accent-soft text-accent-ink" : "text-ink-muted hover:bg-surface-sunken"}`}
           >
-            <Settings
+            <IconSettings
               className={`w-5 h-5 transition-transform duration-(--duration-base) ease-standard ${showSettings ? "rotate-90" : ""}`}
               aria-hidden="true"
             />
           </button>
         </div>
-        <div className="space-y-xs sm:text-right">
+        <div className="space-y-2 sm:text-right">
           <fieldset className="grid grid-cols-2 gap-1 bg-surface-sunken p-1.5 rounded-lg sm:ml-auto sm:inline-grid sm:w-fit">
             <legend className="sr-only">Modo de cálculo da saída</legend>
             {EXIT_MODES.map(({ label, isManual }) => (
@@ -115,13 +124,13 @@ export function JourneyForm({
         </div>
       </div>
 
-      <CollapsiblePanel id={SETTINGS_PANEL_ID} isOpen={showSettings} className="mb-xl">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-lg bg-surface-sunken p-lg rounded-lg border border-line">
+      <CollapsiblePanel id={SETTINGS_PANEL_ID} isOpen={showSettings} className="mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-surface-sunken p-6 rounded-lg border border-line">
           <DurationField
             id="daily-journey"
             label="Tempo de Trabalho Diário"
             className="sm:col-span-2"
-            labelIcon={<Zap className="w-4 h-4 text-overtime-ink" aria-hidden="true" />}
+            labelIcon={<IconBolt className="w-4 h-4 text-overtime-ink" aria-hidden="true" />}
             hint="Define o tempo total de trabalho esperado por dia. Vale também para o cálculo do valor da sua hora."
             minutes={workMinutes}
             onMinutesChange={onWorkMinutesChange}
@@ -131,7 +140,7 @@ export function JourneyForm({
             id="first-tier-rate"
             label="Adicional até 2h extras (%)"
             hint="O piso legal é 50% sobre a hora normal (art. 7º, XVI, da CF; art. 59, §1º, da CLT)."
-            labelIcon={<Percent className="w-4 h-4 text-overtime-ink" aria-hidden="true" />}
+            labelIcon={<IconPercentage className="w-4 h-4 text-overtime-ink" aria-hidden="true" />}
           >
             <Input
               id="first-tier-rate"
@@ -146,7 +155,7 @@ export function JourneyForm({
             id="extra-tier-rate"
             label="Adicional acima de 2h (%)"
             hint="Não existe lei que dobre o adicional depois da 2ª hora: o piso continua sendo 50%. Só use 100% se a sua convenção coletiva previr esse degrau."
-            labelIcon={<Percent className="w-4 h-4 text-overtime-ink" aria-hidden="true" />}
+            labelIcon={<IconPercentage className="w-4 h-4 text-overtime-ink" aria-hidden="true" />}
           >
             <Input
               id="extra-tier-rate"
@@ -163,19 +172,19 @@ export function JourneyForm({
       {issue ? (
         <AlertBanner
           id={ISSUE_BANNER_ID}
-          icon={AlertTriangle}
+          icon={IconAlertTriangle}
           tone="danger"
           title="Confira seus horários"
-          className="mb-lg"
+          className="mb-6"
         >
           <p>{issue.message}</p>
         </AlertBanner>
       ) : null}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-lg mb-xl">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <DateTimeInput
           label="Entrada"
-          icon={LogIn}
+          icon={IconLogin}
           value={entry}
           onChange={onEntryChange}
           hasError={issue?.field === "entry"}
@@ -183,7 +192,7 @@ export function JourneyForm({
         />
         <DateTimeInput
           label="Saída Almoço"
-          icon={Coffee}
+          icon={IconCoffee}
           value={lunchStart}
           onChange={onLunchStartChange}
           hasError={issue?.field === "lunchStart"}
@@ -191,7 +200,7 @@ export function JourneyForm({
         />
         <DateTimeInput
           label="Volta Almoço"
-          icon={RotateCcw}
+          icon={IconRotate}
           className="[&_svg]:rotate-180"
           value={lunchEnd}
           onChange={onLunchEndChange}
@@ -200,7 +209,7 @@ export function JourneyForm({
         />
         <DateTimeInput
           label={isManualExit ? "Saída Real" : "Saída Sugerida"}
-          icon={LogOut}
+          icon={IconLogout}
           id="saida-real"
           value={exitValue}
           onChange={onExitChange}
@@ -210,14 +219,14 @@ export function JourneyForm({
         />
       </div>
 
-      <div className="flex items-center justify-between pt-lg border-t border-line-faint">
+      <div className="flex items-center justify-between pt-6 border-t border-line-faint">
         <button
           type="button"
           aria-label="Resetar Horários"
           onClick={() => setIsConfirmingReset(true)}
-          className="flex min-h-11 items-center gap-xs -mx-2 rounded-md px-2 text-label text-ink-muted transition-colors duration-(--duration-fast) ease-standard hover:text-negative-ink ring-focus"
+          className="flex min-h-11 items-center gap-2 -mx-2 rounded-md px-2 text-label text-ink-muted transition-colors duration-(--duration-fast) ease-standard hover:text-negative-ink ring-focus"
         >
-          <RotateCcw className="w-4 h-4" aria-hidden="true" />
+          <IconRotate className="w-4 h-4" aria-hidden="true" />
           Resetar Horários
         </button>
       </div>
@@ -226,16 +235,16 @@ export function JourneyForm({
         isOpen={isConfirmingReset}
         onClose={() => setIsConfirmingReset(false)}
         labelledBy={RESET_DIALOG_TITLE_ID}
-        className="w-full max-w-md rounded-2xl border border-line bg-surface-raised p-xl shadow-raised edge-lit"
+        className="w-full max-w-md rounded-2xl border border-line bg-surface-raised p-8 shadow-raised edge-lit"
       >
-        <div className="space-y-lg">
+        <div className="space-y-6">
           <h2 id={RESET_DIALOG_TITLE_ID} className="text-display">
             Resetar os horários?
           </h2>
           <p className="text-body text-ink-muted">
             Entrada, almoço, saída e as configurações da jornada voltam aos valores padrão. Não dá para desfazer.
           </p>
-          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-sm">
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
             <Button variant="outline" onClick={() => setIsConfirmingReset(false)}>
               Cancelar
             </Button>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Clock, Moon, Sun, Wallet } from "lucide-react";
+import { IconClock, IconMoon, IconSun, IconWallet } from "@tabler/icons-react";
 import { useTheme } from "next-themes";
 import { useEffect } from "react";
 import { Button } from "@/components/atoms/button";
@@ -10,7 +10,7 @@ import { formatClockTime, PLACEHOLDER_CLOCK } from "@/lib/utils";
 
 export function AppHeader({ heading }: { heading: string }) {
   const currentTime = useCurrentTime();
-  const { setTheme, resolvedTheme } = useTheme();
+  const { setTheme } = useTheme();
 
   useEffect(() => {
     safeGAEvent("session_metadata", {
@@ -26,10 +26,10 @@ export function AppHeader({ heading }: { heading: string }) {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 bg-chrome backdrop-blur-chrome backdrop-saturate-(--saturate-chrome) border-b border-line">
-      <div className="max-w-app mx-auto px-md sm:px-lg lg:px-xl h-(--header-height) flex items-center justify-between">
-        <div className="flex items-center gap-sm">
+      <div className="max-w-app mx-auto px-4 sm:px-6 lg:px-8 h-(--header-height) flex items-center justify-between">
+        <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-md bg-accent flex items-center justify-center">
-            <Wallet className="text-ink-onfill" size={24} strokeWidth={1.75} aria-hidden="true" />
+            <IconWallet className="text-ink-onfill" size={24} stroke={1.75} aria-hidden="true" />
           </div>
           <div>
             <h1 className="text-title">
@@ -42,19 +42,19 @@ export function AppHeader({ heading }: { heading: string }) {
           </div>
         </div>
 
-        <div className="flex items-center gap-md">
+        <div className="flex items-center gap-4">
           <div
             aria-hidden="true"
-            className="hidden md:flex items-center gap-xs bg-surface-sunken rounded-sm px-md py-xs text-label numeric text-ink-muted"
+            className="hidden md:flex items-center gap-2 bg-surface-sunken rounded-sm px-4 py-2 text-label numeric text-ink-muted"
           >
-            <Clock className="w-4 h-4 text-accent-ink" aria-hidden="true" />
+            <IconClock className="w-4 h-4 text-accent-ink" aria-hidden="true" />
             <span>{currentTime === null ? PLACEHOLDER_CLOCK : formatClockTime(currentTime)}</span>
           </div>
           <Button
             variant="ghost"
             size="icon"
             onClick={() => {
-              const newTheme = resolvedTheme === "dark" ? "light" : "dark";
+              const newTheme = document.documentElement.classList.contains("dark") ? "light" : "dark";
               setTheme(newTheme);
               safeGAEvent("toggle_theme", {
                 theme: newTheme,
@@ -63,11 +63,8 @@ export function AppHeader({ heading }: { heading: string }) {
             title="Alternar tema"
             aria-label="Alternar tema"
           >
-            {resolvedTheme === "dark" ? (
-              <Sun className="w-5 h-5" aria-hidden="true" />
-            ) : (
-              <Moon className="w-5 h-5" aria-hidden="true" />
-            )}
+            <IconMoon className="w-5 h-5 dark:hidden" aria-hidden="true" data-theme-icon="moon" />
+            <IconSun className="hidden w-5 h-5 dark:block" aria-hidden="true" data-theme-icon="sun" />
           </Button>
         </div>
       </div>

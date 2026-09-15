@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { CURRENT_LEGAL_YEAR } from "@/lib/legal-tables";
 import {
   calculateIncomeTax,
   calculateSocialSecurity,
@@ -8,6 +9,7 @@ import {
   sanitizeAmount,
   WORK_REGIME_INFO,
 } from "@/lib/payroll";
+import { formatCurrency } from "@/lib/utils";
 
 describe("sanitizeAmount", () => {
   it("keeps positive finite amounts untouched", () => {
@@ -52,11 +54,38 @@ describe("WORK_REGIME_INFO", () => {
     expect(clt?.impact).toContain("2026");
   });
 
+  it("names R$ 8.475,55 as the salário de contribuição, not the contribution", () => {
+    const clt = WORK_REGIME_INFO.find(({ value }) => value === "clt");
+
+    expect(clt?.impact).toContain("teto do salário de contribuição");
+    expect(clt?.impact).not.toContain("teto de contribuição em");
+  });
+
+  it("keeps the ceiling, the capped discount and the table year in one sentence", () => {
+    const clt = WORK_REGIME_INFO.find(({ value }) => value === "clt");
+    const ceiling = formatCurrency(CURRENT_LEGAL_YEAR.rgpsBrackets.at(-1)?.ceiling ?? 0);
+    const discount = formatCurrency(CURRENT_LEGAL_YEAR.rgpsCeilingDiscount);
+    const ceilingIndex = clt?.impact.indexOf(ceiling) ?? -1;
+    const discountIndex = clt?.impact.indexOf(discount) ?? -1;
+    const betweenFigures = clt?.impact.slice(ceilingIndex + ceiling.length, discountIndex);
+
+    expect(ceilingIndex).toBeGreaterThanOrEqual(0);
+    expect(discountIndex).toBeGreaterThan(ceilingIndex);
+    expect(betweenFigures).not.toContain(".");
+    expect(clt?.impact).toContain(`(tabela de ${CURRENT_LEGAL_YEAR.year})`);
+  });
+
   it("says the estatutário table is the federal one", () => {
     const civilService = WORK_REGIME_INFO.find(({ value }) => value === "estatutario");
 
     expect(civilService?.impact).toContain("RPPS federal");
     expect(civilService?.impact).toContain("estadual ou municipal");
+  });
+
+  it("never calls the RPPS federal ceiling the teto do INSS", () => {
+    for (const { impact } of WORK_REGIME_INFO) {
+      expect(impact).not.toContain("teto do INSS");
+    }
   });
 });
 

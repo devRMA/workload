@@ -21,7 +21,7 @@ That framing decides every trade-off in this repo:
 | Framework | Next.js (App Router), React 19, TypeScript strict |
 | Styling | Tailwind CSS 4 — CSS-first, tokens in `app/globals.css`. There is no `tailwind.config.ts`. |
 | Utilities | `clsx` + `tailwind-merge` via `cn()` in `lib/utils.ts` |
-| Icons | `lucide-react` |
+| Icons | `@tabler/icons-react` |
 | Motion | `motion` (Framer Motion v13) |
 | Theming | `next-themes` — dark and light both ship |
 | Dates | `date-fns` |
@@ -184,6 +184,13 @@ Every agent updates `STATUS.md` when it finishes: its gate's state, the run numb
 
 `evidence/` is gitignored — screenshots are large, regenerable, and not review material.
 
+### How a criterion is written
+
+Promoted from the lesson ledger at 0005's G10, after three confirmations each. Binding on every agent that writes an acceptance criterion, a verification cell, a "Done when", or a guard — `product-manager`, `tech-lead`, and every reviewer that names evidence.
+
+- **State a prohibition as the search over the whole boundary it names, never as a file and a line.** "No `X` in `app/globals.css:69`" ships the rule with an exception; "no `X` anywhere in the tree, asserted by a test" is the rule. The boundary is the whole class of file the rule governs, including the documents — and a criterion satisfiable by editing one line is not a criterion.
+- **Never name a verification command that has not been run in this tree, by the agent naming it.** A tool the repo ships is not a tool that works here, and a criterion whose evidence path is inoperable proves nothing in either direction. Run it once, paste what it printed, and write the criterion against that. If it cannot run, the criterion is not written until the reason is fixed or the criterion is replaced by one that can.
+
 ---
 
 ## 6. Compound engineering — the squad gets smarter
@@ -246,7 +253,7 @@ The release-manager checks truth, which no script can: whether `STATUS.md` recor
 Binding on `frontend-dev`, enforced by `qa-engineer`.
 
 - **English only.** Every identifier, file name, type, test name and commit message is in English. User-visible strings are pt-BR — and they are the only Portuguese in the repository.
-- **No comments** unless the *why* is genuinely non-obvious — a workaround, a hidden constraint, a subtle invariant, a legal citation that explains a magic number. Never narrate what the code does. Never reference a task, spec, or PR in a comment. If code needs a comment to be followed, refactor it instead.
+- **No comments.** Enforced by `__tests__/comment-free-code.test.ts` across `app/`, `components/`, `hooks/`, `lib/`, `scripts/`, `__tests__/`, `tests/` and the root config files, with two exemptions and no others: a tooling directive (`biome-ignore`, `@ts-expect-error`, `v8 ignore`), and — in `lib/` only — a comment citing a Brazilian norm. Never narrate what the code does. Never reference a task, spec, or PR in a comment: the reader of a failing assertion never sees it and the section number drifts. Put the reasoning in the identifier or the test description, or refactor until it needs none.
 - **Descriptive names.** No single letters, no abbreviations that are not domain terms. `index`, not `i`. `overtimeMinutes`, not `ot`.
 - **Atomic design**: `components/atoms/` → `molecules/` → `organisms/` → `templates/`. Place files at the level the plan names.
 - **TypeScript strict.** No `any`. `unknown` only at a trust boundary, immediately narrowed. No `@ts-ignore`, no `!` to silence the compiler.

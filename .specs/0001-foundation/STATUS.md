@@ -66,7 +66,23 @@ The build order the artifacts describe. Every task is already reflected in the s
 
 ## Blockers
 
-None blocking. Two open items, both recorded rather than hidden:
+None blocking. Three open items, all recorded rather than hidden:
+
+- **AC18 has never been verified, and its verification cell named a command that could not run**
+  (recorded 2026-09-14 by `product-manager`, from the G5 run-4 triage of spec 0002). AC18's whole
+  verification cell is `node .agents/tools/preview.mjs`. That script imported `@axe-core/playwright`,
+  which was absent from `package.json`, from `pnpm-lock.yaml` and from `node_modules`, and imported
+  its driver from `playwright` instead of `@playwright/test` — so it had **never executed once in
+  this repository**. T28 and G6 audit are both `pending` above, so nothing was recorded as passed on
+  a command that did not run; the defect is that this spec shipped a criterion whose only stated
+  evidence path was inoperable, and no one found that out until another spec tried to use it.
+  **The tool is now repaired** (spec 0002, T1 step 0: the dependency added with the `AGENTS.md` §8
+  justification, both imports fixed, the vendored dialog loop deleted) and it runs: at 0002 run 3 it
+  reported **0 axe violations at any impact** on the pre-0002 tree, with 4 `color-contrast`
+  *incomplete* on `/`. That is evidence for 0002, **not** a retroactive pass for AC18 —
+  `web-standards-auditor` owns AC18 and runs it at this spec's own G6, against both themes, which is
+  what the criterion asks for and what has still not happened. **For `release-manager` at G7: AC18
+  is open, not closed.** No gate is re-opened by this note, because none of them ever closed it.
 
 - **Token migration is incomplete.** `components/organisms/cookie-consent.tsx`, `components/organisms/salary-calculator.tsx` and the segment colours in `components/organisms/day-summary.tsx` still carry raw palette utilities (`neutral-*`, `indigo-*`, `blue-*`, `emerald-*`) and raw radii instead of the token set from `app/globals.css`. Pre-migration surface, not a design decision; `design.md` § *System change* names it so no reader mistakes it for intent.
 - **`DESIGN.md` §Components names four components at pre-refactor paths** (`molecules/hero-panel.tsx`, `molecules/stat-box.tsx`, `molecules/alert-banner.tsx`, `molecules/collapsible-panel.tsx`) and two field components that no longer exist under those names (`form-field.tsx`, `currency-field.tsx`). The tokens, states and rules in those sections are still correct. For the `release-manager` at G7.
@@ -89,4 +105,5 @@ None blocking. Two open items, both recorded rather than hidden:
 | 2026-09-14 | tech-lead | **`buildDayBreakdown` is the only day calculation.** Every worked minute, every segment and the overtime split derive from it; nothing re-derives a minute. It is also why the suggested exit is an iterative fixed point rather than a closed form — crediting the ficta bonus moves the exit that produces it. |
 | 2026-09-14 | product-manager | **The footer names every deferred computation.** `legal.md` § *Out of scope* is not an internal note: each excluded item a user could mistake for a promise is written into the footer in plain pt-BR. Silence about an omitted variable is a defect, not a simplification (`PRODUCT.md` §4). |
 | 2026-09-14 | labor-law-analyst | **Four known imprecisions accepted by the human** and recorded in `legal.md`: the ficta-minute basis of the art. 59 limit, the year as thirteen monthly nets, `parseCurrency` on a pasted US-format amount, and the whole-minute ficta rounding. A fifth — the Saturday tier and the entry-day keying — is recorded with them. Only the human can accept a known legal imprecision, and the acceptance is written into the spec. |
+| 2026-09-14 | product-manager | **AC18 stays open and this spec is not re-opened for it.** Found from spec 0002: AC18's only verification method (`node .agents/tools/preview.mjs`) had never executed in this repo. Nothing false is recorded — T28 and G6 audit are `pending`, so no criterion was closed on an unrun command — and the correction is documentation-only, so it does not need the human and does not consume a bounce. Recorded in § Blockers instead, where `release-manager` reads it at G7 and `web-standards-auditor` reads it at G6. The lesson (**012**) generalises it: a criterion's verification method is unverified until it has run once in this tree, and a criterion whose command has never run is not evidence of anything, in either direction. |
 | 2026-09-14 | labor-law-analyst | **D3, D6, D7, D8 and O4–O12 are deferred, not forgotten.** Each is listed in `legal.md` § *Out of scope* with the reason and with what the user sees instead, so a rebuilder does not think the artifacts lost them. |

@@ -1,6 +1,6 @@
 "use client";
 
-import { Clock, LogIn } from "lucide-react";
+import { IconClock, IconLogin } from "@tabler/icons-react";
 import { useMemo } from "react";
 import { useGrossHourlyRate } from "@/hooks/use-gross-hourly-rate";
 import { useWorkCalculator } from "@/hooks/use-work-calculator";
@@ -211,7 +211,7 @@ export function WorkCalculator() {
       }
       aside={
         <HeroPanel
-          icon={Clock}
+          icon={IconClock}
           label={isManualExit ? "Saída Real" : "Saída Prevista"}
           value={exitLabel}
           tone={isInDebt ? "rose" : "emerald"}
@@ -237,9 +237,9 @@ export function WorkCalculator() {
             </>
           }
           footer={
-            <div className="flex items-center justify-between gap-md">
-              <div className="flex items-center gap-xs">
-                <LogIn className="w-4 h-4" aria-hidden="true" />
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <IconLogin className="w-4 h-4" aria-hidden="true" />
                 <span className="text-caption font-semibold numeric">Entrada às {formatTimeLabel(entry)}</span>
               </div>
               <CopyButton

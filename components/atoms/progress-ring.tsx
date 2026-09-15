@@ -55,7 +55,7 @@ export function ProgressRing({ progressPercent, overtimePercent, className, chil
           />
         ) : null}
       </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 px-lg text-center">
+      <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 px-6 text-center">
         {children}
       </div>
     </div>

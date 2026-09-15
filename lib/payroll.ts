@@ -21,7 +21,7 @@ export const WORK_REGIME_INFO: readonly WorkRegimeInfo[] = [
     label: "CLT",
     summary: "Carteira assinada, inclusive em estatais",
     who: "Quem tem contrato regido pela CLT, seja em empresa privada ou em empresa pública e sociedade de economia mista (Correios, Caixa, Petrobras): carteira assinada, FGTS, aviso prévio e férias com 1/3.",
-    impact: `INSS pelo RGPS, com alíquotas progressivas de 7,5% a 14% e teto de contribuição em ${formatCurrency(RGPS_CEILING)} — acima disso o desconto trava em ${formatCurrency(TABLE.rgpsCeilingDiscount)} (tabela de ${TABLE.year}).`,
+    impact: `INSS pelo RGPS, com alíquotas progressivas de 7,5% a 14%. O teto do salário de contribuição é ${formatCurrency(RGPS_CEILING)}: acima disso o desconto trava em ${formatCurrency(TABLE.rgpsCeilingDiscount)} (tabela de ${TABLE.year}).`,
   },
   {
     value: "estatutario",
@@ -29,7 +29,7 @@ export const WORK_REGIME_INFO: readonly WorkRegimeInfo[] = [
     summary: "Servidor público efetivo, com regime próprio",
     who: "Servidor efetivo regido por estatuto (RJU) e vinculado a um regime próprio de previdência (RPPS), não ao INSS.",
     impact:
-      "Aplicamos a tabela do RPPS federal: a contribuição não para no teto do INSS e as faixas seguem subindo até 22% sobre a parcela mais alta. Servidor estadual ou municipal tem alíquota própria (muitas vezes 14% linear), então este número não vale para ele.",
+      "Aplicamos a tabela do RPPS federal: a contribuição não para no teto do salário de contribuição que vale para a CLT e as faixas seguem subindo até 22% sobre a parcela mais alta. Servidor estadual ou municipal tem alíquota própria (muitas vezes 14% linear), então este número não vale para ele.",
   },
 ];
 

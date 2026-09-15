@@ -21,9 +21,7 @@ export function GoogleAd({ slot, className }: GoogleAdProps) {
       const queue = (globalScope.adsbygoogle as Array<Record<string, unknown>> | undefined) ?? [];
       globalScope.adsbygoogle = queue;
       queue.push({});
-    } catch {
-      // the AdSense global is third-party and may reject a push before its script settles
-    }
+    } catch {}
   }, []);
 
   return (

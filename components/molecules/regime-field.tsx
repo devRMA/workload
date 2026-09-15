@@ -1,6 +1,6 @@
 "use client";
 
-import { Briefcase, Check, ChevronDown } from "lucide-react";
+import { IconBriefcase, IconCheck, IconChevronDown } from "@tabler/icons-react";
 import { useState } from "react";
 import { labelClasses } from "@/components/atoms/label";
 import { WORK_REGIME_INFO, type WorkRegime } from "@/lib/payroll";
@@ -25,9 +25,9 @@ export function RegimeField({ value, onChange, className }: RegimeFieldProps) {
   };
 
   return (
-    <fieldset className={cn("space-y-xs", className)}>
+    <fieldset className={cn("space-y-2", className)}>
       <legend className={labelClasses}>
-        <Briefcase className="w-4 h-4" aria-hidden="true" />
+        <IconBriefcase className="w-4 h-4" aria-hidden="true" />
         Regime de Trabalho
       </legend>
 
@@ -36,15 +36,15 @@ export function RegimeField({ value, onChange, className }: RegimeFieldProps) {
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
         aria-controls={OPTIONS_PANEL_ID}
-        className="flex w-full items-center justify-between gap-md rounded-md border border-line-strong bg-surface p-md text-left transition-[border-color] duration-(--duration-fast) ease-standard hover:border-ink-subtle ring-focus"
+        className="flex w-full items-center justify-between gap-4 rounded-md border border-line-strong bg-surface p-4 text-left transition-[border-color] duration-(--duration-fast) ease-standard hover:border-ink-subtle ring-focus"
       >
         <span className="flex flex-col gap-0.5">
           <span className="font-semibold text-ink">{selected.label}</span>
           <span className="text-caption text-ink-subtle text-pretty">{selected.summary}</span>
         </span>
-        <span className="flex shrink-0 items-center gap-xs text-label text-accent-ink">
+        <span className="flex shrink-0 items-center gap-2 text-label text-accent-ink">
           {isOpen ? "Fechar" : "Alterar"}
-          <ChevronDown
+          <IconChevronDown
             className={cn(
               "w-4 h-4 transition-transform duration-(--duration-base) ease-standard",
               isOpen ? "rotate-180" : "",
@@ -55,11 +55,11 @@ export function RegimeField({ value, onChange, className }: RegimeFieldProps) {
       </button>
 
       <CollapsiblePanel id={OPTIONS_PANEL_ID} isOpen={isOpen}>
-        <div className="space-y-sm pt-xs">
+        <div className="space-y-3 pt-2">
           {WORK_REGIME_INFO.map(({ value: regime, label, who, impact }) => (
             <label
               key={regime}
-              className="relative flex cursor-pointer flex-col gap-1 rounded-md border border-line-strong bg-surface p-md pr-9 transition-[border-color,background-color] duration-(--duration-fast) ease-standard hover:border-accent has-checked:border-accent has-checked:bg-accent-soft has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-focus"
+              className="relative flex cursor-pointer flex-col gap-1 rounded-md border border-line-strong bg-surface p-4 pr-9 transition-[border-color,background-color] duration-(--duration-fast) ease-standard hover:border-accent has-checked:border-accent has-checked:bg-accent-soft has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-focus"
             >
               <input
                 type="radio"
@@ -69,7 +69,7 @@ export function RegimeField({ value, onChange, className }: RegimeFieldProps) {
                 onChange={() => handleChange(regime)}
                 className="peer sr-only"
               />
-              <Check
+              <IconCheck
                 className="absolute right-3 top-4 w-4 h-4 text-accent-ink opacity-0 transition-opacity duration-(--duration-fast) peer-checked:opacity-100"
                 aria-hidden="true"
               />

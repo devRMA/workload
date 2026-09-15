@@ -1,6 +1,6 @@
 "use client";
 
-import { Clock, DollarSign } from "lucide-react";
+import { IconClock, IconCurrencyDollar } from "@tabler/icons-react";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
@@ -12,9 +12,9 @@ import { type CalculatorView, VIEW_PATHS } from "@/lib/calculator-view";
 import { CURRENT_LEGAL_YEAR } from "@/lib/legal-tables";
 import { formatIsoDate } from "@/lib/utils";
 
-const VIEW_TABS: readonly { view: CalculatorView; label: string; icon: typeof Clock }[] = [
-  { view: "work", label: "Jornada", icon: Clock },
-  { view: "salary", label: "Custo da Hora", icon: DollarSign },
+const VIEW_TABS: readonly { view: CalculatorView; label: string; icon: typeof IconClock }[] = [
+  { view: "work", label: "Jornada", icon: IconClock },
+  { view: "salary", label: "Custo da Hora", icon: IconCurrencyDollar },
 ];
 
 const PANEL_TRANSITION = {
@@ -38,7 +38,7 @@ export function CalculatorViews({ activeView }: { activeView: CalculatorView }) 
     <>
       <nav
         aria-label="Calculadoras"
-        className="fixed bottom-[max(var(--spacing-md),env(safe-area-inset-bottom))] sm:bottom-xl left-1/2 -translate-x-1/2 z-50"
+        className="fixed bottom-[max(calc(var(--spacing)*4),env(safe-area-inset-bottom))] sm:bottom-8 left-1/2 -translate-x-1/2 z-50"
       >
         <ul className="bg-chrome backdrop-blur-chrome backdrop-saturate-(--saturate-chrome) border border-line p-1.5 rounded-lg shadow-raised flex items-center gap-1">
           {VIEW_TABS.map(({ view, label, icon: Icon }) => (
@@ -48,7 +48,7 @@ export function CalculatorViews({ activeView }: { activeView: CalculatorView }) 
                 scroll={false}
                 aria-current={activeView === view ? "page" : undefined}
                 onClick={() => safeGAEvent("switch_tab", { tab: view })}
-                className={buttonClasses(activeView === view ? "default" : "ghost", "default", "gap-xs")}
+                className={buttonClasses(activeView === view ? "default" : "ghost", "default", "gap-2")}
               >
                 <Icon className="w-4 h-4" aria-hidden="true" />
                 <span>{label}</span>
@@ -62,7 +62,7 @@ export function CalculatorViews({ activeView }: { activeView: CalculatorView }) 
         ref={mainRef}
         id="main-content"
         tabIndex={-1}
-        className="pt-[calc(var(--header-height)+var(--spacing-xl))] pb-3xl px-md sm:px-lg lg:px-xl outline-none"
+        className="pt-[calc(var(--header-height)+var(--spacing)*8)] pb-16 px-4 sm:px-6 lg:px-8 outline-none"
       >
         <AnimatePresence mode="wait" initial={false}>
           <motion.div key={activeView} {...PANEL_TRANSITION}>
@@ -70,14 +70,14 @@ export function CalculatorViews({ activeView }: { activeView: CalculatorView }) 
           </motion.div>
         </AnimatePresence>
 
-        <footer className="mx-auto mt-2xl max-w-3xl space-y-xs text-center text-caption text-ink-subtle text-pretty">
+        <footer className="mx-auto mt-12 max-w-3xl space-y-2 text-center text-caption text-ink-subtle text-pretty">
           <p>
             Tudo o que você digita fica salvo apenas neste navegador. Nada é enviado para nenhum servidor, e ninguém
             além de você vê seus horários ou seu salário.
           </p>
           <p>
-            Os valores são uma estimativa para você se organizar — não substituem seu holerite nem valem como registro
-            oficial de ponto, e nada aqui é orientação jurídica ou contábil.
+            Os valores são uma estimativa para você se organizar. Não substituem seu holerite, não valem como registro
+            oficial de ponto e nada aqui é orientação jurídica ou contábil.
           </p>
           <p>
             Não entram na conta: FGTS, benefícios e adicionais da sua convenção coletiva, o 13º salário e o terço de

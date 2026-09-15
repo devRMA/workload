@@ -1,4 +1,12 @@
-import { AlertTriangle, CalendarDays, Coffee, MoonStar, Sunrise, Sunset, Zap } from "lucide-react";
+import {
+  IconAlertTriangle,
+  IconBolt,
+  IconCalendarMonth,
+  IconCoffee,
+  IconMoonStars,
+  IconSunrise,
+  IconSunset,
+} from "@tabler/icons-react";
 import Link from "next/link";
 import { VIEW_PATHS } from "@/lib/calculator-view";
 import type { ComplianceWarning } from "@/lib/compliance";
@@ -42,7 +50,7 @@ function DayTimeline({ breakdown, times }: Pick<DaySummaryProps, "breakdown" | "
   if (total === 0) return null;
 
   return (
-    <div className="space-y-xs">
+    <div className="space-y-2">
       <div className="flex h-3 w-full overflow-hidden rounded-full bg-surface-sunken" aria-hidden="true">
         {breakdown.segments.map(({ kind, minutes }) => (
           <div key={kind} className={SEGMENT_BAR_CLASSES[kind]} style={{ width: `${(minutes / total) * 100}%` }} />
@@ -69,7 +77,7 @@ function TotalRow({
 }) {
   return (
     <div
-      className="flex items-baseline justify-between gap-md"
+      className="flex items-baseline justify-between gap-4"
       aria-live={live ? "polite" : undefined}
       aria-atomic={live ? true : undefined}
     >
@@ -94,15 +102,21 @@ export function DaySummary({
   const stretches = [
     {
       kind: "morning" as const,
-      icon: Sunrise,
+      icon: IconSunrise,
       label: "Manhã",
       endsAt: times.lunchStart,
       minutes: breakdown.morningMinutes,
     },
-    { kind: "lunch" as const, icon: Coffee, label: "Almoço", endsAt: times.lunchEnd, minutes: breakdown.lunchMinutes },
+    {
+      kind: "lunch" as const,
+      icon: IconCoffee,
+      label: "Almoço",
+      endsAt: times.lunchEnd,
+      minutes: breakdown.lunchMinutes,
+    },
     {
       kind: "afternoon" as const,
-      icon: Sunset,
+      icon: IconSunset,
       label: "Tarde",
       endsAt: times.exit,
       minutes: breakdown.afternoonMinutes,
@@ -118,14 +132,14 @@ export function DaySummary({
   const restDayPay = restDayPayOnOvertime(variablePay, splitMonthDays(new Date(times.entry)));
 
   return (
-    <div className="bg-surface rounded-xl p-lg sm:p-xl shadow-card border border-line space-y-lg">
+    <div className="bg-surface rounded-xl p-6 sm:p-8 shadow-card border border-line space-y-6">
       <h3 className="text-heading">Seu Dia</h3>
 
       <DayTimeline breakdown={breakdown} times={times} />
 
-      <div className="space-y-sm">
+      <div className="space-y-3">
         {stretches.map(({ kind, icon: Icon, label, endsAt, minutes }, index) => (
-          <div key={kind} className="flex items-center gap-sm text-body-sm">
+          <div key={kind} className="flex items-center gap-3 text-body-sm">
             <span className={cn("h-2.5 w-2.5 shrink-0 rounded-full", SEGMENT_BAR_CLASSES[kind])} aria-hidden="true" />
             <Icon className="w-4 h-4 shrink-0 text-ink-muted" aria-hidden="true" />
             <span className="font-medium">{label}</span>
@@ -138,9 +152,9 @@ export function DaySummary({
         ))}
 
         {breakdown.nightBonusMinutes > 0 ? (
-          <div className="flex items-center gap-sm text-body-sm">
+          <div className="flex items-center gap-3 text-body-sm">
             <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-night" aria-hidden="true" />
-            <MoonStar className="w-4 h-4 shrink-0 text-night-ink" aria-hidden="true" />
+            <IconMoonStars className="w-4 h-4 shrink-0 text-night-ink" aria-hidden="true" />
             <span className="font-medium">Hora noturna reduzida</span>
             <span className="text-ink-muted">art. 73 da CLT</span>
             <span className="ml-auto numeric font-semibold text-night-ink">
@@ -150,7 +164,7 @@ export function DaySummary({
         ) : null}
       </div>
 
-      <div className="space-y-xs border-t border-line-faint pt-lg">
+      <div className="space-y-2 border-t border-line-faint pt-6">
         <TotalRow
           label={breakdown.isInProgress ? "Trabalhado até agora" : "Trabalhado no dia"}
           value={formatHoursAndMinutes(breakdown.workedMinutes)}
@@ -163,8 +177,8 @@ export function DaySummary({
         ) : null}
       </div>
 
-      <div className="space-y-sm border-t border-line-faint pt-lg">
-        <div className="flex items-baseline justify-between gap-md">
+      <div className="space-y-3 border-t border-line-faint pt-6">
+        <div className="flex items-baseline justify-between gap-4">
           <span className="text-body-sm font-semibold text-ink">
             {breakdown.remainingMinutes > 0 ? "Saldo se você sair no horário" : "Saldo do dia"}
           </span>
@@ -173,9 +187,9 @@ export function DaySummary({
           </span>
         </div>
 
-        <div className="space-y-xs">
-          <div className="flex items-center gap-sm text-body-sm">
-            <Zap className="w-4 h-4 shrink-0 text-overtime-ink" aria-hidden="true" />
+        <div className="space-y-2">
+          <div className="flex items-center gap-3 text-body-sm">
+            <IconBolt className="w-4 h-4 shrink-0 text-overtime-ink" aria-hidden="true" />
             <span>Extra {firstTierRate}%</span>
             <span className="ml-auto numeric font-semibold">{formatHoursAndMinutes(firstTierMinutes)}</span>
             {firstTierPay === null ? null : (
@@ -184,8 +198,8 @@ export function DaySummary({
               </span>
             )}
           </div>
-          <div className="flex items-center gap-sm text-body-sm">
-            <Zap className="w-4 h-4 shrink-0 text-overtime-ink" aria-hidden="true" />
+          <div className="flex items-center gap-3 text-body-sm">
+            <IconBolt className="w-4 h-4 shrink-0 text-overtime-ink" aria-hidden="true" />
             <span>Extra {extraTierRate}%</span>
             <span className="ml-auto numeric font-semibold">{formatHoursAndMinutes(extraTierMinutes)}</span>
             {extraTierPay === null ? null : (
@@ -194,8 +208,8 @@ export function DaySummary({
               </span>
             )}
           </div>
-          <div className="flex items-center gap-sm text-body-sm">
-            <MoonStar className="w-4 h-4 shrink-0 text-night-ink" aria-hidden="true" />
+          <div className="flex items-center gap-3 text-body-sm">
+            <IconMoonStars className="w-4 h-4 shrink-0 text-night-ink" aria-hidden="true" />
             <span>Adicional noturno 20%</span>
             <span className="ml-auto numeric font-semibold">{formatHoursAndMinutes(nightMinutes)}</span>
             {nightPay === null ? null : (
@@ -205,8 +219,8 @@ export function DaySummary({
             )}
           </div>
           {restDayPay > 0 ? (
-            <div className="flex items-center gap-sm text-body-sm">
-              <CalendarDays className="w-4 h-4 shrink-0 text-positive-ink" aria-hidden="true" />
+            <div className="flex items-center gap-3 text-body-sm">
+              <IconCalendarMonth className="w-4 h-4 shrink-0 text-positive-ink" aria-hidden="true" />
               <span>DSR sobre os extras</span>
               <span className="ml-auto w-24 text-right numeric font-semibold text-positive-ink">
                 {formatCurrency(restDayPay)}
@@ -218,7 +232,7 @@ export function DaySummary({
         {restDayPay > 0 ? (
           <p className="text-caption text-ink-subtle text-pretty">
             O DSR (Súmula 172 do TST) supõe que estes extras se repitam em todos os dias úteis do mês e conta só os
-            domingos — feriados não entram.
+            domingos. Feriados não entram.
           </p>
         ) : null}
 
@@ -226,7 +240,7 @@ export function DaySummary({
           <Link
             href={VIEW_PATHS.salary}
             scroll={false}
-            className="flex min-h-11 w-full items-center justify-center rounded-md border border-dashed border-line-strong p-sm text-center text-body-sm text-ink-muted transition-colors duration-(--duration-fast) ease-standard hover:border-accent hover:text-accent-ink ring-focus"
+            className="flex min-h-11 w-full items-center justify-center rounded-md border border-dashed border-line-strong p-3 text-center text-body-sm text-ink-muted transition-colors duration-(--duration-fast) ease-standard hover:border-accent hover:text-accent-ink ring-focus"
           >
             Quer ver quanto isso vale em reais? Calcule o valor da sua hora →
           </Link>
@@ -234,7 +248,7 @@ export function DaySummary({
       </div>
 
       {warnings.map(({ id, title, detail }) => (
-        <AlertBanner key={id} icon={AlertTriangle} tone="warning" title={title}>
+        <AlertBanner key={id} icon={IconAlertTriangle} tone="warning" title={title}>
           <p>{detail}</p>
         </AlertBanner>
       ))}

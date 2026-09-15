@@ -59,75 +59,74 @@ colors:
   night-soft-dark: "#2f2446"
 typography:
   numeral:
-    fontFamily: "var(--font-inter), system-ui, sans-serif"
+    fontFamily: "var(--font-hyperlegible), system-ui, sans-serif"
     fontSize: "clamp(2.5rem, 20cqi, 6rem)"
     fontWeight: 700
-    lineHeight: 1
-    letterSpacing: "-0.035em"
-    fontVariation: "opsz auto"
+    lineHeight: 1.05
+    letterSpacing: "-0.02em"
     fontFeature: "tnum, zero"
   display:
-    fontFamily: "var(--font-inter), system-ui, sans-serif"
+    fontFamily: "var(--font-hyperlegible), system-ui, sans-serif"
     fontSize: "2rem"
     fontWeight: 700
-    lineHeight: 1.1
-    letterSpacing: "-0.024em"
+    lineHeight: 1.15
+    letterSpacing: "-0.014em"
   title:
-    fontFamily: "var(--font-inter), system-ui, sans-serif"
+    fontFamily: "var(--font-hyperlegible), system-ui, sans-serif"
+    fontSize: "1.5rem"
+    fontWeight: 600
+    lineHeight: 1.25
+    letterSpacing: "-0.01em"
+  metric:
+    fontFamily: "var(--font-hyperlegible), system-ui, sans-serif"
     fontSize: "1.5rem"
     fontWeight: 600
     lineHeight: 1.2
-    letterSpacing: "-0.018em"
-  metric:
-    fontFamily: "var(--font-inter), system-ui, sans-serif"
-    fontSize: "1.5rem"
-    fontWeight: 600
-    lineHeight: 1.15
-    letterSpacing: "-0.016em"
+    letterSpacing: "-0.008em"
     fontFeature: "tnum, zero"
   heading:
-    fontFamily: "var(--font-inter), system-ui, sans-serif"
+    fontFamily: "var(--font-hyperlegible), system-ui, sans-serif"
     fontSize: "1.125rem"
     fontWeight: 600
     lineHeight: 1.3
-    letterSpacing: "-0.011em"
+    letterSpacing: "-0.005em"
   input:
-    fontFamily: "var(--font-inter), system-ui, sans-serif"
+    fontFamily: "var(--font-hyperlegible), system-ui, sans-serif"
     fontSize: "1.125rem"
     fontWeight: 500
-    lineHeight: 1.2
-    letterSpacing: "0.005em"
+    lineHeight: 1.25
+    letterSpacing: "0em"
     fontFeature: "tnum, zero"
   body:
-    fontFamily: "var(--font-inter), system-ui, sans-serif"
+    fontFamily: "var(--font-hyperlegible), system-ui, sans-serif"
     fontSize: "1rem"
     fontWeight: 400
     lineHeight: 1.55
     letterSpacing: "0em"
   body-sm:
-    fontFamily: "var(--font-inter), system-ui, sans-serif"
+    fontFamily: "var(--font-hyperlegible), system-ui, sans-serif"
     fontSize: "0.875rem"
     fontWeight: 400
     lineHeight: 1.5
-    letterSpacing: "0.003em"
+    letterSpacing: "0.005em"
   label:
-    fontFamily: "var(--font-inter), system-ui, sans-serif"
+    fontFamily: "var(--font-hyperlegible), system-ui, sans-serif"
     fontSize: "0.875rem"
     fontWeight: 500
-    lineHeight: 1.2
+    lineHeight: 1.25
     letterSpacing: "0.005em"
   caption:
-    fontFamily: "var(--font-inter), system-ui, sans-serif"
+    fontFamily: "var(--font-hyperlegible), system-ui, sans-serif"
     fontSize: "0.75rem"
     fontWeight: 400
     lineHeight: 1.45
-    letterSpacing: "0.01em"
+    letterSpacing: "0.012em"
   overline:
-    fontFamily: "var(--font-inter), system-ui, sans-serif"
+    fontFamily: "var(--font-hyperlegible), system-ui, sans-serif"
     fontSize: "0.6875rem"
     fontWeight: 600
-    lineHeight: 1.2
-    letterSpacing: "0.08em"
+    lineHeight: 1.25
+    letterSpacing: "0.07em"
 rounded:
   xs: "8px"
   sm: "12px"
@@ -137,14 +136,14 @@ rounded:
   2xl: "32px"
   full: "9999px"
 spacing:
-  hair: "2px"
-  xs: "8px"
-  sm: "12px"
-  md: "16px"
-  lg: "24px"
-  xl: "32px"
-  2xl: "48px"
-  3xl: "64px"
+  "0.5": "2px"
+  "2": "8px"
+  "3": "12px"
+  "4": "16px"
+  "6": "24px"
+  "8": "32px"
+  "12": "48px"
+  "16": "64px"
 components:
   button-primary:
     backgroundColor: "{colors.accent}"
@@ -269,6 +268,35 @@ The predecessor system had six competing accent hues, two different reds, and no
 - Both themes are authored, not derived. Every pair is contrast-verified.
 - Type, spacing and radius all scale from `rem`, so the whole product grows with the user's text size and with the display.
 
+## Design Read and Dials
+
+**Design Read.** Reading this as: a single-purpose pt-BR calculator for a CLT worker holding
+a phone one-handed at a time clock, with a trust-first instrument language, leaning toward
+Tailwind v4 CSS-first tokens, a hyperlegible sans with real tabular figures, and motion that
+only ever confirms a state change.
+
+**Dials.** `DESIGN_VARIANCE: 3` · `MOTION_INTENSITY: 2` · `VISUAL_DENSITY: 5`.
+
+These are not the `8 / 6 / 4` baseline and they are not inherited. They come from the
+`design-taste-frontend` Section 1.A row **"trust-first / public-sector / regulated /
+accessibility-critical"** (3-4 / 2-3 / 4-5) and the Section 1.B preset **"Public-sector
+service"** (3 / 2 / 5), because the quiet constraints in Section 0.A.6 outrank aesthetic
+preference here: WCAG 2.2 AA in both themes is a gate, the copy is legally bound, and the
+user is standing up.
+
+- **VARIANCE 3.** One column below 1024px in a fixed order, one functional asymmetry above it
+  (the 7/5 split that lets the hero stick while the form scrolls). Not 1: the hero is a
+  different object from the cards, and that difference is the hierarchy.
+- **MOTION 2.** The Numbers-Don't-Move Rule takes every element the user reads out of the
+  motion budget. What is left is press feedback, the segment pill, the chevron, surfaces
+  entering and leaving, and the 600ms ring sweep. The "redesign - preserve" row's `+1` is
+  deliberately not taken: motion here is capped by a product rule, not by neglect.
+- **DENSITY 5.** Instrument density, not landing-page density, held at 5 by the Eight Steps
+  Rule rather than by removing information.
+
+A change to any of these three is a change to this document, and therefore a human approval
+point.
+
 ## Colors
 
 The palette is a cool near-achromatic neutral ramp (hue 264, chroma ≤ 0.018) carrying a single saturated cobalt accent and four data hues that are never used as chrome. All values are authored in OKLCH for perceptual evenness and shipped as hex for portability; the frontmatter is normative.
@@ -324,31 +352,31 @@ These four are the exception to the one-accent rule, and each is licensed becaus
 
 ## Typography
 
-**Display, Body, Numeral and Label Font:** Inter Variable (`next/font/google`), with `system-ui, -apple-system, "Segoe UI", Roboto, sans-serif` as the fallback stack.
+**Display, Body, Numeral and Label Font:** Atkinson Hyperlegible Next Variable (`next/font/google`), with `system-ui, -apple-system, "Segoe UI", Roboto, sans-serif` as the fallback stack.
 
-**Character:** One family, four weights, eleven steps. Inter is here because it was drawn for exactly this problem — small text read quickly on a phone at a bad angle — and because its variable `opsz` axis lets the same family be a 11px overline and a 96px clock without either looking like a scaled-up version of the other. It is loaded as a variable face with `font-optical-sizing: auto`, so the letterforms genuinely change shape with size rather than merely stretching.
+**Character:** One family, four weights, eleven steps. Atkinson Hyperlegible Next is here because it was drawn for exactly this problem — small text read quickly on a phone at a bad angle — and because it clears the product's inviolable constraint on real `tnum` and an unambiguous `0`/`O` and `1`/`l`, which the incumbent did not. It exposes only a `wght` axis, so the optical work that a variable `opsz` axis would otherwise do is carried by the per-step tracking in the ramp below instead. `font-optical-sizing: auto` stays declared on `body` — it costs nothing and is correct again the moment a family with an `opsz` axis returns.
 
-**There is no second family, and in particular no monospace.** The predecessor set every input and every figure in `font-mono` — an *undefined* fallback stack that resolves to Courier or DejaVu Sans Mono on most Android devices, which is the worst possible face for the one thing this product exists to show. Inter's tabular figures (`tnum`) give perfect column alignment, and its slashed zero (`zero`) removes the 0/O ambiguity, at no extra byte. A numbers product does not need a typewriter; it needs figures that line up. The `numeric` utility (`@utility numeric { font-variant-numeric: tabular-nums slashed-zero }`) is applied to every element that renders a quantity.
+**There is no second family, and in particular no monospace.** The predecessor set every input and every figure in `font-mono` — an *undefined* fallback stack that resolves to Courier or DejaVu Sans Mono on most Android devices, which is the worst possible face for the one thing this product exists to show. Atkinson's tabular figures (`tnum`) give perfect column alignment. Google Fonts' subsetter keeps a fixed default feature set (`calt ccmp dnom frac liga locl numr pnum tnum rvrn`) and drops `zero` from every family it serves, so the `slashed-zero` request in the `numeric` utility has been inert since 0001 — the 0/O disambiguation instead comes from Atkinson's **default zero glyph**, which carries the slash in its outline (3 contours against every other candidate's 2) and therefore survives the subsetter and every fallback. A numbers product does not need a typewriter; it needs figures that line up. The `numeric` utility (`@utility numeric { font-variant-numeric: tabular-nums slashed-zero }`) is applied to every element that renders a quantity, and is now correct in intent for the first time.
 
 ### Hierarchy
 
 Weights are limited to four: `--font-weight-normal` 400, `--font-weight-medium` 500, `--font-weight-semibold` 600, `--font-weight-bold` 700. Tracking is size-specific in every step — never a single value across the ramp.
 
-- **Numeral** (`--text-numeral`, 700, `clamp(2.5rem, 20cqi, 6rem)`, leading 1, tracking −0.035em, tabular + slashed zero): The one number the user came for. The exit time in the work hero, the period value in the salary hero. Container-query sized so it fills its panel at any width instead of being clamped by the viewport. This is the only step allowed above 2rem.
-- **Display** (`--text-display`, 700, 2rem/32px, leading 1.1, tracking −0.024em): Modal titles only — the reset confirmation, the privacy dialog, the weekly-video prompt.
-- **Title** (`--text-title`, 600, 1.5rem/24px, leading 1.2, tracking −0.018em): The one `h2` at the top of each calculator card: "Sua Jornada", "Custo da Hora".
-- **Metric** (`--text-metric`, 600, 1.5rem/24px, leading 1.15, tracking −0.016em, tabular + slashed zero): A secondary figure that still deserves weight — the day balance, a stat tile value, the ring's centre timer. Same size as Title but tighter and tabular, so a number and a heading at the same optical size never read as the same kind of thing.
-- **Heading** (`--text-heading`, 600, 1.125rem/18px, leading 1.3, tracking −0.011em): Section heads inside a card — "Seu Dia", "Resumo Financeiro".
-- **Input** (`--text-input`, 500, 1.125rem/18px, leading 1.2, tracking +0.005em, tabular + slashed zero): Every text field. 18px is above the iOS zoom-on-focus threshold and is the smallest size at which a mistyped digit is caught without effort.
+- **Numeral** (`--text-numeral`, 700, `clamp(2.5rem, 20cqi, 6rem)`, leading 1.05, tracking −0.02em, tabular + slashed zero): The one number the user came for. The exit time in the work hero, the period value in the salary hero. Container-query sized so it fills its panel at any width instead of being clamped by the viewport. This is the only step allowed above 2rem.
+- **Display** (`--text-display`, 700, 2rem/32px, leading 1.15, tracking −0.014em): Modal titles only — the reset confirmation, the privacy dialog, the weekly-video prompt.
+- **Title** (`--text-title`, 600, 1.5rem/24px, leading 1.25, tracking −0.01em): The one `h2` at the top of each calculator card: "Sua Jornada", "Custo da Hora" — and the hero's statement mode, where the value is a sentence rather than a figure.
+- **Metric** (`--text-metric`, 600, 1.5rem/24px, leading 1.2, tracking −0.008em, tabular + slashed zero): A secondary figure that still deserves weight — the day balance, a stat tile value, the ring's centre timer. Same size as Title but tighter and tabular, so a number and a heading at the same optical size never read as the same kind of thing.
+- **Heading** (`--text-heading`, 600, 1.125rem/18px, leading 1.3, tracking −0.005em): Section heads inside a card — "Seu Dia", "Resumo Financeiro".
+- **Input** (`--text-input`, 500, 1.125rem/18px, leading 1.25, tracking 0em, tabular + slashed zero): Every text field. 18px is above the iOS zoom-on-focus threshold and is the smallest size at which a mistyped digit is caught without effort.
 - **Body** (`--text-body`, 400, 1rem/16px, leading 1.55, tracking 0): Explanatory prose. Capped at 68ch.
-- **Body Small** (`--text-body-sm`, 400, 0.875rem/14px, leading 1.5, tracking +0.003em): Row text in the day summary, regime descriptions, list items. The workhorse of the product.
-- **Label** (`--text-label`, 500, 0.875rem/14px, leading 1.2, tracking +0.005em): Field labels, button labels, tab labels. Shares its size with Body Small and separates by weight and leading, not size — hierarchy from weight is the Apple move and it costs no vertical space.
-- **Caption** (`--text-caption`, 400, 0.75rem/12px, leading 1.45, tracking +0.01em): Hints under a field, the privacy and disclaimer footnotes, ad labels.
-- **Overline** (`--text-overline`, 600, 0.6875rem/11px, leading 1.2, tracking +0.08em, uppercase): The eyebrow above a hero value and above a stat tile. The only uppercase in the product, and the only step with tracking above +0.01em — uppercase without added tracking is unreadable at 11px.
+- **Body Small** (`--text-body-sm`, 400, 0.875rem/14px, leading 1.5, tracking +0.005em): Row text in the day summary, regime descriptions, list items. The workhorse of the product.
+- **Label** (`--text-label`, 500, 0.875rem/14px, leading 1.25, tracking +0.005em): Field labels, button labels, tab labels. Shares its size with Body Small and separates by weight and leading, not size — hierarchy from weight is the Apple move and it costs no vertical space.
+- **Caption** (`--text-caption`, 400, 0.75rem/12px, leading 1.45, tracking +0.012em): Hints under a field, the privacy and disclaimer footnotes, ad labels.
+- **Overline** (`--text-overline`, 600, 0.6875rem/11px, leading 1.25, tracking +0.07em, uppercase): The eyebrow above a hero value and above a stat tile. The only uppercase in the product, and the only step with tracking above +0.01em — uppercase without added tracking is unreadable at 11px.
 
 ### Named Rules
 
-**The 700 Ceiling.** Nothing is heavier than 700. `font-black` (900) and `font-extrabold` (800) do not exist here. Weight above 700 in Inter stops adding emphasis and starts adding noise.
+**The 700 Ceiling.** Nothing is heavier than 700. `font-black` (900) and `font-extrabold` (800) do not exist here. Weight above 700 in Atkinson Hyperlegible Next stops adding emphasis and starts adding noise.
 
 **The Tracking-Follows-Size Rule.** Tracking is negative above 1.125rem, zero at body, and positive below 0.875rem. A single `letter-spacing` applied across the ramp is wrong somewhere by definition.
 
@@ -362,23 +390,25 @@ Weights are limited to four: `--font-weight-normal` 400, `--font-weight-medium` 
 
 The spatial model is a single column that earns a second one only when there is genuinely room for both.
 
-**Spacing scale.** Base unit 4px (`--spacing: 0.25rem`), but only eight steps are sanctioned and everything else is a bug: **2, 8, 12, 16, 24, 32, 48, 64** (`--spacing-hair`, `-xs`, `-sm`, `-md`, `-lg`, `-xl`, `-2xl`, `-3xl`). The rhythm they express: 8px binds a label to its field, 12px separates sibling rows, 16px is the internal padding of a compact control, 24px is a card's padding on a phone and the gap between cards, 32px is a card's padding from `sm` up, 48px separates major regions, 64px is the page's top and bottom breathing room.
+**Spacing scale.** Base unit 4px (`--spacing: 0.25rem`), and the scale is Tailwind's numeric one, derived from that single multiplier — `p-6` is `calc(var(--spacing) * 6)` = 24px. **There is no named spacing scale and there must never be one again.** A key in that namespace does not merely name a value: in Tailwind 4 the `--spacing-*` namespace also feeds the container scale, so declaring one named `3xl` silently redefines `max-w-3xl` — and it did, rendering the legal disclosure footer as a 64px column at every viewport for two whole specs while every check in the repository passed. The eight sanctioned steps are therefore written as numbers: **0.5, 2, 3, 4, 6, 8, 12, 16** — that is **2, 8, 12, 16, 24, 32, 48, 64 px** at a 16px root — and everything else is a bug. The rhythm they express, which is the part that was ever worth naming: **2** is a hairline offset inside a control; **8** binds a label to its field; **12** separates sibling rows; **16** is the internal padding of a compact control; **24** is a card's padding on a phone and the gap between cards; **32** is a card's padding from `sm` up; **48** separates major regions; **64** is the page's top and bottom breathing room. Inside an arbitrary value, read the multiplier, never a hard-coded length: `calc(var(--spacing) * 8)`, not `2rem`.
 
-**Container.** `--container-app` is `80rem` (1280px) up to 1919px and `100rem` (1600px) from 1920px. The page gutter is `--spacing-md` (16px) below `sm`, `--spacing-lg` (24px) from `sm`, `--spacing-xl` (32px) from `lg`.
+**Container.** `--container-app` is `80rem` up to 1919px and `100rem` from 1920px — 1280px at a 16px root, 1700px at the 17px root it shares that breakpoint with, and 1800px from 2560px where the root steps to 18px. It is deliberately **not** a key in Tailwind's container scale (`3xs`…`7xl`), which is why `max-w-app` kept resolving correctly on the very page where `max-w-3xl` did not. The page gutter is `px-4` (16px) below `sm`, `px-6` (24px) from `sm`, `px-8` (32px) from `lg`, each scaling with the root above 1920px.
 
-**The two-column split.** Below `lg` (1024px) everything is one column and **the hero comes first** — the person on a phone must see the answer before the inputs that produced it. At `lg` and above, a 12-column grid splits 7 (form and summary) / 5 (hero), the hero moves to the right, and it sticks at `--header-height + --spacing-xl` while the form scrolls.
+**The two-column split.** Below `lg` (1024px) everything is one column and **the hero comes first** — the person on a phone must see the answer before the inputs that produced it. At `lg` and above, a 12-column grid splits 7 (form and summary) / 5 (hero), the hero moves to the right, and it sticks at `calc(var(--header-height) + var(--spacing) * 8)` while the form scrolls.
 
 **Density at the five reference widths.**
 
 | Width | Columns | Root size | Gutter | Card padding | Notes |
 |---|---|---|---|---|---|
-| **390** (phone) | 1, hero first | 16px | 16px | 24px | Bottom tab bar floats above `env(safe-area-inset-bottom)`; content reserves `--spacing-3xl` below. Form fields are full width; date and time stack. |
+| **390** (phone) | 1, hero first | 16px | 16px | 24px | Bottom tab bar floats above `env(safe-area-inset-bottom)`; content reserves `pb-16` (64px) below. Form fields are full width; date and time stack. |
 | **768** (tablet) | 1, hero first | 16px | 24px | 32px | Paired fields go two-up at `sm` (640px). Header shows the live clock. |
 | **1440** (laptop) | 12 → 7/5 | 16px | 32px | 32px | Container 1280px. Hero sticky. This is the width the system is drawn at. |
-| **2560** (QHD) | 12 → 7/5 | 18px | 32px | 32px | Container 1600px. **The layout does not change — the whole system scales**, because every value is in `rem`. The card that was 1280px of content is now physically the same size on a larger panel instead of a postage stamp in a field of margin. |
-| **3840** (4K) | 12 → 7/5 | 18px | 32px | 32px | Container stays 1600px and the root size stays 18px. Beyond QHD the viewer is further away, not closer; adding a third column or more scale would break the one-glance reading. Extra width becomes margin, deliberately. |
+| **2560** (QHD) | 12 → 7/5 | 18px | **36px** | **36px** | Container **1800px**. **The layout does not change — the whole system scales**, because every value is in `rem`. The gutter and the card padding are the same `px-8`/`p-8` they are at 1440; they measure 36px because the root is 18px, not because anything was redeclared. |
+| **3840** (4K) | 12 → 7/5 | 18px | **36px** | **36px** | Container stays **1800px** and the root size stays 18px. Beyond QHD the viewer is further away, not closer; adding a third column or more scale would break the one-glance reading. Extra width becomes margin, deliberately. |
 
 Root scaling is the mechanism: `html` is 16px, 17px from 1920px, 18px from 2560px. Nothing else in the system knows this happened.
+
+**The 18px cap is load-bearing, and one component knows.** `AlertBanner`'s horizontal chrome is declared in `rem` (`px-3` plus a 1px border) while the legibility budget that bounds it is stated in CSS px — 32px — so the spend scales with the root ramp and the budget does not: 26px at a 16px root, 29px at 18px. A fourth step above 18px puts that atom over its budget without anyone editing the atom. Any change that adds one must, in the same change, measure the alert banner at a viewport inside the new step's band — `tests/e2e/wide-viewport.spec.ts` already does exactly this at 2560 and 3840, and today's top band is the only one it needs to sample.
 
 **Breakpoints.** `sm` 640px (fields go two-up), `md` 768px (header clock appears), `lg` 1024px (the two-column split), `xl` 1280px, `2xl` 1536px, and `wide` 1920px (container and root-size step). The predecessor's arbitrary `min-[1980px]` for side ads becomes `wide`.
 
@@ -386,7 +416,9 @@ Root scaling is the mechanism: `html` is 16px, 17px from 1920px, 18px from 2560p
 
 **The Answer-First Rule.** On any viewport under 1024px, the hero panel is the first thing in the DOM order and the first thing on screen. Inputs come after the answer they produce.
 
-**The Eight Steps Rule.** If a gap is not one of 2, 8, 12, 16, 24, 32, 48, 64, it is wrong. There is no 20px and no 40px.
+**The Eight Steps Rule.** If a gap is not one of `0.5, 2, 3, 4, 6, 8, 12, 16` — 2, 8, 12, 16, 24, 32, 48, 64 px at a 16px root — it is wrong. There is no `p-5` and there is no `p-10`.
+
+**The Numeric Scale Rule.** The `--spacing-*` namespace in `@theme` is **empty and stays empty**; only the bare `--spacing` multiplier is declared. Any key of the form `--spacing-<name>` silently overrides the container-scale entry of the same name, which is how a legally required disclosure shipped 64 pixels wide. A unit test over `app/globals.css` asserts the namespace holds no non-numeric suffix, and that test is **part of this rule, not an implementation detail of it** — the rule cannot be enforced by reading, because its violation is invisible in the file that causes it and visible only in an unrelated component's rendered width.
 
 **The Scale-Don't-Reflow Rule.** Above 1920px the product gets bigger, not busier. New columns, new panels and revealed-on-wide content are forbidden.
 
@@ -461,7 +493,7 @@ Two mechanisms apply to all of them:
 
 ### Fields — `form-field.tsx`, `currency-field.tsx`, `duration-field.tsx`, `date-time-input.tsx`
 
-Label (`--text-label`, `--color-ink-muted`) sits `--spacing-xs` (8px) above its control; an optional hint (`text-caption text-ink-subtle`, the 8px offset coming from the wrapper's `space-y-xs`) sits below: **4.75:1** on surface, **4.61:1** on sunken (light); **5.23:1** / **5.50:1** (dark). One hint style, defined once, used by `Field`, `DurationField`, the journey settings and the salary calculator. Fields in a group are separated by `--spacing-lg` (24px). A label icon is 16px in `--color-ink-muted` unless it is a data icon, in which case it takes that data hue's `-ink` token.
+Label (`--text-label`, `--color-ink-muted`) sits 8px (`space-y-2`) above its control; an optional hint (`text-caption text-ink-subtle`, the 8px offset coming from the wrapper's `space-y-2`) sits below: **4.75:1** on surface, **4.61:1** on sunken (light); **5.23:1** / **5.50:1** (dark). One hint style, defined once, used by `Field`, `DurationField`, the journey settings and the salary calculator. Fields in a group are separated by 24px (`gap-6`). A label icon is 16px in `--color-ink-muted` unless it is a data icon, in which case it takes that data hue's `-ink` token.
 
 `date-time-input` is two controls under one label: the date field flexes, the time field is a fixed 8rem, and they stack below `sm` with a 12px gap. Both carry the same error state together — a date and a time are one answer.
 
@@ -470,7 +502,7 @@ The journey settings panel is one `grid grid-cols-1 sm:grid-cols-2 gap-lg`: the 
 ### Cards — `journey-form.tsx`, `day-summary.tsx`, `salary-calculator.tsx`
 
 - **Corner:** `--radius-xl` (28px). **Background:** `--color-surface`. **Border:** 1px `--color-line`. **Shadow:** `--shadow-card` in light, none in dark. **Padding:** 24px below `sm`, 32px from `sm`.
-- Internal sections are separated by a 1px `--color-line-faint` rule with `--spacing-lg` above and below. Recessed sub-panels (journey settings, tax details) are `--color-surface-sunken` at `--radius-lg`.
+- Internal sections are separated by a 1px `--color-line-faint` rule with 24px (`space-y-6`) above and below. Recessed sub-panels (journey settings, tax details) are `--color-surface-sunken` at `--radius-lg`.
 
 ### Hero panel — `components/molecules/hero-panel.tsx`
 
@@ -479,6 +511,7 @@ The signature component: a saturated plane carrying the single number the user c
 - **Corner** `--radius-2xl` (32px). **Padding** 32px, 48px from `lg`. **Shadow** `--shadow-accent`. **Text** `--color-ink-onfill` throughout, with secondary text at 90% opacity — corrected from a planned 80%, which measured **4.18:1** over `--color-accent`, below 4.5:1; at 90% it is **4.85:1** on accent and **6.75:1** on `--color-positive-deep`. Applied to the exit description and the ring's status overline in `work-calculator.tsx`, and the supporting rate line in `salary-calculator.tsx`.
 - **Fill** is semantic, not decorative: `--color-positive-deep` when the journey is on track, `--color-negative-deep` when the user is in time debt, `--color-accent` on the salary view. Three fills, three meanings.
 - The value is `--text-numeral`, container-query sized against the panel, tabular and slashed-zero.
+- A value with no digit renders instead at `--text-title`, wrapping to at most two lines, without the `numeric` utility — the statement mode for a legally bound sentence like "Sem carga horária" (`legal.md` S6).
 - The two decorative blurred circles the predecessor layered inside it are removed. A gauge does not have bokeh.
 - Tone changes cross-fade over `--duration-slow` (320ms), not 700ms.
 
@@ -504,13 +537,13 @@ Track `--color-ink-onfill` at 20%; the worked arc `--color-ink-onfill` solid; th
 
 `--color-surface-sunken` at `--radius-lg`, 16px padding, 1px `--color-line`. Overline label in `--color-ink-muted`, value in `--text-metric`. The *value* takes the data hue's `-ink` token (`--color-positive-ink` for gains, `--color-negative-ink` for deductions, `--color-ink` for the neutral default) — the tile background stays neutral. The predecessor tinted the whole tile; a wall of tinted boxes makes every number look equally urgent.
 
-### Alerts — `components/molecules/alert-banner.tsx`
+### Alerts — `components/atoms/alert-banner.tsx`
 
-`--radius-lg`, 16px padding, 1px border in the data hue at 30%, fill in the hue's `-soft`, text in its `-ink`, icon 20px in its `-ink`. Two tones: **warning** uses Overtime Amber (a CLT limit approached), **danger** uses Debit Red (an input the app cannot use). `role="alert"` for danger, `role="status"` for warning, as already implemented.
+`--radius-lg`, 16px vertical and 12px horizontal padding, 1px border in the data hue at 30%, fill in the hue's `-soft`, text in its `-ink`, icon 20px in its `-ink` sharing the title's line, with the body text running the full width of the banner beneath it. The horizontal padding is one step tighter than the vertical on purpose: the body text column is measured against the banner's own root, and a banner may spend no more than 32 CSS px of border and horizontal padding between the two. Two tones: **warning** uses Overtime Amber (a CLT limit approached), **danger** uses Debit Red (an input the app cannot use). `role="alert"` for danger, `role="status"` for warning, as already implemented.
 
 ### Navigation — `app-header.tsx`, the tab bar in `calculator-views.tsx`
 
-- **Header:** `--header-height` tall — the token itself steps from 4rem (64px) to 5rem (80px) at `md` (48rem) in the base layer, so the header's own height, the content's top padding, and the sticky aside offset (`--header-height + --spacing-xl`) all derive from that one value instead of drifting independently — `--color-chrome` + `--blur-chrome`, bottom edge is a `--color-line` hairline that fades in only once the page has scrolled — a scroll edge effect, not a permanent rule. The logo mark is a 40px `--radius-md` `--color-accent` tile. The live clock is `--text-label` tabular in `--color-ink-muted`.
+- **Header:** `--header-height` tall — the token itself steps from 4rem (64px) to 5rem (80px) at `md` (48rem) in the base layer, so the header's own height, the content's top padding, and the sticky aside offset (`calc(var(--header-height) + var(--spacing) * 8)`) all derive from that one value instead of drifting independently — `--color-chrome` + `--blur-chrome`, bottom edge is a `--color-line` hairline that fades in only once the page has scrolled — a scroll edge effect, not a permanent rule. The logo mark is a 40px `--radius-md` `--color-accent` tile. The live clock is `--text-label` tabular in `--color-ink-muted`.
 - **Tab bar:** floats at the bottom, `--color-chrome` + `--blur-chrome`, `--radius-lg` track, `--shadow-raised`, sitting above `env(safe-area-inset-bottom)`. Active tab is the Primary button; inactive is Ghost. `aria-current="page"` on the active one.
 
 ### Modals — `components/atoms/modal-dialog.tsx`
@@ -521,13 +554,13 @@ Native `<dialog>` with `showModal()`, wrapped in a plain `<div>` — not `Animat
 
 Height and opacity animate together over `--duration-base` with `--ease-out`. The disclosure button carries `aria-expanded` and `aria-controls`, and its chevron rotates 180° over the same duration. The panel is always `overflow: hidden` during the transition and releases it on settle so a focus ring inside is never clipped.
 
-### Iconography — `lucide-react`
+### Iconography — `@tabler/icons-react`
 
 - **Three sizes only:** 16px beside `--text-body-sm` and `--text-label`, 20px in buttons and fields, 24px in the header and hero. Nothing else.
-- **Stroke width 2** at 16 and 20; **1.75** at 24 and above, so the weight stays optically constant as the icon grows.
-- **Colour is `currentColor`** by default. The only icons with an independent colour are the data icons, which take their hue's `-ink` token: `Zap` = overtime, `MoonStar` = night, `TrendingUp` = positive, `TrendingDown` = negative, `AlertTriangle` = the tone of its banner.
+- **Stroke width 2** (`stroke` prop) at 16 and 20; **1.75** at 24 and above, so the weight stays optically constant as the icon grows.
+- **Colour is `currentColor`** by default. The only icons with an independent colour are the data icons, which take their hue's `-ink` token: `IconBolt` = overtime, `IconMoonStars` = night, `IconTrendingUp` = positive, `IconTrendingDown` = negative, `IconAlertTriangle` = the tone of its banner.
 - **Every icon is `aria-hidden="true"`.** The accessible name comes from adjacent text or the control's `aria-label`. An icon-only control without an `aria-label` does not ship.
-- **Gap to adjacent text** is `--spacing-xs` (8px) at 16px, `--spacing-sm` (12px) at 20 and 24px, with `items-center`.
+- **Gap to adjacent text** is `gap-2` (8px) at 16px, `gap-3` (12px) at 20 and 24px, with `items-center`.
 - One idea, one icon. No icon is used for two meanings and no meaning gets two icons.
 
 ### Named Rules
@@ -605,7 +638,7 @@ This is the floor, not the target. A number nobody can read is a number that doe
 - **Don't** introduce a second accent hue, a second red, or a gradient. `indigo`, `blue`, `rose`, `emerald`, `sky` and `orange` as raw utilities do not exist in this codebase any more.
 - **Don't** write a colour, radius, shadow, duration or type value inline. Every one of them is a token in `app/globals.css`, and a `dark:` twin on a colour utility is a sign the token is missing.
 - **Don't** use `font-black` or `font-extrabold`. 700 is the ceiling.
-- **Don't** use `font-mono`. Inter's tabular figures are the numeric face.
+- **Don't** use `font-mono`. Atkinson's tabular figures are the numeric face.
 - **Don't** apply a single `letter-spacing` across sizes. Tracking is negative above 1.125rem and positive below 0.875rem.
 - **Don't** animate a value the user is reading — the clock, the countdown, the hero numeral, a stat tile figure.
 - **Don't** animate from `scale(0)`, and don't ship an enter animation without its exit.

@@ -1,6 +1,6 @@
 "use client";
 
-import { Cookie, Shield, X } from "lucide-react";
+import { IconCookie, IconShield, IconX } from "@tabler/icons-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/atoms/button";
@@ -41,12 +41,12 @@ export function CookieConsent() {
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
-            className="fixed bottom-[max(var(--spacing-lg),env(safe-area-inset-bottom))] left-lg right-lg z-60 mx-auto max-w-4xl"
+            className="fixed bottom-[max(calc(var(--spacing)*6),env(safe-area-inset-bottom))] left-6 right-6 z-60 mx-auto max-w-4xl"
           >
             <div className="overflow-hidden rounded-2xl border border-line bg-surface-raised shadow-raised edge-lit">
-              <div className="flex flex-col md:flex-row items-center gap-lg p-lg md:p-xl">
+              <div className="flex flex-col md:flex-row items-center gap-6 p-6 md:p-8">
                 <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-md bg-accent-soft text-accent-ink">
-                  <Cookie size={32} aria-hidden="true" />
+                  <IconCookie size={32} aria-hidden="true" />
                 </div>
 
                 <div className="flex-1 space-y-1 text-center md:text-left">
@@ -57,7 +57,7 @@ export function CookieConsent() {
                   </p>
                 </div>
 
-                <div className="flex flex-col sm:flex-row items-center gap-sm w-full md:w-auto">
+                <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
                   <button
                     type="button"
                     onClick={() => setShowSettings(true)}
@@ -82,7 +82,7 @@ export function CookieConsent() {
         isOpen={showSettings}
         onClose={() => setShowSettings(false)}
         labelledBy="privacy-settings-title"
-        className="w-full max-w-lg rounded-2xl border border-line bg-surface-raised p-xl shadow-raised edge-lit"
+        className="w-full max-w-lg rounded-2xl border border-line bg-surface-raised p-8 shadow-raised edge-lit"
       >
         <Button
           variant="ghost"
@@ -91,26 +91,26 @@ export function CookieConsent() {
           aria-label="Fechar configurações de privacidade"
           className="absolute right-4 top-4"
         >
-          <X size={20} aria-hidden="true" />
+          <IconX size={20} aria-hidden="true" />
         </Button>
 
-        <div className="space-y-xl">
-          <div className="flex items-center gap-md">
+        <div className="space-y-8">
+          <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-md bg-accent-soft text-accent-ink">
-              <Shield size={24} aria-hidden="true" />
+              <IconShield size={24} aria-hidden="true" />
             </div>
             <h2 id="privacy-settings-title" className="text-display">
               Privacidade
             </h2>
           </div>
 
-          <div className="space-y-lg">
-            <div className="flex min-h-11 items-center justify-between gap-md p-md rounded-lg bg-surface-sunken border border-line">
+          <div className="space-y-6">
+            <div className="flex min-h-11 flex-col items-start justify-between gap-4 p-4 rounded-lg bg-surface-sunken border border-line sm:flex-row sm:items-center">
               <div className="space-y-1">
                 <p className="text-body font-semibold">Cookies Essenciais</p>
                 <p className="text-caption text-ink-subtle">Necessários para o funcionamento do site.</p>
               </div>
-              <div className="flex shrink-0 items-center gap-sm">
+              <div className="flex shrink-0 items-center gap-3">
                 <p className="text-caption font-semibold text-accent-ink">Sempre ativo</p>
                 <div aria-hidden="true" className="h-6 w-11 rounded-full bg-accent flex items-center px-1">
                   <div className="h-4 w-4 rounded-full bg-ink-onfill ml-auto" />
@@ -118,7 +118,7 @@ export function CookieConsent() {
               </div>
             </div>
 
-            <div className="flex items-center justify-between gap-md p-md rounded-lg bg-surface-sunken border border-line">
+            <div className="flex flex-col items-start justify-between gap-4 p-4 rounded-lg bg-surface-sunken border border-line sm:flex-row sm:items-center">
               <div className="space-y-1">
                 <p id="telemetry-consent-label" className="text-body font-semibold">
                   Telemetria (Google Analytics)
@@ -157,10 +157,10 @@ export function CookieConsent() {
         <button
           type="button"
           onClick={() => setShowSettings(true)}
-          className="fixed bottom-[max(var(--spacing-md),env(safe-area-inset-bottom))] right-4 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-line bg-chrome text-ink-muted shadow-card backdrop-blur-chrome transition-colors duration-(--duration-fast) ease-standard hover:text-accent-ink ring-focus"
+          className="fixed bottom-[max(calc(var(--spacing)*4),env(safe-area-inset-bottom))] right-4 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-line bg-chrome text-ink-muted shadow-card backdrop-blur-chrome transition-colors duration-(--duration-fast) ease-standard hover:text-accent-ink ring-focus"
           aria-label="Configurações de Privacidade"
         >
-          <Shield size={18} aria-hidden="true" />
+          <IconShield size={18} aria-hidden="true" />
         </button>
       )}
     </>

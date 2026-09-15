@@ -55,6 +55,14 @@ describe("findComplianceWarnings", () => {
     expect(lunch.detail).toContain("art. 71");
   });
 
+  it("allocates the irregularity to the employer without an em-dash", () => {
+    const [overtime] = warnings({ overtimeMinutes: 180, workedMinutes: 700, lunchMinutes: 0 });
+
+    expect(overtime.detail).toContain("Súmula 376 do TST");
+    expect(overtime.detail).toContain("a sanção recai sobre o empregador");
+    expect(overtime.detail).not.toContain("—");
+  });
+
   it("accepts a day of exactly four hours without any break", () => {
     expect(warningIds({ workedMinutes: 240, lunchMinutes: 0 })).toEqual([]);
   });

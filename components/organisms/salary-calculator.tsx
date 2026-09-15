@@ -1,16 +1,16 @@
 "use client";
 
 import {
-  AlertTriangle,
-  Calculator,
-  ChevronDown,
-  ChevronUp,
-  Clock,
-  Sun,
-  TrendingDown,
-  TrendingUp,
-  Wallet,
-} from "lucide-react";
+  IconAlertTriangle,
+  IconCalculator,
+  IconChevronDown,
+  IconChevronUp,
+  IconClock,
+  IconSun,
+  IconTrendingDown,
+  IconTrendingUp,
+  IconWallet,
+} from "@tabler/icons-react";
 import { useState } from "react";
 import { useSalaryCalculator } from "@/hooks/use-salary-calculator";
 import { minutesToHours } from "@/lib/duration";
@@ -31,7 +31,7 @@ import { CalculatorLayout } from "../templates/calculator-layout";
 import { TaxDetailsPanel } from "./tax-details-panel";
 
 const DETAILS_PANEL_ID = "tax-details";
-const MISSING_VALUE = "—";
+const MISSING_VALUE = "Sem carga horária";
 
 export function SalaryCalculator() {
   const {
@@ -74,10 +74,10 @@ export function SalaryCalculator() {
     <CalculatorLayout
       main={
         <>
-          <div className="bg-surface rounded-xl p-lg sm:p-xl shadow-card border border-line">
-            <div className="flex items-center gap-md mb-xl">
+          <div className="bg-surface rounded-xl p-6 sm:p-8 shadow-card border border-line">
+            <div className="flex items-center gap-4 mb-8">
               <div className="p-3 bg-accent-soft rounded-md">
-                <Calculator className="text-accent-ink" size={24} strokeWidth={1.75} aria-hidden="true" />
+                <IconCalculator className="text-accent-ink" size={24} stroke={1.75} aria-hidden="true" />
               </div>
               <div>
                 <h2 className="text-title">Custo da Hora</h2>
@@ -88,7 +88,7 @@ export function SalaryCalculator() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-lg mb-xl">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
               <Field id="salario-bruto" label="Salário Bruto (R$)" className="sm:col-span-2">
                 <CurrencyInput
                   id="salario-bruto"
@@ -104,7 +104,7 @@ export function SalaryCalculator() {
                   id="horas-mensais"
                   type="number"
                   min={0}
-                  icon={<Clock className="w-5 h-5" aria-hidden="true" />}
+                  icon={<IconClock className="w-5 h-5" aria-hidden="true" />}
                   placeholder="220"
                   value={monthlyHours || ""}
                   onChange={(event) => setMonthlyHours(Number(event.target.value))}
@@ -114,22 +114,25 @@ export function SalaryCalculator() {
                 id="jornada-diaria"
                 label="Jornada Diária"
                 hint="A mesma jornada diária usada na aba Jornada."
-                icon={<Sun className="w-5 h-5" aria-hidden="true" />}
+                icon={<IconSun className="w-5 h-5" aria-hidden="true" />}
                 minutes={dailyMinutes}
                 onMinutesChange={setDailyMinutes}
               />
             </div>
 
             {hasGrossSalary ? null : (
-              <AlertBanner icon={AlertTriangle} tone="danger" title="Informe o seu salário bruto" className="mb-lg">
-                <p>
-                  Sem ele os valores abaixo continuam em R$ 0,00 — e esse zero não é o seu salário, é a falta do dado.
-                </p>
+              <AlertBanner icon={IconAlertTriangle} tone="danger" title="Informe o seu salário bruto" className="mb-6">
+                <p>Sem ele os valores abaixo continuam em R$ 0,00. Esse zero não é o seu salário, é a falta do dado.</p>
               </AlertBanner>
             )}
 
             {hasMonthlyHours ? null : (
-              <AlertBanner icon={AlertTriangle} tone="danger" title="Informe a carga horária mensal" className="mb-lg">
+              <AlertBanner
+                icon={IconAlertTriangle}
+                tone="danger"
+                title="Informe a carga horária mensal"
+                className="mb-6"
+              >
                 <p>
                   Sem ela não dá para saber quanto vale a sua hora. Para a jornada de 8h48 por dia o divisor é 220 horas
                   por mês.
@@ -139,10 +142,10 @@ export function SalaryCalculator() {
 
             {coherentMonthlyHours === null ? null : (
               <AlertBanner
-                icon={AlertTriangle}
+                icon={IconAlertTriangle}
                 tone="warning"
                 title="A carga mensal não combina com a jornada diária"
-                className="mb-lg"
+                className="mb-6"
               >
                 <p>
                   Pela Súmula 431 do TST, a jornada que você informou corresponde ao divisor {coherentMonthlyHours}{" "}
@@ -157,20 +160,20 @@ export function SalaryCalculator() {
               onClick={() => setShowDetails(!showDetails)}
               aria-expanded={showDetails}
               aria-controls={DETAILS_PANEL_ID}
-              className="w-full flex items-center justify-between gap-md p-md rounded-lg border border-line hover:bg-surface-sunken transition-colors duration-(--duration-fast) ease-standard ring-focus"
+              className="w-full flex items-center justify-between gap-4 p-4 rounded-lg border border-line hover:bg-surface-sunken transition-colors duration-(--duration-fast) ease-standard ring-focus"
             >
               <span className="flex flex-col items-start gap-0.5 text-left">
                 <span className="text-body font-medium">Impostos e Descontos</span>
                 <span className="text-caption text-ink-subtle">INSS, IRRF, dependentes, descontos e ganhos extras</span>
               </span>
               {showDetails ? (
-                <ChevronUp className="shrink-0" size={20} aria-hidden="true" />
+                <IconChevronUp className="shrink-0" size={20} aria-hidden="true" />
               ) : (
-                <ChevronDown className="shrink-0" size={20} aria-hidden="true" />
+                <IconChevronDown className="shrink-0" size={20} aria-hidden="true" />
               )}
             </button>
 
-            <CollapsiblePanel id={DETAILS_PANEL_ID} isOpen={showDetails} className="mt-lg">
+            <CollapsiblePanel id={DETAILS_PANEL_ID} isOpen={showDetails} className="mt-6">
               <TaxDetailsPanel
                 dependents={dependents}
                 onDependentsChange={setDependents}
@@ -189,11 +192,11 @@ export function SalaryCalculator() {
             </CollapsiblePanel>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-md" aria-live="polite">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" aria-live="polite">
             <StatBox
               label="Salário Líquido"
               value={formatCurrency(stats.netSalary)}
-              icon={<Wallet className="w-4 h-4" aria-hidden="true" />}
+              icon={<IconWallet className="w-4 h-4" aria-hidden="true" />}
               variant="default"
             />
             {stats.totalExtraGains > 0 ? (
@@ -201,7 +204,7 @@ export function SalaryCalculator() {
                 label="Total Recebido"
                 value={formatCurrency(stats.totalValue)}
                 subValue="Líquido + Extras"
-                icon={<TrendingUp className="w-4 h-4" aria-hidden="true" />}
+                icon={<IconTrendingUp className="w-4 h-4" aria-hidden="true" />}
                 variant="success"
               />
             ) : null}
@@ -209,7 +212,7 @@ export function SalaryCalculator() {
               label="Total Descontos"
               value={formatCurrency(stats.inss + stats.irrf + stats.totalExtraDeductions)}
               subValue="INSS + IRRF + Outros"
-              icon={<TrendingDown className="w-4 h-4" aria-hidden="true" />}
+              icon={<IconTrendingDown className="w-4 h-4" aria-hidden="true" />}
               variant="danger"
             />
           </div>
@@ -217,14 +220,14 @@ export function SalaryCalculator() {
       }
       aside={
         <HeroPanel
-          icon={Clock}
+          icon={IconClock}
           label={`Valor por ${SALARY_PERIOD_LABELS[period]}`}
           value={hasMonthlyHours ? formatCurrency(stats.periodValue) : MISSING_VALUE}
           tone="blue"
           footer={
             <>
-              <p className="text-body-sm mb-xs">Resumo Financeiro</p>
-              <div className="grid grid-cols-2 gap-md">
+              <p className="text-body-sm mb-2">Resumo Financeiro</p>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-overline uppercase">Bruto</p>
                   <p className="text-heading numeric">{formatCurrency(grossSalary)}</p>
@@ -237,10 +240,10 @@ export function SalaryCalculator() {
             </>
           }
         >
-          <p className="mt-md text-body font-medium text-ink-onfill/90">
+          <p className="mt-4 text-body font-medium text-ink-onfill/90">
             {hasMonthlyHours ? supportingRate : "Informe a carga horária mensal para calcular"}
           </p>
-          <div className="mt-lg">
+          <div className="mt-6">
             <PeriodSelector value={period} onChange={setPeriod} />
           </div>
         </HeroPanel>

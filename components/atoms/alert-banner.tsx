@@ -20,11 +20,13 @@ export function AlertBanner({ icon: Icon, tone, title, id, className, children }
     <div
       id={id}
       role={tone === "danger" ? "alert" : "status"}
-      className={cn("flex items-start gap-sm rounded-lg border p-md", TONE_CLASSES[tone], className)}
+      className={cn("rounded-lg border px-3 py-4", TONE_CLASSES[tone], className)}
     >
-      <Icon className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />
       <div className="space-y-1 text-body-sm">
-        <p className="font-semibold">{title}</p>
+        <div className="flex items-start gap-3">
+          <Icon className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />
+          <p className="font-semibold">{title}</p>
+        </div>
         {children}
       </div>
     </div>

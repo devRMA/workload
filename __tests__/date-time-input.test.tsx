@@ -1,7 +1,7 @@
+import { IconLogin } from "@tabler/icons-react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { format } from "date-fns";
-import { LogIn } from "lucide-react";
 import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { DateTimeInput } from "@/components/molecules/date-time-input";
@@ -18,7 +18,7 @@ function InputHarness({
   return (
     <DateTimeInput
       label="Entrada"
-      icon={LogIn}
+      icon={IconLogin}
       value={value}
       onChange={(next) => {
         setValue(next);
@@ -125,7 +125,7 @@ describe("DateTimeInput", () => {
     render(
       <DateTimeInput
         label="Entrada"
-        icon={LogIn}
+        icon={IconLogin}
         value="2026-02-01T08:00"
         onChange={vi.fn()}
         hasError
@@ -141,7 +141,7 @@ describe("DateTimeInput", () => {
 
   it("uses the provided id for the date field", () => {
     render(
-      <DateTimeInput label="Saída Real" icon={LogIn} id="saida-real" value="2026-02-01T18:00" onChange={vi.fn()} />,
+      <DateTimeInput label="Saída Real" icon={IconLogin} id="saida-real" value="2026-02-01T18:00" onChange={vi.fn()} />,
     );
 
     expect(screen.getByLabelText("Saída Real")).toHaveAttribute("id", "saida-real");

@@ -1,5 +1,5 @@
+import { IconClock } from "@tabler/icons-react";
 import { render, screen } from "@testing-library/react";
-import { Clock } from "lucide-react";
 import { describe, expect, it } from "vitest";
 import { HeroPanel } from "@/components/organisms/hero-panel";
 
@@ -9,7 +9,7 @@ function readValueCqi(element: HTMLElement): number {
 
 describe("HeroPanel", () => {
   it("renders the label and the highlighted value", () => {
-    render(<HeroPanel icon={Clock} label="FALTAM" value="01:23:45" tone="emerald" />);
+    render(<HeroPanel icon={IconClock} label="FALTAM" value="01:23:45" tone="emerald" />);
 
     expect(screen.getByText("FALTAM")).toBeInTheDocument();
     expect(screen.getByText("01:23:45")).toBeInTheDocument();
@@ -18,7 +18,7 @@ describe("HeroPanel", () => {
   it("renders badge, children and footer when provided", () => {
     render(
       <HeroPanel
-        icon={Clock}
+        icon={IconClock}
         label="Valor da Hora"
         value="R$ 25,00"
         tone="blue"
@@ -35,25 +35,39 @@ describe("HeroPanel", () => {
   });
 
   it("shrinks the font as the value gets longer so it never wraps", () => {
-    const { rerender } = render(<HeroPanel icon={Clock} label="Valor" value="R$ 25,00" tone="blue" />);
+    const { rerender } = render(<HeroPanel icon={IconClock} label="Valor" value="R$ 25,00" tone="blue" />);
     const shortValueCqi = readValueCqi(screen.getByText("R$ 25,00"));
 
-    rerender(<HeroPanel icon={Clock} label="Valor" value="R$ 926.150,68" tone="blue" />);
+    rerender(<HeroPanel icon={IconClock} label="Valor" value="R$ 926.150,68" tone="blue" />);
     const longValueCqi = readValueCqi(screen.getByText("R$ 926.150,68"));
 
     expect(shortValueCqi).toBeGreaterThan(0);
     expect(longValueCqi).toBeLessThan(shortValueCqi);
   });
 
-  it("still asks for a finite size when there is no value to show", () => {
-    const { container } = render(<HeroPanel icon={Clock} label="Valor" value="" tone="blue" />);
+  it("asks for no inline size when there is no value to show", () => {
+    const { container } = render(<HeroPanel icon={IconClock} label="Valor" value="" tone="blue" />);
     const valueElement = container.querySelector<HTMLElement>("p[aria-live]");
 
-    expect(readValueCqi(valueElement as HTMLElement)).toBeGreaterThan(0);
+    expect(valueElement?.style.getPropertyValue("--hero-value-size")).toBe("");
+  });
+
+  it("sets a sentence value in the statement step instead of the numeral step", () => {
+    render(<HeroPanel icon={IconClock} label="Valor por mês" value="Sem carga horária" tone="blue" />);
+    const valueElement = screen.getByText("Sem carga horária");
+
+    expect(valueElement.style.getPropertyValue("--hero-value-size")).toBe("");
+  });
+
+  it("still announces a sentence value politely", () => {
+    render(<HeroPanel icon={IconClock} label="Valor por mês" value="Sem carga horária" tone="blue" />);
+    const valueElement = screen.getByText("Sem carga horária");
+
+    expect(valueElement).toHaveAttribute("aria-live", "polite");
   });
 
   it("omits the footer separator when there is no footer", () => {
-    render(<HeroPanel icon={Clock} label="HORA EXTRA" value="00:10:00" tone="rose" />);
+    render(<HeroPanel icon={IconClock} label="HORA EXTRA" value="00:10:00" tone="rose" />);
 
     expect(document.querySelector(".border-t")).toBeNull();
   });

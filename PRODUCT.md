@@ -113,8 +113,15 @@ What the product can actually back up today, and therefore what it may claim:
 | The night-shift reduced hour is correct | CLT art. 73 §1º — 52min30s, window 22:00–05:00 |
 | 100% unit coverage | `vitest.config.ts` fails the run below the threshold; it is enforced, not asserted |
 | Works at 390 / 1440 / 2560 / 3840 | Playwright asserts no horizontal overflow and no control off-viewport at each |
+| The app computes a **single day's** jornada: horas extras, adicional noturno and the saldo of that day | `components/organisms/day-summary.tsx` renders `stats.balance` for one day; nothing in `lib/` carries a balance across days |
 
 Anything not in this table is not a claim the product may make, in the UI or in the README.
+
+**Explicit non-claims**, recorded because they were claimed once and retired:
+
+| Non-claim | Why it may not be made |
+|---|---|
+| **Banco de horas** | It is a named legal instrument — CLT art. 59 §§2º, 5º e 6º: a compensation regime, pactuado, with a statutory settlement window. The app accumulates nothing across days. Building it would require storing a month of records, which §7 refuses. Retired from seven locations in spec `0002`; it returns only after a human amends §7, the feature ships, and this table gains a row for it. |
 
 ---
 

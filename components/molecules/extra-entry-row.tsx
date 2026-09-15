@@ -1,6 +1,6 @@
 "use client";
 
-import { Trash2 } from "lucide-react";
+import { IconTrash } from "@tabler/icons-react";
 import { parseCurrency } from "@/lib/utils";
 import { Button } from "../atoms/button";
 import { Input } from "../atoms/input";
@@ -32,7 +32,7 @@ export function ExtraEntryRow({
   onRemove,
 }: ExtraEntryRowProps) {
   return (
-    <div className="flex gap-sm">
+    <div className="flex gap-3">
       <div className="flex-1 min-w-0">
         <Input
           type="text"
@@ -60,7 +60,7 @@ export function ExtraEntryRow({
         onClick={onRemove}
         className="shrink-0"
       >
-        <Trash2 className="w-4 h-4" aria-hidden="true" />
+        <IconTrash className="w-4 h-4" aria-hidden="true" />
       </Button>
     </div>
   );

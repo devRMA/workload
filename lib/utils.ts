@@ -16,8 +16,6 @@ const TYPE_STEPS = [
   "overline",
 ] as const;
 
-// Without this, tailwind-merge reads our type steps as colours and a `text-label`
-// passed by a caller silently deletes the component's own `text-ink-onfill`.
 const twMerge = extendTailwindMerge({
   extend: {
     classGroups: {

@@ -9,10 +9,9 @@ vi.mock("@/lib/analytics", () => ({
   safeGAEvent: vi.fn(),
 }));
 
-const HEADING = "Calculadora de jornada de trabalho, horas extras e banco de horas";
+const HEADING = "Calculadora de jornada de trabalho, horas extras e saldo do dia";
 
-const themeState: { resolvedTheme: string | undefined; setTheme: () => void } = {
-  resolvedTheme: undefined,
+const themeState: { setTheme: () => void } = {
   setTheme: vi.fn(),
 };
 
@@ -29,11 +28,11 @@ function renderAtFixedTime() {
 describe("AppHeader", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    themeState.resolvedTheme = undefined;
   });
 
   afterEach(() => {
     vi.useRealTimers();
+    document.documentElement.classList.remove("dark");
   });
 
   it("names the application and holds the clock still on the server", () => {
@@ -72,8 +71,36 @@ describe("AppHeader", () => {
     );
   });
 
+  it("server-renders both theme glyphs", () => {
+    const markup = renderToString(<AppHeader heading={HEADING} />);
+
+    expect(markup).toContain('data-theme-icon="moon"');
+    expect(markup).toContain('data-theme-icon="sun"');
+  });
+
+  it("announces neither glyph, only the static toggle label", () => {
+    render(<AppHeader heading={HEADING} />);
+
+    for (const glyph of document.querySelectorAll("[data-theme-icon]")) {
+      expect(glyph).toHaveAttribute("aria-hidden", "true");
+    }
+    expect(screen.getByRole("button", { name: "Alternar tema" })).toBeInTheDocument();
+  });
+
+  it("substitutes no glyph across a click", async () => {
+    const user = userEvent.setup();
+    render(<AppHeader heading={HEADING} />);
+    const toggle = screen.getByRole("button", { name: "Alternar tema" });
+
+    expect(document.querySelectorAll("[data-theme-icon]")).toHaveLength(2);
+
+    await user.click(toggle);
+
+    expect(document.querySelectorAll("[data-theme-icon]")).toHaveLength(2);
+    expect(screen.getByRole("button", { name: "Alternar tema" })).toBe(toggle);
+  });
+
   it("offers the dark theme while the light one is active", async () => {
-    themeState.resolvedTheme = "light";
     const user = userEvent.setup();
     render(<AppHeader heading={HEADING} />);
 
@@ -84,7 +111,7 @@ describe("AppHeader", () => {
   });
 
   it("offers the light theme while the dark one is active", async () => {
-    themeState.resolvedTheme = "dark";
+    document.documentElement.classList.add("dark");
     const user = userEvent.setup();
     render(<AppHeader heading={HEADING} />);
 
@@ -92,5 +119,25 @@ describe("AppHeader", () => {
 
     expect(themeState.setTheme).toHaveBeenCalledWith("light");
     expect(safeGAEvent).toHaveBeenCalledWith("toggle_theme", { theme: "light" });
+  });
+
+  it("toggles the theme from the keyboard", async () => {
+    const user = userEvent.setup();
+    render(<AppHeader heading={HEADING} />);
+
+    await user.tab();
+    expect(screen.getByRole("button", { name: "Alternar tema" })).toHaveFocus();
+
+    await user.keyboard("{Enter}");
+
+    expect(themeState.setTheme).toHaveBeenCalledWith("dark");
+    expect(safeGAEvent).toHaveBeenCalledWith("toggle_theme", { theme: "dark" });
+  });
+
+  it("carries no motion wrapper on the theme toggle — a theme swap must not animate", () => {
+    render(<AppHeader heading={HEADING} />);
+
+    const toggle = screen.getByRole("button", { name: "Alternar tema" });
+    expect(toggle).not.toHaveAttribute("style");
   });
 });

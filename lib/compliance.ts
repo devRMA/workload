@@ -31,7 +31,7 @@ export function findComplianceWarnings({
       id: "daily-overtime-limit",
       title: "Você passou de 2h extras hoje",
       detail:
-        "O art. 59 da CLT limita a jornada extra a 2 horas por dia. Todas as horas trabalhadas continuam devidas a você (Súmula 376 do TST) — a irregularidade está na extrapolação, e a sanção recai sobre o empregador.",
+        "O art. 59 da CLT limita a jornada extra a 2 horas por dia. Todas as horas trabalhadas continuam devidas a você (Súmula 376 do TST). A irregularidade está na extrapolação, e a sanção recai sobre o empregador.",
     });
   }
 
