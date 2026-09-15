@@ -8,15 +8,13 @@ import { safeGAEvent } from "@/lib/analytics";
 import { findComplianceWarnings } from "@/lib/compliance";
 import { buildDayBreakdown } from "@/lib/day-breakdown";
 import { formatClock, formatSignedHoursAndMinutes } from "@/lib/duration";
-import { formatClockTime, formatTimeLabel } from "@/lib/utils";
+import { formatClockTime, formatTimeLabel, PLACEHOLDER_CLOCK } from "@/lib/utils";
 import { ProgressRing } from "../atoms/progress-ring";
 import { CopyButton } from "../molecules/copy-button";
-import { HeroPanel } from "../molecules/hero-panel";
+import { HeroPanel } from "../organisms/hero-panel";
 import { CalculatorLayout } from "../templates/calculator-layout";
 import { DaySummary } from "./day-summary";
 import { JourneyForm } from "./journey-form";
-
-const PLACEHOLDER_CLOCK = "--:--:--";
 
 interface TimerData {
   statusLabel: string;

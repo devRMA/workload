@@ -6,25 +6,22 @@ import {
   formatSignedHoursAndMinutes,
   isRealDuration,
   minutesToHours,
-  minutesToSeconds,
   parsePaddedDuration,
-  splitHoursAndMinutes,
 } from "@/lib/duration";
 
-describe("splitHoursAndMinutes", () => {
+describe("splitting minutes into hours and minutes", () => {
   it("splits minutes into whole hours and a rounded remainder", () => {
-    expect(splitHoursAndMinutes(0)).toEqual({ hours: 0, minutes: 0 });
-    expect(splitHoursAndMinutes(59)).toEqual({ hours: 0, minutes: 59 });
-    expect(splitHoursAndMinutes(60)).toEqual({ hours: 1, minutes: 0 });
-    expect(splitHoursAndMinutes(528)).toEqual({ hours: 8, minutes: 48 });
-    expect(splitHoursAndMinutes(90.4)).toEqual({ hours: 1, minutes: 30 });
+    expect(formatPaddedDuration(0)).toBe("00:00");
+    expect(formatPaddedDuration(59)).toBe("00:59");
+    expect(formatPaddedDuration(60)).toBe("01:00");
+    expect(formatPaddedDuration(528)).toBe("08:48");
+    expect(formatPaddedDuration(90.4)).toBe("01:30");
   });
 
   it("carries a rounded-up remainder into the hour instead of reporting 60 minutes", () => {
-    expect(splitHoursAndMinutes(59.6)).toEqual({ hours: 1, minutes: 0 });
-    expect(splitHoursAndMinutes(119.6)).toEqual({ hours: 2, minutes: 0 });
     expect(formatHoursAndMinutes(59.6)).toBe("1h 0m");
     expect(formatPaddedDuration(59.6)).toBe("01:00");
+    expect(formatPaddedDuration(119.6)).toBe("02:00");
   });
 });
 
@@ -58,13 +55,6 @@ describe("formatClock", () => {
     expect(formatClock(3661)).toBe("01:01:01");
     expect(formatClock(86399)).toBe("23:59:59");
     expect(formatClock(1.9)).toBe("00:00:01");
-  });
-});
-
-describe("minutesToSeconds", () => {
-  it("converts minutes to seconds", () => {
-    expect(minutesToSeconds(0)).toBe(0);
-    expect(minutesToSeconds(90)).toBe(5400);
   });
 });
 

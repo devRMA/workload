@@ -6,9 +6,7 @@ import { useEffect } from "react";
 import { Button } from "@/components/atoms/button";
 import { useCurrentTime } from "@/hooks/use-current-time";
 import { safeGAEvent } from "@/lib/analytics";
-import { formatClockTime } from "@/lib/utils";
-
-const PLACEHOLDER_CLOCK = "--:--:--";
+import { formatClockTime, PLACEHOLDER_CLOCK } from "@/lib/utils";
 
 export function AppHeader() {
   const currentTime = useCurrentTime();

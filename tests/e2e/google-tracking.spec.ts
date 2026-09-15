@@ -21,14 +21,19 @@ test.describe("Google Tracking & Ads", () => {
     await expect(gaScript).toHaveCount(1);
   });
 
-  test("should show side ads on desktop after delay", async ({ page }) => {
-    const viewport = page.viewportSize();
-    test.skip(!viewport || viewport.width < 1980, "side ads only render from 1980px up, where they clear the content");
-
+  test("should never place an ad above the calculator", async ({ page }) => {
     await page.click('button:has-text("Aceitar Tudo")');
 
-    const sideAd = page.locator("text=Espaço do Apoiador").first();
-    await expect(sideAd).toBeVisible({ timeout: 10000 });
+    await expect(page.locator("ins.adsbygoogle").first()).toBeAttached();
+
+    const adComesAfterTheAnswer = await page.evaluate(() => {
+      const heading = [...document.querySelectorAll("h2")].find((node) => node.textContent?.includes("Sua Jornada"));
+      const slot = document.querySelector("ins.adsbygoogle");
+      if (!heading || !slot) return false;
+      return (heading.compareDocumentPosition(slot) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0;
+    });
+
+    expect(adComesAfterTheAnswer).toBe(true);
   });
 
   test("should hide consent banner after choice", async ({ page }) => {

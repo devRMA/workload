@@ -7,7 +7,7 @@ export interface JourneyIssue {
   message: string;
 }
 
-export interface JourneyTimestamps {
+interface JourneyTimestamps {
   entry: string;
   lunchStart: string;
   lunchEnd: string;

@@ -1,8 +1,7 @@
 import type { ReactNode } from "react";
 import { DURATION_GROUP_SIZES, formatPaddedDuration, isRealDuration, parsePaddedDuration } from "@/lib/duration";
-import { cn } from "@/lib/utils";
-import { Label } from "../atoms/label";
-import { MaskedInput } from "../atoms/masked-input";
+import { MaskedInput } from "../molecules/masked-input";
+import { Field } from "./field";
 
 interface DurationFieldProps {
   id: string;
@@ -26,11 +25,7 @@ export function DurationField({
   className,
 }: DurationFieldProps) {
   return (
-    <div className={cn("space-y-3", className)}>
-      <Label htmlFor={id}>
-        {labelIcon}
-        {label}
-      </Label>
+    <Field id={id} label={label} labelIcon={labelIcon} hint={hint} className={className}>
       <MaskedInput
         id={id}
         icon={icon}
@@ -42,11 +37,6 @@ export function DurationField({
         isValid={isRealDuration}
         onCommit={(duration) => onMinutesChange(parsePaddedDuration(duration))}
       />
-      {hint ? (
-        <p id={`${id}-hint`} className="text-xs text-neutral-500 dark:text-neutral-400">
-          {hint}
-        </p>
-      ) : null}
-    </div>
+    </Field>
   );
 }

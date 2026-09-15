@@ -1,6 +1,6 @@
 import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { StatBox } from "@/components/molecules/stat-box";
+import { StatBox } from "@/components/atoms/stat-box";
 
 describe("StatBox", () => {
   it("renders with the default variant", () => {

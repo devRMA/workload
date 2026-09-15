@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { type ComplianceInput, findComplianceWarnings } from "@/lib/compliance";
+import { findComplianceWarnings } from "@/lib/compliance";
+
+type ComplianceInput = Parameters<typeof findComplianceWarnings>[0];
 
 const REGULAR_DAY: ComplianceInput = {
   overtimeMinutes: 0,

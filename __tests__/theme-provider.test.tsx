@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/components/templates/theme-provider";
 
 describe("ThemeProvider", () => {
   it("renders its children through next-themes", () => {

@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { CookieConsent } from "@/components/molecules/cookie-consent";
 import { AdManager } from "@/components/organisms/ad-manager";
 import { AnalyticsWrapper } from "@/components/organisms/analytics-wrapper";
-import { ThemeProvider } from "@/components/theme-provider";
+import { CookieConsent } from "@/components/organisms/cookie-consent";
+import { ThemeProvider } from "@/components/templates/theme-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 

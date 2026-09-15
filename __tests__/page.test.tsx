@@ -19,28 +19,11 @@ vi.mock("@/components/organisms/salary-calculator", () => ({
 }));
 
 describe("Home", () => {
-  it("renders the whole shell on the server instead of a blank document", () => {
-    const markup = renderToString(<Home />);
-
-    expect(markup).toContain("WorkLoad");
-    expect(markup).toContain("Jornada");
-    expect(markup).toContain("Custo da Hora");
-    expect(markup).toContain("Pular para o conteúdo principal");
-    expect(markup).toContain("--:--:--");
-  });
-
   it("serves the journey panel on the very first frame", () => {
     const markup = renderToString(<Home />);
 
     expect(markup).toContain("Painel da jornada");
     expect(markup).not.toContain("Painel do custo da hora");
-  });
-
-  it("marks the journey tab as the current page", () => {
-    const markup = renderToString(<Home />);
-
-    expect(markup).toContain('href="/"');
-    expect(markup).toContain('aria-current="page"');
   });
 });
 

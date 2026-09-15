@@ -1,14 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { formatCurrencySimple, parseCurrency } from "@/lib/utils";
-import { Input, type InputProps } from "./input";
-
-const NON_DIGITS = /\D/g;
-
-function countDigits(text: string): number {
-  return text.replace(NON_DIGITS, "").length;
-}
+import { countDigits, formatCurrencySimple, parseCurrency } from "@/lib/utils";
+import { Input, type InputProps } from "../atoms/input";
 
 function caretAfterDigits(text: string, digitsFromStart: number): number {
   let seenDigits = 0;

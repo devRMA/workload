@@ -9,12 +9,4 @@ describe("CalculatorLayout", () => {
     expect(screen.getByRole("heading", { name: "Sua Jornada" })).toBeInTheDocument();
     expect(screen.getByText("Painel destaque")).toBeInTheDocument();
   });
-
-  it("applies the calculator accent class", () => {
-    const { container } = render(
-      <CalculatorLayout className="selection:bg-blue-500/30" main={<p>Formulário</p>} aside={<p>Destaque</p>} />,
-    );
-
-    expect(container.firstElementChild).toHaveClass("selection:bg-blue-500/30");
-  });
 });

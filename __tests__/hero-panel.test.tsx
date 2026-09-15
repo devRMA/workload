@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { Clock } from "lucide-react";
 import { describe, expect, it } from "vitest";
-import { HeroPanel } from "@/components/molecules/hero-panel";
+import { HeroPanel } from "@/components/organisms/hero-panel";
 
 function readValueCqi(element: HTMLElement): number {
   return Number.parseFloat(/([\d.]+)cqi/.exec(element.style.getPropertyValue("--hero-value-size"))?.[1] ?? "");

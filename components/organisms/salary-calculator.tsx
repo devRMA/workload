@@ -17,15 +17,16 @@ import { minutesToHours } from "@/lib/duration";
 import { isRealAmount } from "@/lib/payroll";
 import { findDivisorMismatch, SALARY_PERIOD_LABELS } from "@/lib/salary-period";
 import { formatCurrency, parseCurrency } from "@/lib/utils";
-import { AlertBanner } from "../molecules/alert-banner";
-import { CollapsiblePanel } from "../molecules/collapsible-panel";
-import { CurrencyField } from "../molecules/currency-field";
+import { AlertBanner } from "../atoms/alert-banner";
+import { CollapsiblePanel } from "../atoms/collapsible-panel";
+import { Input } from "../atoms/input";
+import { StatBox } from "../atoms/stat-box";
+import { CurrencyInput } from "../molecules/currency-input";
 import { DurationField } from "../molecules/duration-field";
-import { FormField } from "../molecules/form-field";
-import { HeroPanel } from "../molecules/hero-panel";
+import { Field } from "../molecules/field";
 import { PeriodSelector } from "../molecules/period-selector";
 import { RegimeField } from "../molecules/regime-field";
-import { StatBox } from "../molecules/stat-box";
+import { HeroPanel } from "../organisms/hero-panel";
 import { CalculatorLayout } from "../templates/calculator-layout";
 import { TaxDetailsPanel } from "./tax-details-panel";
 
@@ -89,26 +90,27 @@ export function SalaryCalculator() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-              <CurrencyField
-                id="salario-bruto"
-                label="Salário Bruto (R$)"
-                className="sm:col-span-2"
-                icon={<span className="font-bold text-blue-500">R$</span>}
-                placeholder="0,00"
-                value={grossSalary}
-                onValueChange={(rawValue) => setGrossSalary(parseCurrency(rawValue))}
-              />
+              <Field id="salario-bruto" label="Salário Bruto (R$)" className="sm:col-span-2">
+                <CurrencyInput
+                  id="salario-bruto"
+                  icon={<span className="font-bold text-blue-500">R$</span>}
+                  placeholder="0,00"
+                  value={grossSalary}
+                  onValueChange={(rawValue) => setGrossSalary(parseCurrency(rawValue))}
+                />
+              </Field>
               <RegimeField className="sm:col-span-2" value={regime} onChange={setRegime} />
-              <FormField
-                id="horas-mensais"
-                label="Carga Horária Mensal"
-                type="number"
-                min={0}
-                icon={<Clock className="w-5 h-5" aria-hidden="true" />}
-                placeholder="220"
-                value={monthlyHours || ""}
-                onChange={(event) => setMonthlyHours(Number(event.target.value))}
-              />
+              <Field id="horas-mensais" label="Carga Horária Mensal">
+                <Input
+                  id="horas-mensais"
+                  type="number"
+                  min={0}
+                  icon={<Clock className="w-5 h-5" aria-hidden="true" />}
+                  placeholder="220"
+                  value={monthlyHours || ""}
+                  onChange={(event) => setMonthlyHours(Number(event.target.value))}
+                />
+              </Field>
               <DurationField
                 id="jornada-diaria"
                 label="Jornada Diária"

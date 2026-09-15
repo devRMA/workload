@@ -1,9 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { Input, type InputProps } from "./input";
-
-const NON_DIGITS = /\D/g;
+import { digitsOnly } from "@/lib/utils";
+import { Input, type InputProps } from "../atoms/input";
 
 function applyMask(digits: string, groupSizes: readonly number[], separator: string): string {
   const groups: string[] = [];
@@ -38,7 +37,7 @@ export function MaskedInput({ value, separator, groupSizes, isValid, onCommit, .
   const requiredDigits = groupSizes.reduce((total, size) => total + size, 0);
 
   const commitWhenComplete = (maskedValue: string) => {
-    const digits = maskedValue.replace(NON_DIGITS, "");
+    const digits = digitsOnly(maskedValue);
     if (digits.length !== requiredDigits || !isValid(maskedValue)) return false;
 
     onCommit(maskedValue);
@@ -46,7 +45,7 @@ export function MaskedInput({ value, separator, groupSizes, isValid, onCommit, .
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const digits = event.target.value.replace(NON_DIGITS, "").slice(0, requiredDigits);
+    const digits = digitsOnly(event.target.value).slice(0, requiredDigits);
     const maskedValue = applyMask(digits, groupSizes, separator);
 
     setText(maskedValue);

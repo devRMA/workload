@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { CookieConsent } from "@/components/molecules/cookie-consent";
+import { CookieConsent } from "@/components/organisms/cookie-consent";
 
 const CONSENT_KEY = "workload_cookie_consent";
 const CONSENT_CHANGED_EVENT = "workload:consent-changed";
