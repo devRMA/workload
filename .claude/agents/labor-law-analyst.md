@@ -1,0 +1,1 @@
+../../.agents/agents/labor-law-analyst.md

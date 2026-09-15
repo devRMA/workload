@@ -1,0 +1,647 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-14T00:00:00Z",
+  "title": "Design System: WorkLoad",
+  "extensions": {
+    "colorMeta": {
+      "accent": {
+        "role": "primary",
+        "displayName": "Cobalt Signal",
+        "canonical": "oklch(0.525 0.182 262)",
+        "tonalRamp": [
+          "#00003e",
+          "#001962",
+          "#003095",
+          "#164ebb",
+          "#346ddd",
+          "#5d95fe",
+          "#9cbefd",
+          "#dce9fe"
+        ]
+      },
+      "accent-ink": {
+        "role": "primary",
+        "displayName": "Cobalt Ink",
+        "canonical": "oklch(0.492 0.184 262)",
+        "tonalRamp": [
+          "#00003e",
+          "#001962",
+          "#003095",
+          "#164ebb",
+          "#346ddd",
+          "#5d95fe",
+          "#9cbefd",
+          "#dce9fe"
+        ]
+      },
+      "accent-soft": {
+        "role": "primary",
+        "displayName": "Cobalt Wash",
+        "canonical": "oklch(0.962 0.018 262)",
+        "tonalRamp": [
+          "#00003e",
+          "#001962",
+          "#003095",
+          "#164ebb",
+          "#346ddd",
+          "#5d95fe",
+          "#9cbefd",
+          "#dce9fe"
+        ]
+      },
+      "positive": {
+        "role": "tertiary",
+        "displayName": "Credit Green",
+        "canonical": "oklch(0.545 0.135 152)",
+        "tonalRamp": [
+          "#001303",
+          "#002d12",
+          "#004b22",
+          "#036a34",
+          "#1f8a4b",
+          "#4db06e",
+          "#75d792",
+          "#acfec2"
+        ]
+      },
+      "negative": {
+        "role": "tertiary",
+        "displayName": "Debit Red",
+        "canonical": "oklch(0.545 0.198 25)",
+        "tonalRamp": [
+          "#250000",
+          "#4c0005",
+          "#78000d",
+          "#a6071b",
+          "#cf2d32",
+          "#fb5956",
+          "#fea199",
+          "#fde0dd"
+        ]
+      },
+      "overtime": {
+        "role": "tertiary",
+        "displayName": "Overtime Amber",
+        "canonical": "oklch(0.655 0.135 70)",
+        "tonalRamp": [
+          "#190900",
+          "#361e00",
+          "#563504",
+          "#7b4c00",
+          "#a06604",
+          "#cd8725",
+          "#f5ad53",
+          "#fee3c5"
+        ]
+      },
+      "night": {
+        "role": "tertiary",
+        "displayName": "Night Violet",
+        "canonical": "oklch(0.560 0.210 300)",
+        "tonalRamp": [
+          "#15002e",
+          "#31005b",
+          "#50038f",
+          "#6d26b8",
+          "#8a4ada",
+          "#ad74ff",
+          "#c9adfd",
+          "#ebe3fc"
+        ]
+      },
+      "canvas": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "oklch(0.984 0.003 264)",
+        "tonalRamp": [
+          "#0b0d13",
+          "#21242a",
+          "#3a3d44",
+          "#55585f",
+          "#71757c",
+          "#9498a0",
+          "#babec6",
+          "#e4e8f0"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Card",
+        "canonical": "oklch(1 0 264)",
+        "tonalRamp": [
+          "#0b0d13",
+          "#21242a",
+          "#3a3d44",
+          "#55585f",
+          "#71757c",
+          "#9498a0",
+          "#babec6",
+          "#e4e8f0"
+        ]
+      },
+      "surface-sunken": {
+        "role": "neutral",
+        "displayName": "Inset",
+        "canonical": "oklch(0.966 0.005 264)",
+        "tonalRamp": [
+          "#0b0d13",
+          "#21242a",
+          "#3a3d44",
+          "#55585f",
+          "#71757c",
+          "#9498a0",
+          "#babec6",
+          "#e4e8f0"
+        ]
+      },
+      "surface-raised": {
+        "role": "neutral",
+        "displayName": "Raised",
+        "canonical": "oklch(1 0 264)",
+        "tonalRamp": [
+          "#0b0d13",
+          "#21242a",
+          "#3a3d44",
+          "#55585f",
+          "#71757c",
+          "#9498a0",
+          "#babec6",
+          "#e4e8f0"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "oklch(0.255 0.018 264)",
+        "tonalRamp": [
+          "#0b0d13",
+          "#21242a",
+          "#3a3d44",
+          "#55585f",
+          "#71757c",
+          "#9498a0",
+          "#babec6",
+          "#e4e8f0"
+        ]
+      },
+      "ink-muted": {
+        "role": "neutral",
+        "displayName": "Ink Muted",
+        "canonical": "oklch(0.505 0.018 264)",
+        "tonalRamp": [
+          "#0b0d13",
+          "#21242a",
+          "#3a3d44",
+          "#55585f",
+          "#71757c",
+          "#9498a0",
+          "#babec6",
+          "#e4e8f0"
+        ]
+      },
+      "ink-subtle": {
+        "role": "neutral",
+        "displayName": "Ink Subtle",
+        "canonical": "oklch(0.545 0.017 264)",
+        "tonalRamp": [
+          "#0b0d13",
+          "#21242a",
+          "#3a3d44",
+          "#55585f",
+          "#71757c",
+          "#9498a0",
+          "#babec6",
+          "#e4e8f0"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "oklch(0.912 0.006 264)",
+        "tonalRamp": [
+          "#0b0d13",
+          "#21242a",
+          "#3a3d44",
+          "#55585f",
+          "#71757c",
+          "#9498a0",
+          "#babec6",
+          "#e4e8f0"
+        ]
+      },
+      "line-faint": {
+        "role": "neutral",
+        "displayName": "Hairline Faint",
+        "canonical": "oklch(0.945 0.005 264)",
+        "tonalRamp": [
+          "#0b0d13",
+          "#21242a",
+          "#3a3d44",
+          "#55585f",
+          "#71757c",
+          "#9498a0",
+          "#babec6",
+          "#e4e8f0"
+        ]
+      },
+      "line-strong": {
+        "role": "neutral",
+        "displayName": "Control Edge",
+        "canonical": "oklch(0.655 0.014 264)",
+        "tonalRamp": [
+          "#0b0d13",
+          "#21242a",
+          "#3a3d44",
+          "#55585f",
+          "#71757c",
+          "#9498a0",
+          "#babec6",
+          "#e4e8f0"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "numeral": {
+        "displayName": "Numeral",
+        "purpose": "The single answer the user came for: the hero exit time and the hero period value. Container-query sized, tabular, slashed zero. The only step above 2rem."
+      },
+      "display": {
+        "displayName": "Display",
+        "purpose": "Modal titles only - reset confirmation, privacy dialog, weekly-video prompt."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "The single h2 at the top of each calculator card."
+      },
+      "metric": {
+        "displayName": "Metric",
+        "purpose": "Secondary figures with weight: day balance, stat tile value, the ring's centre timer. Tabular."
+      },
+      "heading": {
+        "displayName": "Heading",
+        "purpose": "Section heads inside a card."
+      },
+      "input": {
+        "displayName": "Input",
+        "purpose": "Every text field. 18px clears the iOS zoom-on-focus threshold. Tabular."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Explanatory prose, capped at 68ch."
+      },
+      "body-sm": {
+        "displayName": "Body Small",
+        "purpose": "Day summary rows, regime descriptions, list items. The workhorse."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Field, button and tab labels. Separates from Body Small by weight, not size."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "Field hints, privacy and disclaimer footnotes, ad labels."
+      },
+      "overline": {
+        "displayName": "Overline",
+        "purpose": "The eyebrow above a hero value or a stat tile. The only uppercase in the product."
+      }
+    },
+    "shadows": [
+      {
+        "name": "shadow-card",
+        "value": "0 1px 2px rgb(15 17 22 / 0.04), 0 8px 24px -16px rgb(15 17 22 / 0.12)",
+        "purpose": "Ambient contact shadow of a card in light mode; resolves to none in dark, where --color-line carries the separation."
+      },
+      {
+        "name": "shadow-raised",
+        "value": "0 2px 6px rgb(15 17 22 / 0.06), 0 20px 48px -24px rgb(15 17 22 / 0.22)",
+        "purpose": "Floating chrome and modals. Dark mode collapses it to 0 20px 48px -28px rgb(0 0 0 / 0.6)."
+      },
+      {
+        "name": "shadow-press",
+        "value": "0 1px 1px rgb(15 17 22 / 0.06)",
+        "purpose": "What a pressed control drops to, paired with scale(0.97)."
+      },
+      {
+        "name": "shadow-accent",
+        "value": "0 8px 24px -12px color-mix(in oklab, var(--color-accent) 45%, transparent)",
+        "purpose": "The hero panel alone. The one coloured glow in the product, because the hero is the answer."
+      }
+    ],
+    "motion": [
+      {
+        "name": "duration-instant",
+        "value": "100ms",
+        "purpose": "Press feedback, fired on pointer-down."
+      },
+      {
+        "name": "duration-fast",
+        "value": "160ms",
+        "purpose": "Hover, colour and border transitions."
+      },
+      {
+        "name": "duration-base",
+        "value": "220ms",
+        "purpose": "Collapsible panels, tab change, segment pill."
+      },
+      {
+        "name": "duration-slow",
+        "value": "320ms",
+        "purpose": "Modal and sheet enter/exit, hero tone change."
+      },
+      {
+        "name": "duration-data",
+        "value": "600ms",
+        "purpose": "The progress ring sweep - the only long animation, exempt because it is data, not chrome."
+      },
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.23, 1, 0.32, 1)",
+        "purpose": "Anything entering or responding to a press."
+      },
+      {
+        "name": "ease-in-out",
+        "value": "cubic-bezier(0.77, 0, 0.175, 1)",
+        "purpose": "Something moving across the screen."
+      },
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Colour and opacity only."
+      },
+      {
+        "name": "spring-ui",
+        "value": "{ type: 'spring', bounce: 0, duration: 0.35 }",
+        "purpose": "Default UI spring: critically damped, interruptible, no overshoot."
+      },
+      {
+        "name": "spring-momentum",
+        "value": "{ type: 'spring', bounce: 0.2, duration: 0.4 }",
+        "purpose": "Only where a gesture carried momentum."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      },
+      {
+        "name": "2xl",
+        "value": "1536px"
+      },
+      {
+        "name": "wide",
+        "value": "1920px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The only cobalt fill in a viewport. Primary action, active tab.",
+      "html": "<button class=\"ds-btn-primary\">Salvar Preferencias</button>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 24px;border:none;border-radius:16px;background:var(--color-accent,#2a62d1);color:#fff;font-family:var(--font-inter),system-ui,sans-serif;font-size:.875rem;font-weight:500;line-height:1.2;letter-spacing:.005em;cursor:pointer;transition:background 160ms cubic-bezier(.4,0,.2,1),transform 100ms cubic-bezier(.23,1,.32,1)}.ds-btn-primary:hover{background:var(--color-accent-hover,#184fbb)}.ds-btn-primary:focus-visible{outline: 2px solid var(--color-focus); outline-offset: 2px;}.ds-btn-primary:active{background:var(--color-accent-active,#1245a8);transform:scale(.97)}.ds-btn-primary:disabled{opacity:.4;pointer-events:none}"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Secondary action. Hairline border at 3:1, no fill at rest.",
+      "html": "<button class=\"ds-btn-outline\">Cancelar</button>",
+      "css": ".ds-btn-outline{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 24px;border:1px solid var(--color-line-strong,#8c919a);border-radius:16px;background:transparent;color:var(--color-ink,#1e232c);font-family:var(--font-inter),system-ui,sans-serif;font-size:.875rem;font-weight:500;letter-spacing:.005em;cursor:pointer;transition:background 160ms cubic-bezier(.4,0,.2,1),border-color 160ms cubic-bezier(.4,0,.2,1),transform 100ms cubic-bezier(.23,1,.32,1)}.ds-btn-outline:hover{background:var(--color-surface-sunken,#f2f4f7);border-color:var(--color-ink-subtle,#6b707a)}.ds-btn-outline:focus-visible{outline: 2px solid var(--color-focus); outline-offset: 2px;}.ds-btn-outline:active{transform:scale(.97)}.ds-btn-outline:disabled{opacity:.4;pointer-events:none}"
+    },
+    {
+      "name": "Danger Button",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "Destructive action. Tinted, never a solid red - solid red is reserved for numbers.",
+      "html": "<button class=\"ds-btn-danger\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m3 0v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6\"/></svg>Resetar horarios</button>",
+      "css": ".ds-btn-danger{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 24px;border:none;border-radius:16px;background:var(--color-negative-soft,#faebec);color:var(--color-negative-ink,#bf2029);font-family:var(--font-inter),system-ui,sans-serif;font-size:.875rem;font-weight:500;letter-spacing:.005em;cursor:pointer;transition:background 160ms cubic-bezier(.4,0,.2,1),transform 100ms cubic-bezier(.23,1,.32,1)}.ds-btn-danger:hover{background:color-mix(in oklab,var(--color-negative,#ca262e) 18%,transparent)}.ds-btn-danger:focus-visible{outline:2px solid var(--color-negative,#ca262e);outline-offset:2px}.ds-btn-danger:active{transform:scale(.97)}"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "56px tall, 18px tabular text, 3:1 control edge. Cobalt focus ring everywhere.",
+      "html": "<div class=\"ds-field\"><label class=\"ds-field-label\" for=\"ds-in\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 7v5l3 2\"/></svg>Entrada</label><input class=\"ds-input\" id=\"ds-in\" inputmode=\"numeric\" value=\"08:12\"><p class=\"ds-field-hint\">A mesma jornada diaria usada na aba Jornada.</p></div>",
+      "css": ".ds-field{display:flex;flex-direction:column;gap:8px;font-family:var(--font-inter),system-ui,sans-serif}.ds-field-label{display:flex;align-items:center;gap:8px;font-size:.875rem;font-weight:500;line-height:1.2;letter-spacing:.005em;color:var(--color-ink-muted,#5f656f)}.ds-input{height:56px;padding:0 16px;border:1px solid var(--color-line-strong,#8c919a);border-radius:16px;background:var(--color-surface,#fff);color:var(--color-ink,#1e232c);font:500 1.125rem/1.2 var(--font-inter),system-ui,sans-serif;letter-spacing:.005em;font-variant-numeric:tabular-nums slashed-zero;transition:border-color 160ms cubic-bezier(.4,0,.2,1)}.ds-input::placeholder{color:var(--color-ink-subtle,#6b707a)}.ds-input:hover{border-color:var(--color-ink-subtle,#6b707a)}.ds-input:focus-visible{border-color:var(--color-accent,#2a62d1);outline: 2px solid var(--color-focus); outline-offset: 2px;}.ds-input[aria-invalid=\"true\"]{border-color:var(--color-negative,#ca262e);background:var(--color-negative-soft,#faebec)}.ds-input:disabled{background:var(--color-surface-sunken,#f2f4f7);border-color:var(--color-line,#e0e2e6);opacity:.6;cursor:not-allowed}.ds-field-hint{margin:0;font-size:.75rem;line-height:1.45;letter-spacing:.01em;color:var(--color-ink-subtle,#6b707a)}"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "28px corner, hairline border, contact shadow in light and none in dark.",
+      "html": "<section class=\"ds-card\"><h2 class=\"ds-card-title\">Sua Jornada</h2><p class=\"ds-card-sub\">Informe seus horarios para ver quando pode sair e quanto ja trabalhou.</p></section>",
+      "css": ".ds-card{padding:24px;border:1px solid var(--color-line,#e0e2e6);border-radius:28px;background:var(--color-surface,#fff);box-shadow:0 1px 2px rgb(15 17 22/.04),0 8px 24px -16px rgb(15 17 22/.12);font-family:var(--font-inter),system-ui,sans-serif}@media(min-width:640px){.ds-card{padding:32px}}.ds-card-title{margin:0 0 8px;font-size:1.5rem;font-weight:600;line-height:1.2;letter-spacing:-.018em;color:var(--color-ink,#1e232c)}.ds-card-sub{margin:0;font-size:.875rem;line-height:1.5;letter-spacing:.003em;color:var(--color-ink-muted,#5f656f)}"
+    },
+    {
+      "name": "Hero Panel",
+      "kind": "custom",
+      "refersTo": "hero",
+      "description": "The signature surface. A semantic fill carrying the one number the user came for, at --text-numeral.",
+      "html": "<div class=\"ds-hero\"><div class=\"ds-hero-top\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 7v5l3 2\"/></svg><span class=\"ds-hero-eyebrow\">Saida Prevista</span></div><p class=\"ds-hero-value\">17:42</p><p class=\"ds-hero-note\">e quando sua jornada fecha</p></div>",
+      "css": ".ds-hero{container-type:inline-size;padding:32px;border-radius:32px;background:var(--color-positive-deep,#085e2f);color:#fff;box-shadow:0 8px 24px -12px color-mix(in oklab,var(--color-positive-deep,#085e2f) 45%,transparent);font-family:var(--font-inter),system-ui,sans-serif;text-align:center}.ds-hero-top{display:flex;align-items:center;gap:12px;text-align:left}.ds-hero-eyebrow{font-size:.6875rem;font-weight:600;line-height:1.2;letter-spacing:.08em;text-transform:uppercase}.ds-hero-value{margin:24px 0 0;font-size:clamp(2.5rem,20cqi,6rem);font-weight:700;line-height:1;letter-spacing:-.035em;font-variant-numeric:tabular-nums slashed-zero;white-space:nowrap}.ds-hero-note{margin:8px 0 0;font-size:.875rem;font-weight:500;opacity:.8}"
+    },
+    {
+      "name": "Segmented Control",
+      "kind": "chip",
+      "refersTo": "segment-option",
+      "description": "Real radio inputs in a sunken track. Selected pill is a surface plane with cobalt ink.",
+      "html": "<fieldset class=\"ds-seg\"><legend class=\"ds-seg-legend\">Modo de calculo da saida</legend><label class=\"ds-seg-opt\"><input type=\"radio\" name=\"ds-seg\" checked>AUTO</label><label class=\"ds-seg-opt\"><input type=\"radio\" name=\"ds-seg\">MANUAL</label></fieldset>",
+      "css": ".ds-seg{display:inline-grid;grid-auto-flow:column;gap:4px;margin:0;padding:6px;border:none;border-radius:20px;background:var(--color-surface-sunken,#f2f4f7);font-family:var(--font-inter),system-ui,sans-serif}.ds-seg-legend{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.ds-seg-opt{display:flex;align-items:center;justify-content:center;min-height:44px;padding:0 20px;border-radius:12px;color:var(--color-ink-muted,#5f656f);font-size:.875rem;font-weight:500;letter-spacing:.005em;cursor:pointer;transition:background 160ms cubic-bezier(.4,0,.2,1),color 160ms cubic-bezier(.4,0,.2,1)}.ds-seg-opt input{position:absolute;opacity:0;pointer-events:none}.ds-seg-opt:hover{background:color-mix(in oklab,var(--color-ink,#1e232c) 6%,transparent)}.ds-seg-opt:has(:checked){background:var(--color-surface,#fff);color:var(--color-accent-ink,#1f57c7);box-shadow:0 1px 1px rgb(15 17 22/.06)}.ds-seg-opt:has(:focus-visible){outline: 2px solid var(--color-focus); outline-offset: 2px;}"
+    },
+    {
+      "name": "Stat Tile",
+      "kind": "card",
+      "refersTo": "stat-tile",
+      "description": "Neutral plane, coloured value. The tile never tints - only the number carries the hue.",
+      "html": "<div class=\"ds-stat\"><span class=\"ds-stat-label\">Total Descontos</span><span class=\"ds-stat-value\">R$ 1.284,37</span><span class=\"ds-stat-sub\">INSS + IRRF + Outros</span></div>",
+      "css": ".ds-stat{display:flex;flex-direction:column;gap:8px;padding:16px;border:1px solid var(--color-line,#e0e2e6);border-radius:20px;background:var(--color-surface-sunken,#f2f4f7);font-family:var(--font-inter),system-ui,sans-serif}.ds-stat-label{font-size:.6875rem;font-weight:600;line-height:1.2;letter-spacing:.08em;text-transform:uppercase;color:var(--color-ink-muted,#5f656f)}.ds-stat-value{font-size:1.5rem;font-weight:600;line-height:1.15;letter-spacing:-.016em;font-variant-numeric:tabular-nums slashed-zero;color:var(--color-negative-ink,#bf2029)}.ds-stat-sub{font-size:.75rem;line-height:1.45;letter-spacing:.01em;color:var(--color-ink-subtle,#6b707a)}"
+    },
+    {
+      "name": "Alert Banner",
+      "kind": "custom",
+      "refersTo": "alert-warning",
+      "description": "Two tones only: amber for a CLT limit approached, red for an input the app cannot use.",
+      "html": "<div class=\"ds-alert\" role=\"status\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z\"/><path d=\"M12 9v4M12 17h.01\"/></svg><div><p class=\"ds-alert-title\">Limite de 2h extras atingido</p><p class=\"ds-alert-body\">A CLT limita a jornada suplementar a 2 horas por dia.</p></div></div>",
+      "css": ".ds-alert{display:flex;align-items:flex-start;gap:12px;padding:16px;border:1px solid color-mix(in oklab,var(--color-overtime,#c48019) 30%,transparent);border-radius:20px;background:var(--color-overtime-soft,#faf4ea);color:var(--color-overtime-ink,#905e16);font-family:var(--font-inter),system-ui,sans-serif}.ds-alert svg{flex:0 0 auto;margin-top:1px}.ds-alert-title{margin:0;font-size:.875rem;font-weight:600;line-height:1.3}.ds-alert-body{margin:4px 0 0;font-size:.875rem;line-height:1.5;letter-spacing:.003em}"
+    },
+    {
+      "name": "Floating Tab Bar",
+      "kind": "nav",
+      "refersTo": "nav-tab",
+      "description": "Translucent chrome above the safe area. Active tab is the Primary button; inactive is Ghost.",
+      "html": "<nav class=\"ds-tabs\" aria-label=\"Calculadoras\"><a class=\"ds-tab ds-tab-active\" href=\"#\" aria-current=\"page\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 7v5l3 2\"/></svg>Jornada</a><a class=\"ds-tab\" href=\"#\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 2v20M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6\"/></svg>Custo da Hora</a></nav>",
+      "css": ".ds-tabs{display:inline-flex;gap:4px;padding:6px;border:1px solid var(--color-line,#e0e2e6);border-radius:20px;background:var(--color-chrome,rgb(255 255 255/.72));backdrop-filter:blur(20px) saturate(180%);box-shadow:0 2px 6px rgb(15 17 22/.06),0 20px 48px -24px rgb(15 17 22/.22);font-family:var(--font-inter),system-ui,sans-serif}.ds-tab{display:inline-flex;align-items:center;gap:8px;height:48px;padding:0 16px;border-radius:12px;color:var(--color-ink-muted,#5f656f);font-size:.875rem;font-weight:500;letter-spacing:.005em;text-decoration:none;transition:background 160ms cubic-bezier(.4,0,.2,1),color 160ms cubic-bezier(.4,0,.2,1),transform 100ms cubic-bezier(.23,1,.32,1)}.ds-tab:hover{background:var(--color-surface-sunken,#f2f4f7);color:var(--color-ink,#1e232c)}.ds-tab:focus-visible{outline: 2px solid var(--color-focus); outline-offset: 2px;}.ds-tab:active{transform:scale(.97)}.ds-tab-active,.ds-tab-active:hover{background:var(--color-accent,#2a62d1);color:#fff}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Honest Instrument",
+    "overview": "WorkLoad is not an app about work; it is a gauge you glance at. The person holding it is standing at a time clock with one thumb free, possibly in a badly lit corridor, and they want a single number: when can I go home? Everything in this system is built to deliver that number faster and more truthfully than anything else on their screen, and then get out of the way. The reference object is not a fintech dashboard - it is a well-made measuring tool: a caliper, an altimeter, a Braun stopwatch. Tools like that have exactly one colored mark on them, and the mark means something.\n\nThe system is therefore quiet everywhere except where a number lives. Chrome is neutral, near-achromatic, and translucent so content passes under it. Cards are flat planes separated by tone and a hairline, not by drop shadows competing for depth. There is one accent - a deep cobalt - and it is reserved for the things the user acts on: the primary button, the active tab, the focus ring, the mark in the logo. Every other color on screen is not decoration but data: green means you are in credit, red means you owe time, amber means overtime, violet means the night premium. If a color appears, it is saying something measurable. That is the whole discipline.\n\nThe predecessor system had six competing accent hues, two different reds, and no tokens at all - every color was typed inline twice, once for light and once for dark. That is the anti-reference. So is the blurred gradient field behind the page, the font-black headline weight, and the 700ms color crossfade on the hero. Loud where it should be silent, slow where it should be immediate.",
+    "keyCharacteristics": [
+      "One accent. Everything else is neutral or a data color with a defined meaning.",
+      "Numbers are typographically first-class: tabular figures, slashed zero, tight optical tracking, and the largest type in the product.",
+      "Depth by tone and hairline, not by shadow stacks. Shadows respond to state; they are not applied at rest.",
+      "Motion is spring-based, interruptible, and under 320ms. Live numbers never animate.",
+      "Both themes are authored, not derived. Every pair is contrast-verified.",
+      "Type, spacing and radius all scale from rem, so the whole product grows with the user's text size and with the display."
+    ],
+    "rules": [
+      {
+        "name": "The One Mark Rule",
+        "body": "Cobalt appears on at most three elements in any viewport, and each of them is something the user can act on. If a fourth cobalt thing appears, one of them was decoration - delete it.",
+        "section": "colors"
+      },
+      {
+        "name": "The Colour-Means-a-Number Rule",
+        "body": "Green, red, amber and violet are reserved for values. A green button, an amber card background, a red heading with no red number under it - all forbidden. If you cannot name the quantity the colour encodes, use a neutral.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Red Rule",
+        "body": "There is exactly one red (hue 25). rose, red, crimson and any second failure hue do not exist in this system.",
+        "section": "colors"
+      },
+      {
+        "name": "The Recession Rule",
+        "body": "Sunken is always darker than its parent, in both themes. Never invert the depth model between light and dark.",
+        "section": "colors"
+      },
+      {
+        "name": "The 700 Ceiling",
+        "body": "Nothing is heavier than 700. font-black (900) and font-extrabold (800) do not exist here. Weight above 700 in Inter stops adding emphasis and starts adding noise.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tracking-Follows-Size Rule",
+        "body": "Tracking is negative above 1.125rem, zero at body, and positive below 0.875rem. A single letter-spacing applied across the ramp is wrong somewhere by definition.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tabular Rule",
+        "body": "Every digit that represents a quantity, a time, or money carries the numeric utility. A column of times that shifts horizontally as the seconds tick is a defect, not a rendering artifact.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Voice per Card Rule",
+        "body": "A card has exactly one Title. Everything below it is Heading or smaller. Two 24px headings in one card means the card should have been two cards.",
+        "section": "typography"
+      },
+      {
+        "name": "The Answer-First Rule",
+        "body": "On any viewport under 1024px, the hero panel is the first thing in the DOM order and the first thing on screen. Inputs come after the answer they produce.",
+        "section": "layout"
+      },
+      {
+        "name": "The Eight Steps Rule",
+        "body": "If a gap is not one of 2, 8, 12, 16, 24, 32, 48, 64, it is wrong. There is no 20px and no 40px.",
+        "section": "layout"
+      },
+      {
+        "name": "The Scale-Don't-Reflow Rule",
+        "body": "Above 1920px the product gets bigger, not busier. New columns, new panels and revealed-on-wide content are forbidden.",
+        "section": "layout"
+      },
+      {
+        "name": "The Flat-at-Rest Rule",
+        "body": "No element carries a shadow in its resting state except the four floating layers: header, tab bar, modal, hero. Everything else earns a shadow by being pressed or dragged, or does without.",
+        "section": "elevation"
+      },
+      {
+        "name": "The No-Stacked-Glass Rule",
+        "body": "A translucent surface never sits on another translucent surface. The tab bar over the page is fine; a translucent card under the translucent tab bar is not.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Dark-Has-No-Shadows Rule",
+        "body": "In dark mode, separation comes from --color-surface-* steps, --color-line, and --color-edge-highlight. If a dark-mode design reads as flat, the fix is a lighter surface step, never a bigger shadow.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Concentric Rule",
+        "body": "A child flush against its parent's inner edge takes parent radius minus inset. A child floating with at least 16px of clearance on every side takes the next step down the scale from its parent. A card (xl, 28px) with 24px padding therefore holds panels at lg (20px), which hold fields at md (16px), which hold chips at xs (8px). Corners never nest upward.",
+        "section": "shapes"
+      },
+      {
+        "name": "The Hairline Rule",
+        "body": "One pixel, always. A heavier border is a request for a different surface colour, not a thicker line.",
+        "section": "shapes"
+      },
+      {
+        "name": "The Forty-Four Rule",
+        "body": "No interactive target is smaller than 44x44px, including the ones that look like text links. Pad the hit area rather than growing the glyph.",
+        "section": "components"
+      },
+      {
+        "name": "The Ring Is Never Optional Rule",
+        "body": "focus-visible always draws the focus ring. A component that removes the outline without replacing it with an equally contrasting indicator is broken, not clean.",
+        "section": "components"
+      },
+      {
+        "name": "The Error Has Words Rule",
+        "body": "An error state changes a border colour and names the problem in pt-BR in a banner the field points at with aria-describedby. Colour alone is never the message.",
+        "section": "components"
+      },
+      {
+        "name": "The Under-320 Rule",
+        "body": "No interaction animation exceeds 320ms. The single exception is --duration-data, and it is exempt only because it is data, not chrome.",
+        "section": "motion"
+      },
+      {
+        "name": "The Numbers-Don't-Move Rule",
+        "body": "A value the user is reading does not animate. Ever.",
+        "section": "motion"
+      },
+      {
+        "name": "The Interruptible Rule",
+        "body": "Anything the user can trigger twice in a second is a spring or a CSS transition, never a keyframe. It must reverse from where it is, not from where it started.",
+        "section": "motion"
+      },
+      {
+        "name": "The Same-Path Rule",
+        "body": "What enters from a direction exits to that direction. The tab bar, the cookie banner and the ad-block notice enter from the bottom and leave to the bottom.",
+        "section": "motion"
+      }
+    ],
+    "dos": [
+      "Do use exactly one accent. --color-accent on the primary action, the active tab, the focus ring, the logo mark - and nowhere else.",
+      "Do give every colour a quantity. If it is not the accent and not a neutral, it is green, red, amber or violet and it is describing a number.",
+      "Do set every figure with the numeric utility (tabular-nums slashed-zero).",
+      "Do put the answer before the inputs on anything narrower than 1024px.",
+      "Do separate layers with --color-surface-* steps and a --color-line hairline first; reach for a shadow only for the four floating layers.",
+      "Do give interactive borders --color-line-strong (at least 3:1) and structural borders --color-line.",
+      "Do nest radii concentrically: xl card, lg panel, md field, xs chip.",
+      "Do keep interaction animation under 320ms, spring-based, and interruptible.",
+      "Do state the measured contrast ratio when introducing any new colour pair.",
+      "Do scale the root font size above 1920px and leave the composition alone."
+    ],
+    "donts": [
+      "Don't introduce a second accent hue, a second red, or a gradient. indigo, blue, rose, emerald, sky and orange as raw utilities do not exist in this codebase any more.",
+      "Don't write a colour, radius, shadow, duration or type value inline. Every one of them is a token in app/globals.css, and a dark: twin on a colour utility is a sign the token is missing.",
+      "Don't use font-black or font-extrabold. 700 is the ceiling.",
+      "Don't use font-mono. Inter's tabular figures are the numeric face.",
+      "Don't apply a single letter-spacing across sizes. Tracking is negative above 1.125rem and positive below 0.875rem.",
+      "Don't animate a value the user is reading - the clock, the countdown, the hero numeral, a stat tile figure.",
+      "Don't animate from scale(0), and don't ship an enter animation without its exit.",
+      "Don't put a shadow on a resting card, and don't try to fix flat dark mode with a bigger shadow - use a lighter surface step.",
+      "Don't stack a translucent surface on another translucent surface.",
+      "Don't let a target fall under 44x44px or remove a focus outline without replacing it.",
+      "Don't add decorative blur, bokeh, or a full-viewport gradient field behind the page. This is an instrument.",
+      "Don't add a new column, panel or revealed content above 1920px. Scale, don't reflow."
+    ]
+  }
+}
