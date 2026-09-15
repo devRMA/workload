@@ -19,7 +19,6 @@
 | audit | web-standards-auditor | pending | 0 | `reports/audit.md` |
 | release | release-manager | pending | 0 | `reports/release.md` |
 | preview | web-standards-auditor | pending | 0 | `reports/audit-preview.md` |
-| recruiter | tech-recruiter | pending | 0 | `reports/recruiter.md` |
 
 ## Tasks
 
