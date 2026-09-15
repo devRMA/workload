@@ -1,6 +1,6 @@
 "use client";
 
-import { Clock, DollarSign } from "lucide-react";
+import { IconClock, IconCurrencyDollar } from "@tabler/icons-react";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
@@ -12,9 +12,9 @@ import { type CalculatorView, VIEW_PATHS } from "@/lib/calculator-view";
 import { CURRENT_LEGAL_YEAR } from "@/lib/legal-tables";
 import { formatIsoDate } from "@/lib/utils";
 
-const VIEW_TABS: readonly { view: CalculatorView; label: string; icon: typeof Clock }[] = [
-  { view: "work", label: "Jornada", icon: Clock },
-  { view: "salary", label: "Custo da Hora", icon: DollarSign },
+const VIEW_TABS: readonly { view: CalculatorView; label: string; icon: typeof IconClock }[] = [
+  { view: "work", label: "Jornada", icon: IconClock },
+  { view: "salary", label: "Custo da Hora", icon: IconCurrencyDollar },
 ];
 
 const PANEL_TRANSITION = {

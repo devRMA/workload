@@ -1,6 +1,6 @@
 "use client";
 
-import { Cookie, Shield, X } from "lucide-react";
+import { IconCookie, IconShield, IconX } from "@tabler/icons-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/atoms/button";
@@ -46,7 +46,7 @@ export function CookieConsent() {
             <div className="overflow-hidden rounded-2xl border border-line bg-surface-raised shadow-raised edge-lit">
               <div className="flex flex-col md:flex-row items-center gap-lg p-lg md:p-xl">
                 <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-md bg-accent-soft text-accent-ink">
-                  <Cookie size={32} aria-hidden="true" />
+                  <IconCookie size={32} aria-hidden="true" />
                 </div>
 
                 <div className="flex-1 space-y-1 text-center md:text-left">
@@ -91,13 +91,13 @@ export function CookieConsent() {
           aria-label="Fechar configurações de privacidade"
           className="absolute right-4 top-4"
         >
-          <X size={20} aria-hidden="true" />
+          <IconX size={20} aria-hidden="true" />
         </Button>
 
         <div className="space-y-xl">
           <div className="flex items-center gap-md">
             <div className="flex h-12 w-12 items-center justify-center rounded-md bg-accent-soft text-accent-ink">
-              <Shield size={24} aria-hidden="true" />
+              <IconShield size={24} aria-hidden="true" />
             </div>
             <h2 id="privacy-settings-title" className="text-display">
               Privacidade
@@ -160,7 +160,7 @@ export function CookieConsent() {
           className="fixed bottom-[max(var(--spacing-md),env(safe-area-inset-bottom))] right-4 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-line bg-chrome text-ink-muted shadow-card backdrop-blur-chrome transition-colors duration-(--duration-fast) ease-standard hover:text-accent-ink ring-focus"
           aria-label="Configurações de Privacidade"
         >
-          <Shield size={18} aria-hidden="true" />
+          <IconShield size={18} aria-hidden="true" />
         </button>
       )}
     </>

@@ -1,4 +1,12 @@
-import { AlertTriangle, CalendarDays, Coffee, MoonStar, Sunrise, Sunset, Zap } from "lucide-react";
+import {
+  IconAlertTriangle,
+  IconBolt,
+  IconCalendarMonth,
+  IconCoffee,
+  IconMoonStars,
+  IconSunrise,
+  IconSunset,
+} from "@tabler/icons-react";
 import Link from "next/link";
 import { VIEW_PATHS } from "@/lib/calculator-view";
 import type { ComplianceWarning } from "@/lib/compliance";
@@ -94,15 +102,21 @@ export function DaySummary({
   const stretches = [
     {
       kind: "morning" as const,
-      icon: Sunrise,
+      icon: IconSunrise,
       label: "Manhã",
       endsAt: times.lunchStart,
       minutes: breakdown.morningMinutes,
     },
-    { kind: "lunch" as const, icon: Coffee, label: "Almoço", endsAt: times.lunchEnd, minutes: breakdown.lunchMinutes },
+    {
+      kind: "lunch" as const,
+      icon: IconCoffee,
+      label: "Almoço",
+      endsAt: times.lunchEnd,
+      minutes: breakdown.lunchMinutes,
+    },
     {
       kind: "afternoon" as const,
-      icon: Sunset,
+      icon: IconSunset,
       label: "Tarde",
       endsAt: times.exit,
       minutes: breakdown.afternoonMinutes,
@@ -140,7 +154,7 @@ export function DaySummary({
         {breakdown.nightBonusMinutes > 0 ? (
           <div className="flex items-center gap-sm text-body-sm">
             <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-night" aria-hidden="true" />
-            <MoonStar className="w-4 h-4 shrink-0 text-night-ink" aria-hidden="true" />
+            <IconMoonStars className="w-4 h-4 shrink-0 text-night-ink" aria-hidden="true" />
             <span className="font-medium">Hora noturna reduzida</span>
             <span className="text-ink-muted">art. 73 da CLT</span>
             <span className="ml-auto numeric font-semibold text-night-ink">
@@ -175,7 +189,7 @@ export function DaySummary({
 
         <div className="space-y-xs">
           <div className="flex items-center gap-sm text-body-sm">
-            <Zap className="w-4 h-4 shrink-0 text-overtime-ink" aria-hidden="true" />
+            <IconBolt className="w-4 h-4 shrink-0 text-overtime-ink" aria-hidden="true" />
             <span>Extra {firstTierRate}%</span>
             <span className="ml-auto numeric font-semibold">{formatHoursAndMinutes(firstTierMinutes)}</span>
             {firstTierPay === null ? null : (
@@ -185,7 +199,7 @@ export function DaySummary({
             )}
           </div>
           <div className="flex items-center gap-sm text-body-sm">
-            <Zap className="w-4 h-4 shrink-0 text-overtime-ink" aria-hidden="true" />
+            <IconBolt className="w-4 h-4 shrink-0 text-overtime-ink" aria-hidden="true" />
             <span>Extra {extraTierRate}%</span>
             <span className="ml-auto numeric font-semibold">{formatHoursAndMinutes(extraTierMinutes)}</span>
             {extraTierPay === null ? null : (
@@ -195,7 +209,7 @@ export function DaySummary({
             )}
           </div>
           <div className="flex items-center gap-sm text-body-sm">
-            <MoonStar className="w-4 h-4 shrink-0 text-night-ink" aria-hidden="true" />
+            <IconMoonStars className="w-4 h-4 shrink-0 text-night-ink" aria-hidden="true" />
             <span>Adicional noturno 20%</span>
             <span className="ml-auto numeric font-semibold">{formatHoursAndMinutes(nightMinutes)}</span>
             {nightPay === null ? null : (
@@ -206,7 +220,7 @@ export function DaySummary({
           </div>
           {restDayPay > 0 ? (
             <div className="flex items-center gap-sm text-body-sm">
-              <CalendarDays className="w-4 h-4 shrink-0 text-positive-ink" aria-hidden="true" />
+              <IconCalendarMonth className="w-4 h-4 shrink-0 text-positive-ink" aria-hidden="true" />
               <span>DSR sobre os extras</span>
               <span className="ml-auto w-24 text-right numeric font-semibold text-positive-ink">
                 {formatCurrency(restDayPay)}
@@ -234,7 +248,7 @@ export function DaySummary({
       </div>
 
       {warnings.map(({ id, title, detail }) => (
-        <AlertBanner key={id} icon={AlertTriangle} tone="warning" title={title}>
+        <AlertBanner key={id} icon={IconAlertTriangle} tone="warning" title={title}>
           <p>{detail}</p>
         </AlertBanner>
       ))}

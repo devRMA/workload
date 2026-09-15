@@ -1,17 +1,17 @@
+import { IconAlertTriangle } from "@tabler/icons-react";
 import { render, screen } from "@testing-library/react";
-import { AlertTriangle } from "lucide-react";
 import { describe, expect, it } from "vitest";
 import { AlertBanner } from "@/components/atoms/alert-banner";
 
 describe("AlertBanner", () => {
   it("announces a danger banner as an alert", () => {
-    render(<AlertBanner icon={AlertTriangle} tone="danger" title="Confira seus horários" />);
+    render(<AlertBanner icon={IconAlertTriangle} tone="danger" title="Confira seus horários" />);
 
     expect(screen.getByRole("alert")).toHaveTextContent("Confira seus horários");
   });
 
   it("announces a warning banner as a status", () => {
-    render(<AlertBanner icon={AlertTriangle} tone="warning" title="Atenção" />);
+    render(<AlertBanner icon={IconAlertTriangle} tone="warning" title="Atenção" />);
 
     expect(screen.getByRole("status")).toHaveTextContent("Atenção");
     expect(screen.queryByRole("alert")).toBeNull();
@@ -19,7 +19,7 @@ describe("AlertBanner", () => {
 
   it("renders the supporting content below the title", () => {
     render(
-      <AlertBanner icon={AlertTriangle} tone="danger" title="Confira seus horários">
+      <AlertBanner icon={IconAlertTriangle} tone="danger" title="Confira seus horários">
         <p>A saída precisa vir depois da volta do almoço.</p>
       </AlertBanner>,
     );
@@ -28,20 +28,20 @@ describe("AlertBanner", () => {
   });
 
   it("hides the decorative icon from assistive technology", () => {
-    const { container } = render(<AlertBanner icon={AlertTriangle} tone="danger" title="Confira seus horários" />);
+    const { container } = render(<AlertBanner icon={IconAlertTriangle} tone="danger" title="Confira seus horários" />);
 
     expect(container.querySelector("svg")).toHaveAttribute("aria-hidden", "true");
   });
 
   it("exposes the given id so a field can point to it", () => {
-    render(<AlertBanner id="journey-issue" icon={AlertTriangle} tone="danger" title="Confira seus horários" />);
+    render(<AlertBanner id="journey-issue" icon={IconAlertTriangle} tone="danger" title="Confira seus horários" />);
 
     expect(screen.getByRole("alert")).toHaveAttribute("id", "journey-issue");
   });
 
   it("merges custom className", () => {
     const { container } = render(
-      <AlertBanner icon={AlertTriangle} tone="danger" title="Confira seus horários" className="mb-6" />,
+      <AlertBanner icon={IconAlertTriangle} tone="danger" title="Confira seus horários" className="mb-6" />,
     );
 
     expect(container.firstElementChild?.className).toContain("mb-6");

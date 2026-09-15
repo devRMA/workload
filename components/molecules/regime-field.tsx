@@ -1,6 +1,6 @@
 "use client";
 
-import { Briefcase, Check, ChevronDown } from "lucide-react";
+import { IconBriefcase, IconCheck, IconChevronDown } from "@tabler/icons-react";
 import { useState } from "react";
 import { labelClasses } from "@/components/atoms/label";
 import { WORK_REGIME_INFO, type WorkRegime } from "@/lib/payroll";
@@ -27,7 +27,7 @@ export function RegimeField({ value, onChange, className }: RegimeFieldProps) {
   return (
     <fieldset className={cn("space-y-xs", className)}>
       <legend className={labelClasses}>
-        <Briefcase className="w-4 h-4" aria-hidden="true" />
+        <IconBriefcase className="w-4 h-4" aria-hidden="true" />
         Regime de Trabalho
       </legend>
 
@@ -44,7 +44,7 @@ export function RegimeField({ value, onChange, className }: RegimeFieldProps) {
         </span>
         <span className="flex shrink-0 items-center gap-xs text-label text-accent-ink">
           {isOpen ? "Fechar" : "Alterar"}
-          <ChevronDown
+          <IconChevronDown
             className={cn(
               "w-4 h-4 transition-transform duration-(--duration-base) ease-standard",
               isOpen ? "rotate-180" : "",
@@ -69,7 +69,7 @@ export function RegimeField({ value, onChange, className }: RegimeFieldProps) {
                 onChange={() => handleChange(regime)}
                 className="peer sr-only"
               />
-              <Check
+              <IconCheck
                 className="absolute right-3 top-4 w-4 h-4 text-accent-ink opacity-0 transition-opacity duration-(--duration-fast) peer-checked:opacity-100"
                 aria-hidden="true"
               />

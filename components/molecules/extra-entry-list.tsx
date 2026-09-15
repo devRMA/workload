@@ -1,6 +1,6 @@
 "use client";
 
-import { PlusCircle } from "lucide-react";
+import { IconCirclePlus } from "@tabler/icons-react";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "../atoms/button";
@@ -26,7 +26,7 @@ export function ExtraEntryList({ listId, label, addLabel, addButtonClassName, on
           onClick={onAdd}
           className={cn("gap-xs", addButtonClassName)}
         >
-          <PlusCircle className="w-4 h-4" aria-hidden="true" /> Adicionar
+          <IconCirclePlus className="w-4 h-4" aria-hidden="true" /> Adicionar
         </Button>
       </div>
       <div id={listId} className="space-y-sm">

@@ -1,6 +1,15 @@
 "use client";
 
-import { AlertTriangle, Coffee, LogIn, LogOut, Percent, RotateCcw, Settings, Zap } from "lucide-react";
+import {
+  IconAlertTriangle,
+  IconBolt,
+  IconCoffee,
+  IconLogin,
+  IconLogout,
+  IconPercentage,
+  IconRotate,
+  IconSettings,
+} from "@tabler/icons-react";
 import { useState } from "react";
 import type { JourneyIssue } from "@/lib/journey";
 import { AlertBanner } from "../atoms/alert-banner";
@@ -83,7 +92,7 @@ export function JourneyForm({
             aria-controls={SETTINGS_PANEL_ID}
             className={`rounded-md p-3 transition-colors duration-(--duration-fast) ease-standard ring-focus ${showSettings ? "bg-accent-soft text-accent-ink" : "text-ink-muted hover:bg-surface-sunken"}`}
           >
-            <Settings
+            <IconSettings
               className={`w-5 h-5 transition-transform duration-(--duration-base) ease-standard ${showSettings ? "rotate-90" : ""}`}
               aria-hidden="true"
             />
@@ -121,7 +130,7 @@ export function JourneyForm({
             id="daily-journey"
             label="Tempo de Trabalho Diário"
             className="sm:col-span-2"
-            labelIcon={<Zap className="w-4 h-4 text-overtime-ink" aria-hidden="true" />}
+            labelIcon={<IconBolt className="w-4 h-4 text-overtime-ink" aria-hidden="true" />}
             hint="Define o tempo total de trabalho esperado por dia. Vale também para o cálculo do valor da sua hora."
             minutes={workMinutes}
             onMinutesChange={onWorkMinutesChange}
@@ -131,7 +140,7 @@ export function JourneyForm({
             id="first-tier-rate"
             label="Adicional até 2h extras (%)"
             hint="O piso legal é 50% sobre a hora normal (art. 7º, XVI, da CF; art. 59, §1º, da CLT)."
-            labelIcon={<Percent className="w-4 h-4 text-overtime-ink" aria-hidden="true" />}
+            labelIcon={<IconPercentage className="w-4 h-4 text-overtime-ink" aria-hidden="true" />}
           >
             <Input
               id="first-tier-rate"
@@ -146,7 +155,7 @@ export function JourneyForm({
             id="extra-tier-rate"
             label="Adicional acima de 2h (%)"
             hint="Não existe lei que dobre o adicional depois da 2ª hora: o piso continua sendo 50%. Só use 100% se a sua convenção coletiva previr esse degrau."
-            labelIcon={<Percent className="w-4 h-4 text-overtime-ink" aria-hidden="true" />}
+            labelIcon={<IconPercentage className="w-4 h-4 text-overtime-ink" aria-hidden="true" />}
           >
             <Input
               id="extra-tier-rate"
@@ -163,7 +172,7 @@ export function JourneyForm({
       {issue ? (
         <AlertBanner
           id={ISSUE_BANNER_ID}
-          icon={AlertTriangle}
+          icon={IconAlertTriangle}
           tone="danger"
           title="Confira seus horários"
           className="mb-lg"
@@ -175,7 +184,7 @@ export function JourneyForm({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-lg mb-xl">
         <DateTimeInput
           label="Entrada"
-          icon={LogIn}
+          icon={IconLogin}
           value={entry}
           onChange={onEntryChange}
           hasError={issue?.field === "entry"}
@@ -183,7 +192,7 @@ export function JourneyForm({
         />
         <DateTimeInput
           label="Saída Almoço"
-          icon={Coffee}
+          icon={IconCoffee}
           value={lunchStart}
           onChange={onLunchStartChange}
           hasError={issue?.field === "lunchStart"}
@@ -191,7 +200,7 @@ export function JourneyForm({
         />
         <DateTimeInput
           label="Volta Almoço"
-          icon={RotateCcw}
+          icon={IconRotate}
           className="[&_svg]:rotate-180"
           value={lunchEnd}
           onChange={onLunchEndChange}
@@ -200,7 +209,7 @@ export function JourneyForm({
         />
         <DateTimeInput
           label={isManualExit ? "Saída Real" : "Saída Sugerida"}
-          icon={LogOut}
+          icon={IconLogout}
           id="saida-real"
           value={exitValue}
           onChange={onExitChange}
@@ -217,7 +226,7 @@ export function JourneyForm({
           onClick={() => setIsConfirmingReset(true)}
           className="flex min-h-11 items-center gap-xs -mx-2 rounded-md px-2 text-label text-ink-muted transition-colors duration-(--duration-fast) ease-standard hover:text-negative-ink ring-focus"
         >
-          <RotateCcw className="w-4 h-4" aria-hidden="true" />
+          <IconRotate className="w-4 h-4" aria-hidden="true" />
           Resetar Horários
         </button>
       </div>

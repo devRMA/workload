@@ -31,7 +31,7 @@ export function HeroPanel({ icon: Icon, label, value, tone, badge, media, footer
       <div className="relative z-10 space-y-lg lg:space-y-xl">
         <div className="flex items-center justify-between gap-md">
           <div className="flex items-center gap-sm">
-            <Icon size={24} strokeWidth={1.75} aria-hidden="true" />
+            <Icon size={24} stroke={1.75} aria-hidden="true" />
             <span className="text-overline uppercase">{label}</span>
           </div>
           {badge}
