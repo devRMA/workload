@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 export default function CostPerHour() {
   return (
-    <CalculatorPage>
+    <CalculatorPage view="salary">
       <CalculatorViews activeView="salary" />
     </CalculatorPage>
   );

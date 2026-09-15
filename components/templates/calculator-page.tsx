@@ -1,27 +1,15 @@
 import type { ReactNode } from "react";
 import { AppHeader } from "@/components/organisms/app-header";
+import { type CalculatorView, VIEW_HEADINGS } from "@/lib/calculator-view";
+import { buildStructuredData } from "@/lib/structured-data";
 
-const STRUCTURED_DATA = JSON.stringify({
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  name: "WorkLoad",
-  url: "https://workload.devrma.com",
-  description: "Calculadora inteligente de jornada e valor de trabalho.",
-  applicationCategory: "BusinessApplication",
-  operatingSystem: "Any",
-  author: {
-    "@type": "Person",
-    name: "Rafael Augusto",
-  },
-});
-
-export function CalculatorPage({ children }: { children: ReactNode }) {
+export function CalculatorPage({ view, children }: { view: CalculatorView; children: ReactNode }) {
   return (
     <>
       <script
         type="application/ld+json"
         // biome-ignore lint/security/noDangerouslySetInnerHtml: safe only while every field above is a static literal — escape the payload before injecting anything user, API or CMS supplied
-        dangerouslySetInnerHTML={{ __html: STRUCTURED_DATA }}
+        dangerouslySetInnerHTML={{ __html: buildStructuredData(view) }}
       />
       <a
         href="#main-content"
@@ -30,7 +18,7 @@ export function CalculatorPage({ children }: { children: ReactNode }) {
         Pular para o conteúdo principal
       </a>
       <main className="min-h-screen bg-canvas text-ink">
-        <AppHeader />
+        <AppHeader heading={VIEW_HEADINGS[view]} />
 
         {children}
       </main>

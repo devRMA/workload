@@ -40,6 +40,7 @@ describe("calculateTimerData", () => {
     expect(calculateTimerData(baseInput)).toEqual({
       statusLabel: "faltam",
       statusTime: "07:48:00",
+      statusAnnouncement: "Faltam 7h 48m para o fim da jornada",
       isOvertime: false,
     });
   });
@@ -48,6 +49,7 @@ describe("calculateTimerData", () => {
     expect(calculateTimerData({ ...baseInput, currentTime: new Date(`${DAY}T18:48:00`) })).toEqual({
       statusLabel: "hora extra",
       statusTime: "+01:00:00",
+      statusAnnouncement: "Hora extra de 1h 0m",
       isOvertime: true,
     });
   });
@@ -56,6 +58,7 @@ describe("calculateTimerData", () => {
     expect(calculateTimerData({ ...baseInput, currentTime: null })).toEqual({
       statusLabel: "faltam",
       statusTime: "--:--:--",
+      statusAnnouncement: "Calculando o tempo restante",
       isOvertime: false,
     });
   });
@@ -64,6 +67,7 @@ describe("calculateTimerData", () => {
     expect(calculateTimerData({ ...baseInput, displayExit: "" })).toEqual({
       statusLabel: "aguardando horários",
       statusTime: "--:--:--",
+      statusAnnouncement: "Aguardando os horários da jornada",
       isOvertime: false,
     });
   });
@@ -72,6 +76,7 @@ describe("calculateTimerData", () => {
     expect(calculateTimerData({ ...baseInput, isManualExit: true, balanceMinutes: 75 })).toEqual({
       statusLabel: "balanço do dia",
       statusTime: "+1h 15m",
+      statusAnnouncement: "Balanço do dia: +1h 15m",
       isOvertime: true,
     });
   });
@@ -80,6 +85,7 @@ describe("calculateTimerData", () => {
     expect(calculateTimerData({ ...baseInput, isManualExit: true, balanceMinutes: -30 })).toEqual({
       statusLabel: "balanço do dia",
       statusTime: "-0h 30m",
+      statusAnnouncement: "Balanço do dia: -0h 30m",
       isOvertime: false,
     });
   });
@@ -115,6 +121,13 @@ describe("WorkCalculator", () => {
     expect(screen.getByText("Saída Prevista")).toBeInTheDocument();
     expect(screen.getByText("é quando sua jornada fecha")).toBeInTheDocument();
     expect(screen.getByText("Entrada às 08:00")).toBeInTheDocument();
+  });
+
+  it("announces the countdown and the worked total to screen readers", () => {
+    render(<WorkCalculator />);
+
+    expect(screen.getByText("Faltam 7h 48m para o fim da jornada")).toHaveAttribute("aria-live", "polite");
+    expect(screen.getByText("Trabalhado até agora").parentElement).toHaveAttribute("aria-live", "polite");
   });
 
   it("counts the day only up to the current moment", () => {

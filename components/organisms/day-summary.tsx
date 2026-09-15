@@ -56,9 +56,23 @@ function DayTimeline({ breakdown, times }: Pick<DaySummaryProps, "breakdown" | "
   );
 }
 
-function TotalRow({ label, value, emphasis }: { label: string; value: string; emphasis?: boolean }) {
+function TotalRow({
+  label,
+  value,
+  emphasis,
+  live,
+}: {
+  label: string;
+  value: string;
+  emphasis?: boolean;
+  live?: boolean;
+}) {
   return (
-    <div className="flex items-baseline justify-between gap-md">
+    <div
+      className="flex items-baseline justify-between gap-md"
+      aria-live={live ? "polite" : undefined}
+      aria-atomic={live ? true : undefined}
+    >
       <span className={cn("text-body-sm", emphasis ? "font-semibold text-ink" : "text-ink-muted")}>{label}</span>
       <span className={cn("numeric font-semibold", emphasis ? "text-heading" : "")}>{value}</span>
     </div>
@@ -141,6 +155,7 @@ export function DaySummary({
           label={breakdown.isInProgress ? "Trabalhado até agora" : "Trabalhado no dia"}
           value={formatHoursAndMinutes(breakdown.workedMinutes)}
           emphasis
+          live={breakdown.isInProgress}
         />
         <TotalRow label="Previsto no dia" value={formatHoursAndMinutes(breakdown.expectedMinutes)} />
         {breakdown.remainingMinutes > 0 ? (

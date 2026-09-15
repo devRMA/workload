@@ -7,7 +7,7 @@ import { useWorkCalculator } from "@/hooks/use-work-calculator";
 import { safeGAEvent } from "@/lib/analytics";
 import { findComplianceWarnings } from "@/lib/compliance";
 import { buildDayBreakdown } from "@/lib/day-breakdown";
-import { formatClock, formatSignedHoursAndMinutes } from "@/lib/duration";
+import { formatClock, formatHoursAndMinutes, formatSignedHoursAndMinutes } from "@/lib/duration";
 import { formatClockTime, formatTimeLabel, PLACEHOLDER_CLOCK } from "@/lib/utils";
 import { ProgressRing } from "../atoms/progress-ring";
 import { CopyButton } from "../molecules/copy-button";
@@ -16,9 +16,12 @@ import { CalculatorLayout } from "../templates/calculator-layout";
 import { DaySummary } from "./day-summary";
 import { JourneyForm } from "./journey-form";
 
+const SECONDS_PER_MINUTE = 60;
+
 interface TimerData {
   statusLabel: string;
   statusTime: string;
+  statusAnnouncement: string;
   isOvertime: boolean;
 }
 
@@ -32,26 +35,48 @@ interface TimerInput {
 export function calculateTimerData({ currentTime, displayExit, isManualExit, balanceMinutes }: TimerInput): TimerData {
   const exitDate = new Date(displayExit);
   if (Number.isNaN(exitDate.getTime()))
-    return { statusLabel: "aguardando horários", statusTime: PLACEHOLDER_CLOCK, isOvertime: false };
+    return {
+      statusLabel: "aguardando horários",
+      statusTime: PLACEHOLDER_CLOCK,
+      statusAnnouncement: "Aguardando os horários da jornada",
+      isOvertime: false,
+    };
 
-  if (isManualExit)
+  if (isManualExit) {
+    const balance = formatSignedHoursAndMinutes(balanceMinutes);
     return {
       statusLabel: "balanço do dia",
-      statusTime: formatSignedHoursAndMinutes(balanceMinutes),
+      statusTime: balance,
+      statusAnnouncement: `Balanço do dia: ${balance}`,
       isOvertime: balanceMinutes > 0,
     };
+  }
 
-  if (currentTime === null) return { statusLabel: "faltam", statusTime: PLACEHOLDER_CLOCK, isOvertime: false };
-
-  const remainingSeconds = Math.floor((exitDate.getTime() - currentTime.getTime()) / 1000);
-  if (remainingSeconds < 0)
+  if (currentTime === null)
     return {
-      statusLabel: "hora extra",
-      statusTime: `+${formatClock(Math.abs(remainingSeconds))}`,
-      isOvertime: true,
+      statusLabel: "faltam",
+      statusTime: PLACEHOLDER_CLOCK,
+      statusAnnouncement: "Calculando o tempo restante",
+      isOvertime: false,
     };
 
-  return { statusLabel: "faltam", statusTime: formatClock(remainingSeconds), isOvertime: false };
+  const remainingSeconds = Math.floor((exitDate.getTime() - currentTime.getTime()) / 1000);
+  if (remainingSeconds < 0) {
+    const overtimeSeconds = Math.abs(remainingSeconds);
+    return {
+      statusLabel: "hora extra",
+      statusTime: `+${formatClock(overtimeSeconds)}`,
+      statusAnnouncement: `Hora extra de ${formatHoursAndMinutes(overtimeSeconds / SECONDS_PER_MINUTE)}`,
+      isOvertime: true,
+    };
+  }
+
+  return {
+    statusLabel: "faltam",
+    statusTime: formatClock(remainingSeconds),
+    statusAnnouncement: `Faltam ${formatHoursAndMinutes(remainingSeconds / SECONDS_PER_MINUTE)} para o fim da jornada`,
+    isOvertime: false,
+  };
 }
 
 export function WorkCalculator() {
@@ -199,12 +224,17 @@ export function WorkCalculator() {
             </span>
           }
           media={
-            <div aria-hidden="true">
-              <ProgressRing progressPercent={breakdown.progressPercent} overtimePercent={breakdown.overtimePercent}>
-                <span className="text-overline uppercase text-ink-onfill/90">{timerData.statusLabel}</span>
-                <span className="text-metric numeric">{timerData.statusTime}</span>
-              </ProgressRing>
-            </div>
+            <>
+              <div aria-hidden="true">
+                <ProgressRing progressPercent={breakdown.progressPercent} overtimePercent={breakdown.overtimePercent}>
+                  <span className="text-overline uppercase text-ink-onfill/90">{timerData.statusLabel}</span>
+                  <span className="text-metric numeric">{timerData.statusTime}</span>
+                </ProgressRing>
+              </div>
+              <p className="sr-only" aria-live="polite" aria-atomic="true">
+                {timerData.statusAnnouncement}
+              </p>
+            </>
           }
           footer={
             <div className="flex items-center justify-between gap-md">

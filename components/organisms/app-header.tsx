@@ -8,7 +8,7 @@ import { useCurrentTime } from "@/hooks/use-current-time";
 import { safeGAEvent } from "@/lib/analytics";
 import { formatClockTime, PLACEHOLDER_CLOCK } from "@/lib/utils";
 
-export function AppHeader() {
+export function AppHeader({ heading }: { heading: string }) {
   const currentTime = useCurrentTime();
   const { setTheme, resolvedTheme } = useTheme();
 
@@ -32,7 +32,10 @@ export function AppHeader() {
             <Wallet className="text-ink-onfill" size={24} strokeWidth={1.75} aria-hidden="true" />
           </div>
           <div>
-            <h1 className="text-title">WorkLoad</h1>
+            <h1 className="text-title">
+              <span aria-hidden="true">WorkLoad</span>
+              <span className="sr-only">{heading}</span>
+            </h1>
             <p className="hidden sm:block text-caption text-ink-subtle">
               Sua jornada de trabalho, clara e no seu controle
             </p>

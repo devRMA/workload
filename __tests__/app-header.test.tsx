@@ -9,6 +9,8 @@ vi.mock("@/lib/analytics", () => ({
   safeGAEvent: vi.fn(),
 }));
 
+const HEADING = "Calculadora de jornada de trabalho, horas extras e banco de horas";
+
 const themeState: { resolvedTheme: string | undefined; setTheme: () => void } = {
   resolvedTheme: undefined,
   setTheme: vi.fn(),
@@ -21,7 +23,7 @@ vi.mock("next-themes", () => ({
 function renderAtFixedTime() {
   vi.useFakeTimers();
   vi.setSystemTime(new Date("2025-01-06T09:30:00"));
-  return render(<AppHeader />);
+  return render(<AppHeader heading={HEADING} />);
 }
 
 describe("AppHeader", () => {
@@ -35,11 +37,18 @@ describe("AppHeader", () => {
   });
 
   it("names the application and holds the clock still on the server", () => {
-    const markup = renderToString(<AppHeader />);
+    const markup = renderToString(<AppHeader heading={HEADING} />);
 
     expect(markup).toContain("WorkLoad");
+    expect(markup).toContain(HEADING);
     expect(markup).toContain("Sua jornada de trabalho, clara e no seu controle");
     expect(markup).toContain("--:--:--");
+  });
+
+  it("states what the page calculates in its only top-level heading", () => {
+    renderAtFixedTime();
+
+    expect(screen.getByRole("heading", { level: 1 })).toHaveAccessibleName(HEADING);
   });
 
   it("shows the live clock once the client takes over", () => {
@@ -55,7 +64,7 @@ describe("AppHeader", () => {
   });
 
   it("reports the session metadata on mount", () => {
-    render(<AppHeader />);
+    render(<AppHeader heading={HEADING} />);
 
     expect(safeGAEvent).toHaveBeenCalledWith(
       "session_metadata",
@@ -66,7 +75,7 @@ describe("AppHeader", () => {
   it("offers the dark theme while the light one is active", async () => {
     themeState.resolvedTheme = "light";
     const user = userEvent.setup();
-    render(<AppHeader />);
+    render(<AppHeader heading={HEADING} />);
 
     await user.click(screen.getByRole("button", { name: "Alternar tema" }));
 
@@ -77,7 +86,7 @@ describe("AppHeader", () => {
   it("offers the light theme while the dark one is active", async () => {
     themeState.resolvedTheme = "dark";
     const user = userEvent.setup();
-    render(<AppHeader />);
+    render(<AppHeader heading={HEADING} />);
 
     await user.click(screen.getByRole("button", { name: "Alternar tema" }));
 
