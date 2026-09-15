@@ -292,3 +292,62 @@ the control-build instrument and the phase-equality criterion written into that 
 `0006`'s five commits on `fix/design-taste-preflight`. **`0005`'s merge condition is unchanged: the
 stack merges whole, with #39 on top.** `0006` adds no condition and renumbers nothing. That merge is
 the only open action on this branch, and it is `release-manager`'s.
+
+---
+
+## G7/G8 — landing the G10 documentation, run 2
+
+`release-manager`, run 2, 2026-09-15. `tech-lead`'s G10 close (lessons promoted/merged/retired, the
+auditor's control-build rule, `STATUS.md`/`plan.md`/`reports/legal.md`/`reports/audit-preview.md` for
+this spec, and `0004`'s STATUS.md/`.specs/INDEX.md`) was written to the working tree but uncommitted.
+This run commits, pushes and lands it on the existing PR.
+
+**Docs gate (G7):** `node .agents/tools/docs-check.mjs 0006-salary-alert-legibility` → 0 failures, 2
+pre-existing warnings (template placeholders in `copy.md` and `plan.md`, both verified harmless at G7
+run 1). `node .agents/tools/docs-check.mjs 0004-lcp-render-delay` → 0 failures, 0 warnings. Truth
+checks: `STATUS.md`'s bounce ledger, lesson-confirmation counts and the 26→23 active-lesson arithmetic
+were verified against `git show HEAD:.agents/memory/LESSONS.md` and the individual lesson diffs before
+staging, not assumed from the summary handed to me. No legal table changed (`lib/` untouched by this
+spec, confirmed in `reports/legal.md` §G9). No `DESIGN.md` system change beyond the one already
+committed at `b8d4362`. `pnpm check` — 58 files, 506 tests — green on the final tree.
+
+**Commits, grouped by seam, each independently green (docs-only, no code touched):**
+
+| Commit | Files staged | The one idea |
+|---|---|---|
+| `479d602` docs(memory): promote and retire 0006's lessons | `product-manager.md`; `LESSONS.md`; lessons 001/009/019/025 (renamed to `archive/`); lessons 010/011/013/014/015/018/023/024/026 (confirmation bumps, 024's merge); lesson 031 (new) | The memory-ledger mechanics of G10: two promotions, one merge, one retirement, eight confirmation bumps, one new lesson. |
+| `6bffb1b` docs(auditor): add the G9 control-build rule | `web-standards-auditor.md` | The one rule this cycle wrote straight into an agent definition instead of a lesson file, because no one's work was rejected. |
+| `fa73c2d` docs: close spec 0006 at G10, route F1 to spec 0004 | `0006/STATUS.md`, `0006/plan.md`, `0006/reports/legal.md`, `0006/reports/release.md`, `0006/reports/audit-preview.md` (new), `0004-lcp-render-delay/STATUS.md`, `.specs/INDEX.md` | The spec's own closure — the G9 triage ruling, the law gate's deployment pass, the G10 ledger — and the one finding that leaves this spec for another. |
+
+**Attribution:** every commit ends `Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>` — read
+from this session's own system prompt (`Sonnet 5`), not copied from a prior report or hardcoded.
+
+**Human approval:** relayed by `team-lead` before this run started — "The human has approved this push
+and this PR update. Do not ask again, do not open a new PR." No push or PR edit in this run preceded
+that message; a fresh approval was not re-requested per-commit because the message named this exact
+push and this exact PR update, not a standing blanket approval.
+
+**PR #39 body:** extended with three additions, all in the PR's own language (pt-BR, matching every
+other line already in it) — (1) the `0006` bullet now states the measured before/after body-text width
+(242→282px @390, 601.33→641.33px @1440) and the G9 deployment confirmation (48 of 48 LR2a-domain
+cells); (2) a callout near the top, before "O que muda," states plainly that
+`workload.devrma.com` fails its own performance budget today (`performance` 0.91 · 0.76 · 0.75, LCP
+3.26/5.59/5.61s vs. 2500ms), that it predates this PR (proven against `0005`'s frozen G9 deployment),
+and that this PR's green CI is not evidence production is fast; (3) an **F1** line added to the debt
+table pointing at spec `0004`. The existing `🤖 Generated with [Claude Code]` line was kept, not
+duplicated.
+
+**CI, this run:** pushed `72795dc..fa73c2d`. `.agents/tools/pr-preview.sh fix/design-taste-preflight`
+watched all four checks to green — `E2E Tests` (pass, 5m0s), `Lint, Type Check & Unit Tests` (pass,
+1m38s), `Vercel` (pass, deployment completed), `Vercel Preview Comments` (pass) — and printed the
+preview URL below. `gh pr view 39` afterward: `state: OPEN`, `mergeStateStatus: CLEAN`,
+`mergeable: MERGEABLE`.
+
+**Preview URL (G9):** `https://workload-git-fix-design-taste-preflight-devrmas-projects.vercel.app`
+
+**Lessons due for promotion:** none newly due this run. 011, 016, 017, 022, 029 sit at 2 confirmations
+per `STATUS.md` § G10 — flagged there for `tech-lead`, not repeated here.
+
+**Verdict: pass.** #39 is green and `CLEAN`. The only action left on this branch is the whole-stack
+merge, which stays gated on the human per `0005`'s standing merge condition — not performed in this
+run.
