@@ -13,7 +13,7 @@
  *      [--only-dialog]
  */
 import { spawn } from 'node:child_process'
-import { chromium } from 'playwright'
+import { chromium } from '@playwright/test'
 
 const arg = (flag, fallback) => {
 	const i = process.argv.indexOf(flag)

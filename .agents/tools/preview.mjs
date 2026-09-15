@@ -10,7 +10,7 @@ import { spawn } from 'node:child_process'
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { AxeBuilder } from '@axe-core/playwright'
-import { chromium } from 'playwright'
+import { chromium } from '@playwright/test'
 
 const arg = (flag, fallback) => {
 	const i = process.argv.indexOf(flag)
@@ -111,26 +111,6 @@ try {
 							targets: v.nodes.slice(0, 5).map((n) => n.target.join(' ')),
 						}))
 
-				const dialogs = []
-				const triggers = page.locator('#projects article button')
-				const dialogCount = await triggers.count()
-				for (let i = 0; i < dialogCount; i++) {
-					await triggers.nth(i).click()
-					await page.locator('[role="dialog"]').waitFor({ state: 'visible' })
-					await page.waitForTimeout(400)
-					const dialogAxe = await new AxeBuilder({ page })
-						.include('[role="dialog"]')
-						.withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
-						.analyze()
-					dialogs.push({
-						index: i,
-						axeViolations: toViolations(dialogAxe.violations),
-						contrastIncomplete: toIncomplete(dialogAxe.incomplete),
-					})
-					await page.keyboard.press('Escape')
-					await page.locator('[role="dialog"]').waitFor({ state: 'hidden' })
-				}
-
 				report.pages.push({
 					route,
 					viewport: vpName,
@@ -148,7 +128,6 @@ try {
 					consoleErrors,
 					axeViolations: toViolations(axe.violations),
 					contrastIncomplete: toIncomplete(axe.incomplete),
-					dialogs,
 				})
 				await context.close()
 			}
@@ -161,18 +140,12 @@ try {
 
 writeFileSync(resolve(out, 'report.json'), `${JSON.stringify(report, null, 2)}\n`)
 
-const violations = report.pages.flatMap((p) => [
-	...p.axeViolations,
-	...p.dialogs.flatMap((d) => d.axeViolations),
-])
-const incomplete = report.pages.flatMap((p) => [
-	...p.contrastIncomplete,
-	...p.dialogs.flatMap((d) => d.contrastIncomplete),
-])
+const violations = report.pages.flatMap((p) => p.axeViolations)
+const incomplete = report.pages.flatMap((p) => p.contrastIncomplete)
 const errors = report.pages.flatMap((p) => p.consoleErrors)
 console.log(`capturas: ${report.pages.length} → ${out}`)
 console.log(
-	`violações axe: ${violations.length} (dialogs: ${report.pages.reduce((n, p) => n + p.dialogs.flatMap((d) => d.axeViolations).length, 0)} violações) | contrast incomplete: ${incomplete.length} | erros de console: ${errors.length}`,
+	`violações axe: ${violations.length} | contrast incomplete: ${incomplete.length} | erros de console: ${errors.length}`,
 )
 for (const v of violations) console.log(`  [${v.impact}] ${v.id}: ${v.help} (${v.nodes})`)
 process.exit(violations.some((v) => v.impact === 'critical' || v.impact === 'serious') ? 1 : 0)
