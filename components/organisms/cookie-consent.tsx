@@ -105,7 +105,7 @@ export function CookieConsent() {
           </div>
 
           <div className="space-y-6">
-            <div className="flex min-h-11 items-center justify-between gap-4 p-4 rounded-lg bg-surface-sunken border border-line">
+            <div className="flex min-h-11 flex-col items-start justify-between gap-4 p-4 rounded-lg bg-surface-sunken border border-line sm:flex-row sm:items-center">
               <div className="space-y-1">
                 <p className="text-body font-semibold">Cookies Essenciais</p>
                 <p className="text-caption text-ink-subtle">Necessários para o funcionamento do site.</p>
@@ -118,7 +118,7 @@ export function CookieConsent() {
               </div>
             </div>
 
-            <div className="flex items-center justify-between gap-4 p-4 rounded-lg bg-surface-sunken border border-line">
+            <div className="flex flex-col items-start justify-between gap-4 p-4 rounded-lg bg-surface-sunken border border-line sm:flex-row sm:items-center">
               <div className="space-y-1">
                 <p id="telemetry-consent-label" className="text-body font-semibold">
                   Telemetria (Google Analytics)
