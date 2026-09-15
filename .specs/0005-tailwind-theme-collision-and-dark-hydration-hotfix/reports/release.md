@@ -312,3 +312,42 @@ existing, and remains binding on this agent until the branch is actually merged.
   registry`).
 
 Neither finding has a fix in any commit above, on purpose.
+
+---
+
+## G10 — close-out (`tech-lead`, appended after this report was written)
+
+Two corrections to the record above, and the disposition of everything it carried forward. The
+sections § Human approval, § PRs, § CI and § Preview URL were written before G8 completed and are
+stale as printed: approval was given, **seven** commits landed on `fix/design-taste-preflight`
+(the six listed above plus `ba94c2d docs: add the G7/G8 release report for spec 0005`), **PR #39**
+is open with CI green, and G9 ran against the preview at
+`https://workload-8kqr9212j-devrmas-projects.vercel.app/`. The commit-by-commit verification above
+stands unchanged; only the delivery status moved.
+
+**The merge-block condition is discharged.** § Merge-block condition above lifted it "once these
+commits merge"; they now exist as PR #39 on top of the stack, and G9 reproduced the repaired
+geometry on the deployed artifact itself — footer 358/768px, dialog 358/512px, the `PRODUCT.md` §4
+paragraph at 52.4-56.7 characters per line, both themes, both routes, 390 and 1440, with LR3
+verified against the raw HTTP response body. **One condition survives: the stack merges whole, with
+PR #39 at its tip.** Merging #35-#37 without 0005's commits re-arms the 64px disclosure exactly.
+The merge itself is still a human-approval point (`AGENTS.md` §10).
+
+**Carried findings, now with landing places** (full reasoning in `STATUS.md` § G10):
+
+| Finding | Lands in | Owner |
+|---|---|---|
+| `og:image`/`twitter:image` resolving to the Vercel branch-alias host instead of `metadataBase` (`app/opengraph-image.tsx`, `app/twitter-image.tsx`) | `.specs/0004-lcp-render-delay/`, as a second and independently falsifiable criterion, with 0004's title and scope amended at G1 | `product-manager` |
+| Lighthouse `best-practices`/`seo` below budget on `*.vercel.app` | no budget change; the G9 procedure in `.agents/agents/web-standards-auditor.md` now states when those two categories are reported-not-scored and requires the attribution proved per failing audit | `web-standards-auditor` |
+| `lib/legal-tables.ts:48` aggregator `sourceUrl` (0002's B6 / 0003's F4, flagged a third time at G9) | `.specs/0003-citation-registry/`, where its STATUS now records the G9 sighting | `product-manager`, then `labor-law-analyst` |
+| DS3, `AlertBanner` at ~24.3 characters per line at 390 | `.specs/0006-salary-alert-legibility/`, open and at G2 | `labor-law-analyst` |
+
+**Lessons.** § Lessons above reported 23 active and none due for promotion; both moved after it was
+written. 006 and 012 reached three confirmations during this cycle and are promoted into
+`AGENTS.md` §5 ("How a criterion is written"); 008 was merged into 012 and 021 into 022 before
+promotion. Active ledger: **20 / 30**.
+
+**`.agents/memory/archive/019-probe.md`** — no longer present at G10. It was untracked and never
+committed, so its disappearance leaves no trace in git and nothing in the ledger referenced it; the
+archive now holds exactly the four lessons retired at this gate. Not deleted by `tech-lead`, and no
+approval was owed either way. Recorded so a reader of § Stray file above is not left looking for it.

@@ -544,3 +544,308 @@ the production build.
 **Verdict: pass.** The disclosure this product's entire positioning rests on is being made again,
 and the granular consent choice is offered in a form a person can operate. Both were measured, in
 both themes, against the page that ships.
+
+---
+
+# 0005 — Legal verification (G9 — deployed preview)
+
+> Owner: labor-law-analyst · Gate: `law` (G9) · Run 1 · Appended; G6 above is untouched
+
+## G9 — verification against the deployed preview
+
+**Verdict: pass.**
+
+G6 measured a production build on my own machine. A user loads
+`https://workload-8kqr9212j-devrmas-projects.vercel.app/`. This section is the confirmation that the
+two are the same artifact where it matters legally — and they are, to the pixel and to the centavo.
+**Every LR1–LR4 number I recorded at G6 reproduced exactly against the deployed URL, in a real
+browser, at 390×844 and 1440×900, on `/` and `/custo-da-hora`, in `light` and `dark`.** Not one
+value drifted. DS3 reproduced its failure exactly as well, which is the other half of a credible
+instrument: the measurement that passes and the measurement that fails both survived the deploy.
+
+Read-only throughout. No repository file was opened for writing, no git command that changes state
+was run, no worktree created. The browser scripts live in the session scratchpad. Chromium,
+`colorScheme` emulated per context rather than by toggling a class, geometry read after load and
+after the dialog's entry transition settled.
+
+---
+
+### G9.1 — LR1 and LR2 over DS1, the `PRODUCT.md` §4 footer · **pass**
+
+`footer.max-w-3xl`, `getBoundingClientRect().width`, both routes, both themes.
+
+| Viewport | Theme | Route | Rendered width | Computed `max-width` | LR1 floor | LR1 | Whole-footer cpl | LR2 | G6 |
+|---|---|---|---|---|---|---|---|---|---|
+| 390×844 | light | `/` | **358.00** | 768px | 320 | **pass** | 852/16 = **53.3** | **pass** | identical |
+| 390×844 | light | `/custo-da-hora` | **358.00** | 768px | 320 | **pass** | **53.3** | **pass** | identical |
+| 390×844 | dark | `/` | **358.00** | 768px | 320 | **pass** | **53.3** | **pass** | identical |
+| 390×844 | dark | `/custo-da-hora` | **358.00** | 768px | 320 | **pass** | **53.3** | **pass** | identical |
+| 1440×900 | light | `/` | **768.00** | 768px | 320 | **pass** | 852/9 = **94.7** | **pass** | identical |
+| 1440×900 | light | `/custo-da-hora` | **768.00** | 768px | 320 | **pass** | **94.7** | **pass** | identical |
+| 1440×900 | dark | `/` | **768.00** | 768px | 320 | **pass** | **94.7** | **pass** | identical |
+| 1440×900 | dark | `/custo-da-hora` | **768.00** | 768px | 320 | **pass** | **94.7** | **pass** | identical |
+
+Per paragraph — the granularity `legal.md` §3's domain table requires ("the `<footer>` **and each of
+its four `<p>`**"). Every one of the eight combinations above returned these same numbers:
+
+| ¶ | What it discloses | 390: chars / lineBoxes = cpl | 1440: cpl | LR2 | G6 |
+|---|---|---|---|---|---|
+| P1 | The privacy claim — nothing leaves the browser | 150 / 3 = **50.0** | 150 / 2 = **75.0** | pass | identical |
+| P2 | D1–D4: estimativa, não substitui o holerite, não vale como registro de ponto, não é orientação jurídica | 170 / 3 = **56.7** | 170 / 2 = **85.0** | pass | identical |
+| P3 | **The gap list** — FGTS, CCT, 13º, terço de férias, INSS/IRRF sobre extras, Súmula 60, feriados, intervalo suprimido, insalubridade/periculosidade, RPPS federal only | 419 / 8 = **52.4** | 419 / 4 = **104.8** | pass | identical |
+| P4 | **The table citation** — year, effective date, source link | 113 / 2 = **56.5** | 113 / 1 = **113.0** | pass | identical |
+
+The defect this spec exists to repair rendered this footer at **64px**, with P3 at **≈9** characters
+per line. The deployed page renders it at **358px / 52.4 cpl** on a phone. That is the obligation in
+`PRODUCT.md` §4 and the *ostensividade* standard of CDC art. 31 / art. 54 §4º being discharged on the
+page a user actually loads, which is the only place discharging it counts.
+
+`legal.md` §8 requires the raw float to be compared, not a rounded value. `358` and `768` are exact
+in the returned rects; no sub-pixel value is near either floor.
+
+### G9.2 — LR3 over DS1 · **pass**
+
+Checked against the **raw HTTP response body** of the preview, not the hydrated DOM — the thing the
+network delivers before any script runs. `curl` on both routes, HTTP 200 on both:
+
+| String | `/` | `/custo-da-hora` |
+|---|---|---|
+| `Tudo o que você digita fica salvo` (P1) | 1 | 1 |
+| `Não substituem seu holerite` (P2) | 1 | 1 |
+| `registro oficial de ponto` (P2) | 1 | 1 |
+| `Não entram na conta: FGTS` (P3) | 1 | 1 |
+| `Tabelas de INSS e IRRF de` … `em vigor desde` (P4) | 1 | 1 |
+| `Portaria Interministerial MPS/MF nº 13, de 09/01/2026` (P4) | 1 | 1 |
+| `<footer class="mx-auto mt-12 max-w-3xl space-y-2 text-center text-caption text-ink-subtle text-pretty"` | present | present |
+
+Live computed styles on the same element: `visibility: visible`, `opacity: 1`, `display: block`, no
+`[hidden]` ancestor, no closed `<details>`, no `aria-expanded="false"` owner, not `.sr-only`. No
+interaction beyond scrolling. **LR3 pass on the deployed page, both routes, both themes.**
+
+### G9.3 — DS2, the DSR caption (Súmula 172 TST) · **pass**
+
+DS2 renders only when `restDayPay > 0`. I brought it on screen the way a user does — by seeding the
+app's own `localStorage` journey keys in the browser and reloading the preview — and measured it
+there.
+
+| Viewport | Theme | Width | Available `A` | LR1 floor `min(320, A)` | LR1 | chars / lineBoxes = cpl | LR2 | G6 |
+|---|---|---|---|---|---|---|---|---|
+| 390×844 | light | **308.00** | 308 | 308 | **pass** (attained) | 134 / 3 = **44.7** | pass | identical |
+| 390×844 | dark | **308.00** | 308 | 308 | **pass** (attained) | 134 / 3 = **44.7** | pass | identical |
+| 1440×900 | light | **667.33** | 667 | 320 | pass | 134 / 2 = **67.0** | pass | identical |
+| 1440×900 | dark | **667.33** | 667 | 320 | pass | 134 / 2 = **67.0** | pass | identical |
+
+Text read off the rendered page, entire:
+
+> "O DSR (Súmula 172 do TST) supõe que estes extras se repitam em todos os dias úteis do mês e conta
+> só os domingos. Feriados não entram."
+
+The súmula is named by number, both assumptions survive, "Feriados não entram." closes the same
+visible caption, and the caption sits directly below the `DSR sobre os extras` row it qualifies.
+0002's **S3** holds in substance on the deployed page. `visibility: visible`, `opacity: 1`,
+`display: block` — **LR3 pass**.
+
+### G9.4 — LR4 over DS4, the granular consent dialog · **pass**
+
+Opened through the `Configurar` control on the banner, as a user would, in a fresh browser context
+with no stored consent. Measured on the panel's border box — the basis my own G6 §5/B2 ruling fixed,
+correcting the "content-box" wording of `legal.md` §4 clause 1.
+
+| Viewport | Theme | Route | Panel border-box width | LR4 cl. 1 floor `min(480, vw−32)` | LR4 cl. 1 | G6 |
+|---|---|---|---|---|---|---|
+| 390×844 | light | `/` and `/custo-da-hora` | **358.00** | 358 | **pass** (attained) | identical |
+| 390×844 | dark | `/` and `/custo-da-hora` | **358.00** | 358 | **pass** (attained) | identical |
+| 1440×900 | light | `/` and `/custo-da-hora` | **512.00** | 480 | **pass** | identical |
+| 1440×900 | dark | `/` and `/custo-da-hora` | **512.00** | 480 | **pass** | identical |
+
+512px is `--container-lg` = 32rem exactly. At 390 the panel attains 358px — the whole width the
+`<dialog>`'s 16px inset leaves — which the clause's `min()` treats as satisfaction, not as a near
+miss. At G2 this surface measured **≈24px**.
+
+**LR2 per explanatory caption**, under B3's ruling that a string rendering on a single line box
+satisfies the measure floor:
+
+| Caption | Chars | Line boxes | cpl | Width | LR2 |
+|---|---|---|---|---|---|
+| "Necessários para o funcionamento do site." | 41 | **1** | 41.0 | 246.06 | pass |
+| "Sempre ativo" | 12 | **1** | 12.0 | 80.61 | pass (B3) |
+| "Ajuda a entender como o site é usado." | 37 | **1** | 37.0 | 234.09 | pass (B3) |
+
+Identical at both viewports, both themes, both routes.
+
+**LR4 clause 2 — every control that expresses a choice, whole and labelled.** I did not read a test
+summary; I read each control's box against the panel's box on all four edges, on the deployed page.
+
+At 390 the panel spans `left 16 → right 374`:
+
+| Control | Accessible name | left → right | Inside the panel | Inside the viewport |
+|---|---|---|---|---|
+| Telemetry `switch` | **"Telemetria (Google Analytics)"**, resolved through `aria-labelledby="telemetry-consent-label"`, `aria-checked` present | 66 → 110 | yes | yes |
+| `Salvar Preferências` | rendered label | 49 → 341 | yes | yes |
+| Close | `aria-label="Fechar configurações de privacidade"` | 313 → 357 | yes | yes |
+
+At 1440 the panel spans `left 464 → right 976`; the same three controls sit at 882→926, 497→943 and
+915→959. All inside, both themes, both routes.
+
+The dialog's accessibility tree as the deployed page exposes it:
+
+```
+- dialog "Privacidade":
+  - button "Fechar configurações de privacidade"
+  - heading "Privacidade" [level=2]
+  - paragraph: Cookies Essenciais
+  - paragraph: Necessários para o funcionamento do site.
+  - paragraph: Sempre ativo
+  - paragraph: Telemetria (Google Analytics)
+  - paragraph: Ajuda a entender como o site é usado.
+  - switch "Telemetria (Google Analytics)" [checked]
+  - button "Salvar Preferências"
+```
+
+Each purpose is named, each purpose carries its own explanation, and the one purpose that is
+optional carries its own operable control. That is *finalidade determinada* with a choice attached —
+LGPD art. 5º XII and art. 8º §4º satisfied in the form a user meets them, not in the form a test
+asserts them. **LR4 clause 3 never fires**: clauses 1 and 2 are met, so the `Configurar` entry point
+stands and the granular surface is legitimately offered. A consent recorded through this dialog on
+this deployment is a specific consent, not the *autorização genérica* art. 8º §4º nullifies.
+
+---
+
+### G9.5 — Obligation 1: is the disclosure actually being made, on a phone, by a person?
+
+**Yes.** This is the whole reason 0005 exists and it is discharged.
+
+At 390×844 — a phone — the footer occupies the full 358px of available width, the four paragraphs
+render at 50.0, 56.7, 52.4 and 56.5 characters per line, every one of them above the 40-character
+floor, in both themes, on both routes, present in the first byte the server sends and visible
+without a single interaction. The gap list renders entire, all ten omissions named. The table
+citation renders with its year, its effective date and a live link.
+
+The rendered citation, read off the deployed page:
+
+> "Tabelas de INSS e IRRF de 2026, em vigor desde 01/01/2026 · Portaria Interministerial MPS/MF nº
+> 13, de 09/01/2026"
+
+with `href="https://www.legisweb.com.br/legislacao/?id=489284"`, `target="_blank"`, link text equal
+to `CURRENT_LEGAL_YEAR.source`. (F2 from G6 stands unchanged and is not a G9 finding: the aggregator
+URL should become a primary source at the next spec that legitimately opens `lib/legal-tables.ts`.
+The `source` string itself names the portaria by number and date, so a reader can reach the primary
+text without the link.)
+
+### G9.6 — Obligation 2: no number, rate, bracket, ceiling or divisor changed
+
+Confirmed against the deployed calculator, by driving it and reading the figures off the screen, then
+re-deriving each one by hand from `lib/legal-tables.ts` `LEGAL_YEAR_2026`. I am not re-verifying the
+tables — they were verified digit by digit at 0002 G6 — I am confirming **this deployment serves
+those same tables**.
+
+**Case A — `/custo-da-hora`, CLT, bruto R$ 3.000,00, 220 h/mês, 0 dependentes.** Screen reads
+`SALÁRIO LÍQUIDO R$ 2.751,40`, `TOTAL DESCONTOS R$ 248,60`, `VALOR POR HORA R$ 12,51`,
+`R$ 0,21 por minuto`, `BRUTO R$ 3.000,00`.
+
+Re-derived, in the order of operations `legal.md` (0002) fixes — INSS on the gross first, IRRF on
+the gross net of INSS second:
+
+| Step | Base | Rate | Norm | Result |
+|---|---|---|---|---|
+| RGPS 1ª faixa | 1 621,00 | 7,5 % | Portaria Interministerial MPS/MF nº 13/2026 | 121,575 |
+| RGPS 2ª faixa | 2 902,84 − 1 621,00 = 1 281,84 | 9 % | idem | 115,3656 |
+| RGPS 3ª faixa | 3 000,00 − 2 902,84 = 97,16 | 12 % | idem | 11,6592 |
+| **INSS total** | | | | 248,5998 → **R$ 248,60** ✅ matches the screen |
+| IRRF base | 3 000,00 − 248,60 = 2 751,40; simplified deduction 607,20 → 2 144,20 | — | Lei 15.270/2025; 1ª faixa isenta até 2 428,80 | **R$ 0,00** |
+| **Líquido** | 3 000,00 − 248,60 | | | **R$ 2 751,40** ✅ |
+| **Hora** | 2 751,40 ÷ 220 = 12,5063… | | Súmula 431 TST divisor | **R$ 12,51** ✅ |
+| **Minuto** | 12,5063… ÷ 60 = 0,20843… | | | **R$ 0,21** ✅ |
+
+Every figure on that screen reproduces to the centavo from the 2026 tables in `lib/legal-tables.ts`.
+The RGPS brackets, the progressive order, the simplified deduction and the exemption all behave as
+verified at 0002.
+
+The same screen also surfaced the Súmula 431 divisor warning, unchanged and correct:
+
+> "Pela Súmula 431 do TST, a jornada que você informou corresponde ao divisor 200 horas por mês, e
+> não 220."
+
+**Case B — `/`, journey 14:00 → 23:30 with a 18:00–19:00 intervalo, jornada prevista 8h.** Screen
+reads `Hora noturna reduzida art. 73 da CLT +0h 13m`, `Trabalhado no dia 8h 43m`, `Saldo do dia
++0h 43m`, `Extra 50% 0h 43m R$ 14,66`, `Extra 100% 0h 0m R$ 0,00`, `Adicional noturno 20% 1h 43m
+R$ 4,68`, `DSR sobre os extras R$ 2,98`.
+
+| Quantity | Re-derived | Norm | Screen |
+|---|---|---|---|
+| Clock time worked | 9h30 − 1h00 = 8h30 = 510 min | CLT art. 71 (intervalo deducted) | — |
+| Night window | 22:00 → 23:30 = 90 clock min | CLT art. 73 §2º (22h–5h urbano) | — |
+| Reduced-hour uplift | 90 × 60/52,5 = 102,857 min → +12,857 ≈ **+0h 13m** | CLT art. 73 §1º (hora de 52min30s) | **+0h 13m** ✅ |
+| Total worked | 510 + 12,857 = 522,857 min = 8h42,86 → **8h 43m** | — | **8h 43m** ✅ |
+| Saldo | 522,857 − 480 = 42,857 → **+0h 43m** | CLT art. 59 | **+0h 43m** ✅ |
+| Hora bruta | 3 000 ÷ 220 = 13,6364 | Súmula 431 TST | — |
+| Extra 50 % | 43/60 × 13,6364 × 1,50 = 14,659 → **R$ 14,66** | CLT art. 59 §1º (piso de 50 %) | **R$ 14,66** ✅ |
+| Adicional noturno 20 % | 103/60 × 13,6364 × 0,20 = 4,681 → **R$ 4,68** | CLT art. 73 *caput* | **R$ 4,68** ✅ |
+| DSR sobre os extras | (14,66 + 4,68) × 4 domingos ÷ 26 dias úteis = 2,975 → **R$ 2,98** | Súmula 172 TST | **R$ 2,98** ✅ |
+
+The 20 % premium, the 52min30s reduced hour, the 50 % overtime floor, the art. 71 deduction and the
+Súmula 172 reflex are all serving the values verified at 0002. **No number changed.** The deployment
+serves the same tables, applied in the same order, rounded the same way.
+
+Traceability holds on the deployed page: every one of those figures sits above a footer that names
+the year, the effective date and the source of the tables behind it, and P3 names, next to them, the
+variables the computation omits.
+
+### G9.7 — Obligation 3: DS3 measured on the preview, so the debt carries a deployed number
+
+`components/organisms/salary-calculator.tsx:125`, the zero warning, rendered on `/custo-da-hora`
+whenever `grossSalary` is unset — which is every first visit.
+
+| Viewport | Theme | Width | LR1 floor `min(320, A)` | LR1 | chars / lineBoxes = cpl | LR2 | G6 |
+|---|---|---|---|---|---|---|---|
+| 390×844 | light | **242.00** | 242 | pass (attained) | 97 / 4 = **24.3** | **FAIL** (floor 40) | identical |
+| 390×844 | dark | **242.00** | 242 | pass (attained) | 97 / 4 = **24.3** | **FAIL** | identical |
+| 1440×900 | light | **601.33** | 320 | pass | 97 / 2 = **48.5** | pass | identical |
+| 1440×900 | dark | **601.33** | 320 | pass | 97 / 2 = **48.5** | pass | identical |
+
+**Confirmed on the deployed page, to the same decimal as G6.** The text is intact — the literal
+`R$ 0,00`, the negation and the cause all survive, so 0002's **S5** is satisfied in full; what fails
+is my own typographic floor, on a surface that discharges no legal obligation (G6 §6, ruling 4).
+
+**Ruled again, unchanged: a confirmed finding, not a blocker.** The G6 reasoning is not weakened by
+the deploy — it is strengthened, because the numbers proved stable across two different runtimes.
+
+**The acceptance criteria of the spec being opened for `alert-banner.tsx` can be written against
+these numbers, which are now deployed measurements rather than local ones:**
+
+> DS3 (`salary-calculator.tsx:125`, rendered through `components/atoms/alert-banner.tsx`) measures
+> **242.00px wide, 97 characters over 4 line boxes = 24.3 characters per line at 390×844**, and
+> **601.33px, 97 characters over 2 line boxes = 48.5 characters per line at 1440×900** — identical in
+> `light` and `dark`, on the deployed preview of PR #39. The target is **≥ 40 characters per line at
+> 390**, which is LR2 of `.specs/0005/legal.md` §3. Any remedy must be checked against every other
+> consumer of `alert-banner.tsx`, since the widened measure reaches them too.
+
+---
+
+### G9.8 — G9 verification summary
+
+| Rule | DS1 footer | DS2 DSR caption | DS3 zero warning | DS4 consent dialog |
+|---|---|---|---|---|
+| LR1 — rendered width ≥ min(320, A) | **pass** 358 / 768 | **pass** 308 (attained) / 667.33 | **pass** 242 (attained) / 601.33 | **pass** 358 / 512 |
+| LR2 — ≥ 40 chars per line box | **pass** 52.4–56.7 / 75–113 | **pass** 44.7 / 67.0 | **FAIL 24.3** @390 · pass 48.5 @1440 | **pass** (B3: single line box) |
+| LR3 — first paint, visible, no interaction | **pass** (raw HTTP body verified) | **pass** | **pass** | **pass** (B9 reading — entry point server-rendered) |
+| LR4 — consent clauses 1–3 | n/a | n/a | n/a | **pass** (border-box basis, B2 reading) |
+| Both themes | **identical** | **identical** | **identical** | **identical** |
+| Both routes | **identical** | n/a (`/` only) | n/a (`/custo-da-hora` only) | **identical** |
+| Against G6 | **identical** | **identical** | **identical** | **identical** |
+
+### G9.9 — Findings
+
+| # | Severity | Where | What | Owner |
+|---|---|---|---|---|
+| **G9-F1** | confirmed, **non-blocking** — carried from G6 §6 | `components/organisms/salary-calculator.tsx:125` via `components/atoms/alert-banner.tsx` | DS3 renders 24.3 characters per line at 390 on the deployed preview, against LR2's floor of 40. Pre-existing, not caused by this spec, discharges no legal obligation, 0002's S5 satisfied in full. Numbers in §G9.7 are the acceptance baseline for the spec being opened. | `product-manager` |
+| **G9-F2** | low — carried from G6 §10 F2, **out of 0005's reach** | `lib/legal-tables.ts:48` | `sourceUrl` resolves to a commercial aggregator rather than the DOU/gov.br text of Portaria Interministerial MPS/MF nº 13/2026. Confirmed still live on the deployed page. Not a rejection: the `source` string names the portaria by number and date, and this spec cannot open `lib/`. | `product-manager` — next spec that legitimately opens `lib/legal-tables.ts` |
+
+No new finding. **No rejection.** No user-visible number without a table behind it, no table without
+its norm and effective date, no required disclosure missing or buried, no rounding or
+order-of-operations decision left to the implementation — and, on the deployed page, nothing that
+changed since G6.
+
+**Verdict: pass.** The disclosure this product's positioning rests on is legible on a phone at the
+URL a user loads; the granular consent choice is offered in a form a person can operate; and every
+figure the calculator shows still reproduces, to the centavo, from the 2026 tables it cites.

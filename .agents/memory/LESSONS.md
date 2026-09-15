@@ -29,7 +29,9 @@ A row earns its place by being a rule an agent who was not there could apply tom
 | 020 | [Make every clause of a task's Done when satisfiable by that task's own file list and by the state the task itself produces](lessons/020-make-every-clause-of-a-task-s-done-when-satisfiable-by-that-task-s-own-file-list-and-by-the-state-the-task-itself-produces.md) | tech-lead | 0005 | 0 |
 | 022 | [Cross the guard/payload boundary before either side is binding — run mandated verbatim text through every guard that reads its destination, and run every guard you rule over a file against the texts already mandated for it](lessons/022-run-any-verbatim-text-a-spec-mandates-for-another-file-through-every-automated-guard-that-reads-that-destination-before-mandating-it.md) | all | 0005 | 1 |
 | 023 | [Calibrate a measurable floor against a worked measurement of the intended state, and name the box model it reads](lessons/023-calibrate-a-measurable-floor-against-a-worked-measurement-of-the-intended-state-and-name-the-box-model-it-reads.md) | labor-law-analyst | 0005 | 1 |
+| 024 | [Define a disclosure rule's domain by a test on what each string asserts, never by an enumerated list of surfaces, because the list is built from the defect in view and the next disclosure is written outside it](lessons/024-define-a-disclosure-rule-s-domain-by-a-test-on-what-each-string-asserts-never-by-an-enumerated-list-of-surfaces-because-the-list-is-built-from-the-defect-in-view-and-the-next-disclosure-is-written-outside-it.md) | labor-law-analyst | 0006 | 0 |
+| 025 | [Classify a surface by reading the module its strings come from, never by the component that renders them, because a component that renders a prop tells you nothing about what it asserts](lessons/025-classify-a-surface-by-reading-the-module-its-strings-come-from-never-by-the-component-that-renders-them-because-a-component-that-renders-a-prop-tells-you-nothing-about-what-it-asserts.md) | product-manager | 0006 | 0 |
 
 ---
 
-**Active: 19 / 30.** At the cap, promote or retire before writing a new one.
+**Active: 21 / 30.** At the cap, promote or retire before writing a new one.

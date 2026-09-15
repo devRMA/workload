@@ -51,6 +51,43 @@ Named, not decided — G1 writes the scope, G3 the design and G4 the plan:
    wider than the tool's own spread — and the exact command, per lesson **009**, and attributes the
    metric to its phases before accepting any lever, per lesson **010**.
 
+## Also carried in — `og:image`/`twitter:image` resolve to the wrong host (0005 G9, routed at G10)
+
+Added by `tech-lead` at 0005's G10. A second, **independent** finding, folded in here rather than
+given its own spec: it changes no number, so `AGENTS.md` §11 does not demand ten gates for it, but
+it is invisible anywhere except a deployment — and this is the only open spec whose subject already
+*is* what `app/`'s document head and first paint emit on a real deployment, measured by
+`web-standards-auditor` at G9. `0003` is scoped to citations and `lib/legal-tables.ts` and is the
+wrong home.
+
+- **Where:** `app/opengraph-image.tsx`, `app/twitter-image.tsx` (the generated `<meta>` tags on both
+  routes). Both files entered earlier in the PR stack; `0005` never touched them.
+- **What is wrong:** `app/layout.tsx:16` sets `metadataBase: new URL("https://workload.devrma.com")`,
+  and `canonical`, `og:url`, the JSON-LD `@id`/`url`, `sitemap.xml` and `robots.txt` all resolve
+  against it correctly. The two file-convention image routes do not — on the preview they render as
+  `https://workload-git-fix-design-taste-preflight-devrmas-projects.vercel.app/opengraph-image?…`,
+  the git-branch alias, a third host named nowhere in this repo. The image itself returns `200`
+  `image/png`, so this is a metadata-correctness defect, not a broken asset: a crawler or a chat
+  client unfurling a share fetches from a host outside the app's declared origin.
+- **Standard violated:** `AGENTS.md` §9 — "Metadata, sitemap, robots, manifest and structured data
+  still correct after the change" — the same bar every other field on the page already meets.
+- **Reproduction, run at G9 and quoted here so G1 does not have to invent one:**
+  `curl -s <preview-url>/ | grep -oE '<meta property="og:image"[^>]*>'`, and the same on
+  `/custo-da-hora`. It cannot be reproduced against `localhost`, which is why it survived every G6.
+- **Source of record:** `.specs/0005-…/reports/audit-preview.md` § SEO and metadata, Finding 1.
+
+**Three bindings on `product-manager` at G1, from the G10 ruling:**
+
+1. **Amend this spec's title and its `.specs/INDEX.md` row** to say it carries deployed-head
+   correctness as well as LCP. A spec whose index row describes half of it is a spec the next agent
+   scopes wrong.
+2. **Two separate acceptance criteria, neither able to carry the other.** A partial pass is still a
+   rejection (`AGENTS.md` §4 rule 1) — this must not become a spec that ships half and reads green
+   because the easy half passed.
+3. **Write the metadata criterion against the deployment**, with the `curl` above as its verification
+   command (`AGENTS.md` §5, "How a criterion is written": the command has been run, on the artifact
+   where the defect exists). A criterion written against a local build is unfalsifiable here.
+
 ## Not in this spec, on current evidence
 
 - A runtime dependency added to hit the number (`0002` §3 and its non-goals still bind the app).

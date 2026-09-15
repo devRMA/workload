@@ -40,4 +40,5 @@ host that can reach planalto.
 
 | When | Agent | Decision |
 |---|---|---|
+| 0005 G10 | tech-lead | **F4 re-confirmed on the deployed artifact and stays here.** `labor-law-analyst` flagged `lib/legal-tables.ts`'s aggregator `sourceUrl` a third time during 0005 — at G6 against the production build (`reports/legal.md` F2) and again at G9 against the Vercel preview (G9-F2), where the link is what a user actually clicks under the norm. It was out of reach both times: 0005's AC11 forbids touching `lib/`. Nothing about it changed except the count of gates that have now seen it, and the line number drifted from `:47` to `:48`. **Do not re-triage it — it is F4 above; the only thing G10 adds is that the primary source has already been located and is written into F4, so no search is owed.** |
 | Run 0 | tech-lead | Opened this spec at 0002's G2 triage. A finding that lives only in the rejecting report of a spec that then closes is a finding the squad paid for and lost. Scope is the four findings above and the citation registry they share; it is not a second cosmetic pass. |
