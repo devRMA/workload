@@ -408,6 +408,8 @@ The spatial model is a single column that earns a second one only when there is 
 
 Root scaling is the mechanism: `html` is 16px, 17px from 1920px, 18px from 2560px. Nothing else in the system knows this happened.
 
+**The 18px cap is load-bearing, and one component knows.** `AlertBanner`'s horizontal chrome is declared in `rem` (`px-3` plus a 1px border) while the legibility budget that bounds it is stated in CSS px — 32px — so the spend scales with the root ramp and the budget does not: 26px at a 16px root, 29px at 18px. A fourth step above 18px puts that atom over its budget without anyone editing the atom. Any change that adds one must, in the same change, measure the alert banner at a viewport inside the new step's band — `tests/e2e/wide-viewport.spec.ts` already does exactly this at 2560 and 3840, and today's top band is the only one it needs to sample.
+
 **Breakpoints.** `sm` 640px (fields go two-up), `md` 768px (header clock appears), `lg` 1024px (the two-column split), `xl` 1280px, `2xl` 1536px, and `wide` 1920px (container and root-size step). The predecessor's arbitrary `min-[1980px]` for side ads becomes `wide`.
 
 ### Named Rules
@@ -535,9 +537,9 @@ Track `--color-ink-onfill` at 20%; the worked arc `--color-ink-onfill` solid; th
 
 `--color-surface-sunken` at `--radius-lg`, 16px padding, 1px `--color-line`. Overline label in `--color-ink-muted`, value in `--text-metric`. The *value* takes the data hue's `-ink` token (`--color-positive-ink` for gains, `--color-negative-ink` for deductions, `--color-ink` for the neutral default) — the tile background stays neutral. The predecessor tinted the whole tile; a wall of tinted boxes makes every number look equally urgent.
 
-### Alerts — `components/molecules/alert-banner.tsx`
+### Alerts — `components/atoms/alert-banner.tsx`
 
-`--radius-lg`, 16px padding, 1px border in the data hue at 30%, fill in the hue's `-soft`, text in its `-ink`, icon 20px in its `-ink`. Two tones: **warning** uses Overtime Amber (a CLT limit approached), **danger** uses Debit Red (an input the app cannot use). `role="alert"` for danger, `role="status"` for warning, as already implemented.
+`--radius-lg`, 16px vertical and 12px horizontal padding, 1px border in the data hue at 30%, fill in the hue's `-soft`, text in its `-ink`, icon 20px in its `-ink` sharing the title's line, with the body text running the full width of the banner beneath it. The horizontal padding is one step tighter than the vertical on purpose: the body text column is measured against the banner's own root, and a banner may spend no more than 32 CSS px of border and horizontal padding between the two. Two tones: **warning** uses Overtime Amber (a CLT limit approached), **danger** uses Debit Red (an input the app cannot use). `role="alert"` for danger, `role="status"` for warning, as already implemented.
 
 ### Navigation — `app-header.tsx`, the tab bar in `calculator-views.tsx`
 
