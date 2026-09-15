@@ -1,16 +1,5 @@
-interface ProgressiveBracket {
-  readonly ceiling: number;
-  readonly rate: number;
-}
-
-interface IncomeTaxRate {
-  readonly rate: number;
-  readonly deduction: number;
-}
-
-interface IncomeTaxBracket extends IncomeTaxRate {
-  readonly ceiling: number;
-}
+import { CURRENT_LEGAL_YEAR, type IncomeTaxRate, type LegalYear, type ProgressiveBracket } from "./legal-tables";
+import { formatCurrency } from "./utils";
 
 export type WorkRegime = "clt" | "estatutario";
 
@@ -22,14 +11,17 @@ interface WorkRegimeInfo {
   readonly impact: string;
 }
 
+const TABLE: LegalYear = CURRENT_LEGAL_YEAR;
+
+const RGPS_CEILING = TABLE.rgpsBrackets[TABLE.rgpsBrackets.length - 1].ceiling;
+
 export const WORK_REGIME_INFO: readonly WorkRegimeInfo[] = [
   {
     value: "clt",
     label: "CLT",
     summary: "Carteira assinada, inclusive em estatais",
     who: "Quem tem contrato regido pela CLT, seja em empresa privada ou em empresa pública e sociedade de economia mista (Correios, Caixa, Petrobras): carteira assinada, FGTS, aviso prévio e férias com 1/3.",
-    impact:
-      "INSS pelo RGPS, com alíquotas progressivas de 7,5% a 14% e teto de contribuição em R$ 8.475,55 — acima disso o desconto trava em R$ 988,09.",
+    impact: `INSS pelo RGPS, com alíquotas progressivas de 7,5% a 14% e teto de contribuição em ${formatCurrency(RGPS_CEILING)} — acima disso o desconto trava em ${formatCurrency(TABLE.rgpsCeilingDiscount)} (tabela de ${TABLE.year}).`,
   },
   {
     value: "estatutario",
@@ -37,54 +29,31 @@ export const WORK_REGIME_INFO: readonly WorkRegimeInfo[] = [
     summary: "Servidor público efetivo, com regime próprio",
     who: "Servidor efetivo regido por estatuto (RJU) e vinculado a um regime próprio de previdência (RPPS), não ao INSS.",
     impact:
-      "A contribuição não para no teto do INSS: as faixas seguem subindo até 22% sobre a parcela mais alta, então salários maiores descontam bem mais.",
+      "Aplicamos a tabela do RPPS federal: a contribuição não para no teto do INSS e as faixas seguem subindo até 22% sobre a parcela mais alta. Servidor estadual ou municipal tem alíquota própria (muitas vezes 14% linear), então este número não vale para ele.",
   },
 ];
 
 export const WORK_REGIMES: readonly WorkRegime[] = WORK_REGIME_INFO.map(({ value }) => value);
 
-const GENERAL_REGIME_BRACKETS: readonly ProgressiveBracket[] = [
-  { ceiling: 1621.0, rate: 0.075 },
-  { ceiling: 2902.84, rate: 0.09 },
-  { ceiling: 4354.27, rate: 0.12 },
-  { ceiling: 8475.55, rate: 0.14 },
-];
-
-const CIVIL_SERVICE_BRACKETS: readonly ProgressiveBracket[] = [
-  ...GENERAL_REGIME_BRACKETS,
-  { ceiling: 14514.3, rate: 0.145 },
-  { ceiling: 29028.57, rate: 0.165 },
-  { ceiling: 56605.73, rate: 0.19 },
-  { ceiling: Number.POSITIVE_INFINITY, rate: 0.22 },
-];
-
 const BRACKETS_BY_REGIME: Record<WorkRegime, readonly ProgressiveBracket[]> = {
-  clt: GENERAL_REGIME_BRACKETS,
-  estatutario: CIVIL_SERVICE_BRACKETS,
+  clt: TABLE.rgpsBrackets,
+  estatutario: TABLE.rppsFederalBrackets,
 };
 
-const INCOME_TAX_BRACKETS: readonly IncomeTaxBracket[] = [
-  { ceiling: 2428.8, rate: 0, deduction: 0 },
-  { ceiling: 2826.65, rate: 0.075, deduction: 182.16 },
-  { ceiling: 3751.05, rate: 0.15, deduction: 394.16 },
-  { ceiling: 4664.68, rate: 0.225, deduction: 675.49 },
-];
-
-const TOP_INCOME_TAX_RATE: IncomeTaxRate = { rate: 0.275, deduction: 908.73 };
-
-const SIMPLIFIED_DEDUCTION = 607.2;
-const DEPENDENT_DEDUCTION = 189.59;
-const EXEMPTION_CEILING = 5000;
-const REDUCTION_PHASE_OUT_CEILING = 7350;
-const REDUCTION_INTERCEPT = 978.62;
-const REDUCTION_SLOPE = 0.133145;
+export function isRealAmount(value: number): boolean {
+  return Number.isFinite(value) && value > 0;
+}
 
 export function sanitizeAmount(value: number): number {
-  return Number.isFinite(value) && value > 0 ? value : 0;
+  return isRealAmount(value) ? value : 0;
 }
 
 export function overtimePay(minutes: number, hourlyRate: number, ratePercent: number): number {
   return (minutes / 60) * hourlyRate * (1 + ratePercent / 100);
+}
+
+export function grossHourlyRate(grossSalary: number, monthlyHours: number): number {
+  return monthlyHours > 0 ? sanitizeAmount(grossSalary) / monthlyHours : 0;
 }
 
 function roundToCents(value: number): number {
@@ -110,20 +79,21 @@ export function calculateSocialSecurity(grossSalary: number, regime: WorkRegime 
 }
 
 function findIncomeTaxRate(base: number): IncomeTaxRate {
-  return INCOME_TAX_BRACKETS.find(({ ceiling }) => base <= ceiling) ?? TOP_INCOME_TAX_RATE;
+  return TABLE.incomeTaxBrackets.find(({ ceiling }) => base <= ceiling) ?? TABLE.topIncomeTaxRate;
 }
 
 function taxReductionFor(grossSalary: number): number {
-  if (grossSalary > REDUCTION_PHASE_OUT_CEILING) return 0;
-  return REDUCTION_INTERCEPT - REDUCTION_SLOPE * grossSalary;
+  if (grossSalary > TABLE.reduction.phaseOutCeiling) return 0;
+  return TABLE.reduction.intercept - TABLE.reduction.slope * grossSalary;
 }
 
 export function calculateIncomeTax(grossSalary: number, socialSecurity: number, dependents = 0): number {
   const gross = sanitizeAmount(grossSalary);
-  if (gross <= EXEMPTION_CEILING) return 0;
+  if (gross <= TABLE.exemptionCeiling) return 0;
 
-  const legalDeduction = sanitizeAmount(socialSecurity) + DEPENDENT_DEDUCTION * Math.trunc(sanitizeAmount(dependents));
-  const deductible = Math.max(legalDeduction, SIMPLIFIED_DEDUCTION);
+  const legalDeduction =
+    sanitizeAmount(socialSecurity) + TABLE.dependentDeduction * Math.trunc(sanitizeAmount(dependents));
+  const deductible = Math.max(legalDeduction, TABLE.simplifiedDeduction);
   const base = sanitizeAmount(gross - deductible);
   const { rate, deduction } = findIncomeTaxRate(base);
   const tax = base * rate - deduction - taxReductionFor(gross);

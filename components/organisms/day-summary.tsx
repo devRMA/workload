@@ -1,11 +1,13 @@
-import { AlertTriangle, Coffee, MoonStar, Sunrise, Sunset, Zap } from "lucide-react";
+import { AlertTriangle, CalendarDays, Coffee, MoonStar, Sunrise, Sunset, Zap } from "lucide-react";
 import Link from "next/link";
 import { VIEW_PATHS } from "@/lib/calculator-view";
 import type { ComplianceWarning } from "@/lib/compliance";
 import type { DayBreakdown, DaySegmentKind } from "@/lib/day-breakdown";
 import { formatHoursAndMinutes, formatSignedHoursAndMinutes } from "@/lib/duration";
+import { nightPremiumPay } from "@/lib/night-shift";
 import { overtimePay } from "@/lib/payroll";
 import { cn, formatCurrency, formatTimeLabel } from "@/lib/utils";
+import { restDayPayOnOvertime, splitMonthDays } from "@/lib/weekly-rest";
 import { AlertBanner } from "../molecules/alert-banner";
 
 const SEGMENT_BAR_CLASSES: Record<DaySegmentKind, string> = {
@@ -31,7 +33,7 @@ interface DaySummaryProps {
   nightMinutes: number;
   firstTierRate: number;
   extraTierRate: number;
-  hourlyRate: number | null;
+  grossHourlyRate: number | null;
   warnings: readonly ComplianceWarning[];
 }
 
@@ -75,7 +77,7 @@ export function DaySummary({
   nightMinutes,
   firstTierRate,
   extraTierRate,
-  hourlyRate,
+  grossHourlyRate,
   warnings,
 }: DaySummaryProps) {
   const stretches = [
@@ -98,8 +100,11 @@ export function DaySummary({
 
   const startsAt = [times.entry, times.lunchStart, times.lunchEnd];
   const isPositiveBalance = balanceMinutes >= 0;
-  const firstTierPay = hourlyRate === null ? null : overtimePay(firstTierMinutes, hourlyRate, firstTierRate);
-  const extraTierPay = hourlyRate === null ? null : overtimePay(extraTierMinutes, hourlyRate, extraTierRate);
+  const firstTierPay = grossHourlyRate === null ? null : overtimePay(firstTierMinutes, grossHourlyRate, firstTierRate);
+  const extraTierPay = grossHourlyRate === null ? null : overtimePay(extraTierMinutes, grossHourlyRate, extraTierRate);
+  const nightPay = grossHourlyRate === null ? null : nightPremiumPay(nightMinutes, grossHourlyRate);
+  const variablePay = (firstTierPay ?? 0) + (extraTierPay ?? 0) + (nightPay ?? 0);
+  const restDayPay = restDayPayOnOvertime(variablePay, splitMonthDays(new Date(times.entry)));
 
   return (
     <div className="bg-white dark:bg-neutral-900 rounded-3xl p-6 sm:p-8 shadow-sm border border-neutral-200 dark:border-neutral-800 space-y-6">
@@ -184,13 +189,33 @@ export function DaySummary({
           </div>
           <div className="flex items-center gap-3 text-sm">
             <MoonStar className="w-4 h-4 shrink-0 text-indigo-500" aria-hidden="true" />
-            <span>Adicional noturno</span>
+            <span>Adicional noturno 20%</span>
             <span className="ml-auto font-bold tabular-nums">{formatHoursAndMinutes(nightMinutes)}</span>
-            {hourlyRate === null ? null : <span className="w-24" />}
+            {nightPay === null ? null : (
+              <span className="w-24 text-right font-bold tabular-nums text-emerald-700 dark:text-emerald-400">
+                {formatCurrency(nightPay)}
+              </span>
+            )}
           </div>
+          {restDayPay > 0 ? (
+            <div className="flex items-center gap-3 text-sm">
+              <CalendarDays className="w-4 h-4 shrink-0 text-sky-500" aria-hidden="true" />
+              <span>DSR sobre os extras</span>
+              <span className="ml-auto w-24 text-right font-bold tabular-nums text-emerald-700 dark:text-emerald-400">
+                {formatCurrency(restDayPay)}
+              </span>
+            </div>
+          ) : null}
         </div>
 
-        {hourlyRate === null ? (
+        {restDayPay > 0 ? (
+          <p className="text-xs leading-relaxed text-neutral-600 dark:text-neutral-400 text-pretty">
+            O DSR (Súmula 172 do TST) supõe que estes extras se repitam em todos os dias úteis do mês e conta só os
+            domingos — feriados não entram.
+          </p>
+        ) : null}
+
+        {grossHourlyRate === null ? (
           <Link
             href={VIEW_PATHS.salary}
             scroll={false}

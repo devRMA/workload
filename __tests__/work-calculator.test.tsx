@@ -197,8 +197,9 @@ describe("WorkCalculator", () => {
     expect(container.querySelector(".bg-rose-700")).toBeInTheDocument();
   });
 
-  it("prices the overtime once the salary tab knows the hourly value", () => {
-    localStorage.setItem("hourlyRate", "20");
+  it("prices the overtime on the gross hour the salary tab stored", () => {
+    localStorage.setItem("grossSalary", "4400");
+    localStorage.setItem("monthlyHours", "220");
     vi.setSystemTime(new Date(`${DAY}T19:00:00`));
     render(<WorkCalculator />);
 
@@ -206,12 +207,33 @@ describe("WorkCalculator", () => {
     expect(screen.getByText(/36,00/)).toBeInTheDocument();
   });
 
-  it("ignores a zeroed hourly value instead of pricing the day at nothing", () => {
-    localStorage.setItem("hourlyRate", "0");
+  it("ignores a zeroed salary instead of pricing the day at nothing", () => {
+    localStorage.setItem("grossSalary", "0");
+    localStorage.setItem("monthlyHours", "220");
     vi.setSystemTime(new Date(`${DAY}T19:00:00`));
     render(<WorkCalculator />);
 
     expect(screen.getByRole("link", { name: /Calcule o valor da sua hora/ })).toBeInTheDocument();
+  });
+
+  it("warns when less than eleven hours separate this journey from the previous one", () => {
+    storeJourney();
+    localStorage.setItem("entry", `2025-01-05T08:00`);
+    localStorage.setItem("lunchStart", `2025-01-05T12:00`);
+    localStorage.setItem("lunchEnd", `2025-01-05T13:00`);
+    localStorage.setItem("lastExit", `2025-01-06T02:00`);
+    vi.setSystemTime(new Date(`${DAY}T10:00:00`));
+    render(<WorkCalculator />);
+
+    expect(screen.getByText("Você descansou menos de 11 horas desde a jornada anterior")).toBeInTheDocument();
+  });
+
+  it("stays quiet about the interregno on the first day it ever runs", () => {
+    storeJourney();
+    vi.setSystemTime(new Date(`${DAY}T10:00:00`));
+    render(<WorkCalculator />);
+
+    expect(screen.queryByText("Você descansou menos de 11 horas desde a jornada anterior")).toBeNull();
   });
 
   it("offers the salary tab while the hourly value is unknown", () => {

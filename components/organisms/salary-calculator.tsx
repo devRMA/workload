@@ -13,7 +13,9 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useSalaryCalculator } from "@/hooks/use-salary-calculator";
-import { SALARY_PERIOD_LABELS } from "@/lib/salary-period";
+import { minutesToHours } from "@/lib/duration";
+import { isRealAmount } from "@/lib/payroll";
+import { findDivisorMismatch, SALARY_PERIOD_LABELS } from "@/lib/salary-period";
 import { formatCurrency, parseCurrency } from "@/lib/utils";
 import { AlertBanner } from "../molecules/alert-banner";
 import { CollapsiblePanel } from "../molecules/collapsible-panel";
@@ -60,6 +62,8 @@ export function SalaryCalculator() {
 
   const [showDetails, setShowDetails] = useState(false);
   const hasMonthlyHours = monthlyHours > 0;
+  const hasGrossSalary = isRealAmount(grossSalary);
+  const coherentMonthlyHours = findDivisorMismatch(monthlyHours, minutesToHours(dailyMinutes));
   const supportingRate =
     period === "hour"
       ? `${formatCurrency(stats.minuteRate)} por minuto`
@@ -78,7 +82,8 @@ export function SalaryCalculator() {
               <div>
                 <h2 className="text-2xl font-bold">Custo da Hora</h2>
                 <p className="text-sm text-neutral-600 dark:text-neutral-400 text-pretty">
-                  Descubra quanto vale cada hora do seu trabalho, já com os descontos.
+                  Descubra quanto vale cada hora do seu trabalho, já com os descontos. A hora extra da aba Jornada é
+                  calculada sobre a hora bruta, como manda o art. 59, §1º, da CLT.
                 </p>
               </div>
             </div>
@@ -114,9 +119,35 @@ export function SalaryCalculator() {
               />
             </div>
 
+            {hasGrossSalary ? null : (
+              <AlertBanner icon={AlertTriangle} tone="danger" title="Informe o seu salário bruto" className="mb-6">
+                <p>
+                  Sem ele os valores abaixo continuam em R$ 0,00 — e esse zero não é o seu salário, é a falta do dado.
+                </p>
+              </AlertBanner>
+            )}
+
             {hasMonthlyHours ? null : (
               <AlertBanner icon={AlertTriangle} tone="danger" title="Informe a carga horária mensal" className="mb-6">
-                <p>Sem ela não dá para saber quanto vale a sua hora. O padrão da jornada de 8h é 220 horas por mês.</p>
+                <p>
+                  Sem ela não dá para saber quanto vale a sua hora. Para a jornada de 8h48 por dia o divisor é 220 horas
+                  por mês.
+                </p>
+              </AlertBanner>
+            )}
+
+            {coherentMonthlyHours === null ? null : (
+              <AlertBanner
+                icon={AlertTriangle}
+                tone="warning"
+                title="A carga mensal não combina com a jornada diária"
+                className="mb-6"
+              >
+                <p>
+                  Pela Súmula 431 do TST, a jornada que você informou corresponde ao divisor {coherentMonthlyHours}{" "}
+                  horas por mês, e não {monthlyHours}. Usar um divisor maior do que o devido reduz o valor de cada hora
+                  sua.
+                </p>
               </AlertBanner>
             )}
 

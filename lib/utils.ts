@@ -35,6 +35,10 @@ export function formatTimeLabel(timestamp: string): string {
   return Number.isNaN(parsed.getTime()) ? "--:--" : format(parsed, "HH:mm");
 }
 
+export function formatIsoDate(isoDate: string): string {
+  return isoDate.split("-").reverse().join("/");
+}
+
 export function parseCurrency(value: string): number {
   const digitsOnly = value.replace(/\D/g, "");
   const parsed = Number(digitsOnly) / 100;

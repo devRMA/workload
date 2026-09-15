@@ -9,6 +9,8 @@ import { SalaryCalculator } from "@/components/organisms/salary-calculator";
 import { WorkCalculator } from "@/components/organisms/work-calculator";
 import { safeGAEvent } from "@/lib/analytics";
 import { type CalculatorView, VIEW_PATHS } from "@/lib/calculator-view";
+import { CURRENT_LEGAL_YEAR } from "@/lib/legal-tables";
+import { formatIsoDate } from "@/lib/utils";
 
 const VIEW_TABS: readonly { view: CalculatorView; label: string; icon: typeof Clock }[] = [
   { view: "work", label: "Jornada", icon: Clock },
@@ -75,7 +77,26 @@ export function CalculatorViews({ activeView }: { activeView: CalculatorView }) 
           </p>
           <p>
             Os valores são uma estimativa para você se organizar — não substituem seu holerite nem valem como registro
-            oficial de ponto.
+            oficial de ponto, e nada aqui é orientação jurídica ou contábil.
+          </p>
+          <p>
+            Não entram na conta: FGTS, benefícios e adicionais da sua convenção coletiva, o 13º salário e o terço de
+            férias, a incidência de INSS e IRRF sobre as horas extras, a prorrogação da jornada noturna depois das 5h
+            (Súmula 60 do TST), feriados, o valor do intervalo suprimido e o adicional de insalubridade ou
+            periculosidade. O regime Estatutário usa a tabela do RPPS federal e não vale para servidor estadual ou
+            municipal.
+          </p>
+          <p>
+            Tabelas de INSS e IRRF de {CURRENT_LEGAL_YEAR.year}, em vigor desde{" "}
+            {formatIsoDate(CURRENT_LEGAL_YEAR.effectiveFrom)} ·{" "}
+            <a
+              href={CURRENT_LEGAL_YEAR.sourceUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="underline underline-offset-2 hover:text-emerald-600 dark:hover:text-emerald-400"
+            >
+              {CURRENT_LEGAL_YEAR.source}
+            </a>
           </p>
         </footer>
       </div>

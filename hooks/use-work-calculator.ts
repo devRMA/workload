@@ -21,6 +21,7 @@ const STORAGE_KEYS = {
   lunchStart: "lunchStart",
   lunchEnd: "lunchEnd",
   exitOverride: "exitOverride",
+  lastExit: "lastExit",
   isManualExit: "isManualExit",
   firstTierRate: "firstTierRate",
   extraTierRate: "extraTierRate",
@@ -162,6 +163,7 @@ export function useWorkCalculator() {
   const [lunchEnd, setLunchEnd] = useState(() => todayAt("13:00"));
   const [exitOverride, setExitOverride] = useState("");
   const [isManualExit, setIsManualExit] = useState(false);
+  const [previousExit, setPreviousExit] = useState<string | null>(null);
   const [isRestored, setIsRestored] = useState(false);
 
   useEffect(() => {
@@ -177,6 +179,9 @@ export function useWorkCalculator() {
     setLunchEnd((current) => shiftedByDays(readStoredTimestamp(STORAGE_KEYS.lunchEnd), dayShift, current));
     setExitOverride((current) => shiftedByDays(readStoredTimestamp(STORAGE_KEYS.exitOverride), dayShift, current));
     setIsManualExit(readStoredFlag(STORAGE_KEYS.isManualExit, false));
+
+    const storedLastExit = readStoredTimestamp(STORAGE_KEYS.lastExit);
+    setPreviousExit(dayShift > 0 ? storedLastExit : null);
     setIsRestored(true);
   }, []);
 
@@ -201,6 +206,16 @@ export function useWorkCalculator() {
   const displayExit = isManualExit ? exitOverride : suggestedExit;
 
   const countedExit = isManualExit || currentTime === null ? displayExit : latestOf(displayExit, currentTime);
+
+  useEffect(() => {
+    if (!isRestored || displayExit === "") return;
+    localStorage.setItem(STORAGE_KEYS.lastExit, displayExit);
+  }, [isRestored, displayExit]);
+
+  const minutesSincePreviousShift = useMemo(
+    () => (previousExit === null ? null : differenceInMinutes(new Date(entry), new Date(previousExit))),
+    [previousExit, entry],
+  );
 
   const stats = useMemo(
     () => calculateWorkStats(entry, lunchStart, lunchEnd, countedExit, workMinutes),
@@ -244,6 +259,7 @@ export function useWorkCalculator() {
     displayExit,
     currentTime,
     stats,
+    minutesSincePreviousShift,
     issue,
     resetDefaults,
   };

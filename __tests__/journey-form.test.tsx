@@ -206,4 +206,17 @@ describe("JourneyForm", () => {
     expect(onReset).not.toHaveBeenCalled();
     expect(screen.queryByText("Resetar os horários?")).not.toBeInTheDocument();
   });
+
+  it("says the 100% step above two hours comes from the convenção coletiva, not from the law", async () => {
+    const user = userEvent.setup();
+    render(<JourneyHarness />);
+
+    await user.click(screen.getByRole("button", { name: "Configurações da Jornada" }));
+
+    expect(screen.getByText(/Não existe lei que dobre o adicional depois da 2ª hora/)).toBeInTheDocument();
+    expect(screen.getByLabelText("Adicional acima de 2h (%)")).toHaveAccessibleDescription(
+      /convenção coletiva previr esse degrau/,
+    );
+    expect(screen.getByText(/O piso legal é 50% sobre a hora normal/)).toBeInTheDocument();
+  });
 });

@@ -67,5 +67,28 @@ describe("CalculatorViews", () => {
 
     expect(screen.getByText(/fica salvo apenas neste navegador/)).toBeInTheDocument();
     expect(screen.getByText(/não substituem seu holerite/)).toBeInTheDocument();
+    expect(screen.getByText(/orientação jurídica ou contábil/)).toBeInTheDocument();
+  });
+
+  it("names what the calculation leaves out", () => {
+    render(<CalculatorViews activeView="work" />);
+
+    const omissions = screen.getByText(/Não entram na conta/);
+
+    expect(omissions).toHaveTextContent("FGTS");
+    expect(omissions).toHaveTextContent("convenção coletiva");
+    expect(omissions).toHaveTextContent("13º salário");
+    expect(omissions).toHaveTextContent("Súmula 60 do TST");
+    expect(omissions).toHaveTextContent("RPPS federal");
+  });
+
+  it("dates the tax tables and links the norm that published them", () => {
+    render(<CalculatorViews activeView="work" />);
+
+    expect(screen.getByText(/Tabelas de INSS e IRRF de 2026, em vigor desde 01\/01\/2026/)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Portaria Interministerial MPS\/MF nº 13/ })).toHaveAttribute(
+      "href",
+      "https://www.legisweb.com.br/legislacao/?id=489284",
+    );
   });
 });
