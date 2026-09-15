@@ -76,6 +76,14 @@ Same checks, against the deployed Vercel URL, with `labor-law-analyst` auditing 
 
 A defect that reaches the preview and should have been caught at G6 is a lesson, and you write it.
 
+### The budget on a preview host
+
+Settled at 0005's G10 so it is not re-litigated at every G9. A Vercel preview injects two things this app does not ship and production never sees: the `vercel.live` feedback toolbar script, and an `x-robots-tag: noindex` response header on the `*.vercel.app` alias. They sink `best-practices` and `seo` on their own.
+
+The budget in `.lighthouserc.js` does not move — lowering it to fit a preview host would hide a real regression on the production domain. What changes is what you may conclude on that host: **`categories:best-practices` and `categories:seo` are measured and reported at G9, but not scored against the budget, and only once you have proved the attribution per failing audit.** Proving it means, for each audit scoring 0: reading its own `details.items` out of the `lhr-*.json` and showing every item names a platform origin or a platform response header, and grepping the repo clean of the directive (`app/layout.tsx`, `app/robots.ts`, `next.config.*`). Record the audit ids and the item names in the report.
+
+**If a single item names the app's own origin, it is a finding again** — and `performance`, `accessibility`, LCP, INP and CLS are always scored against the budget, on every host.
+
 ## Output contract — `.specs/NNNN-slug/reports/audit.md` (and `audit-preview.md`)
 
 - **Verdict** — `pass` or `reject`, first line.
