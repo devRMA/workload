@@ -45,11 +45,25 @@ describe("HeroPanel", () => {
     expect(longValueCqi).toBeLessThan(shortValueCqi);
   });
 
-  it("still asks for a finite size when there is no value to show", () => {
+  it("asks for no inline size when there is no value to show", () => {
     const { container } = render(<HeroPanel icon={IconClock} label="Valor" value="" tone="blue" />);
     const valueElement = container.querySelector<HTMLElement>("p[aria-live]");
 
-    expect(readValueCqi(valueElement as HTMLElement)).toBeGreaterThan(0);
+    expect(valueElement?.style.getPropertyValue("--hero-value-size")).toBe("");
+  });
+
+  it("sets a sentence value in the statement step instead of the numeral step", () => {
+    render(<HeroPanel icon={IconClock} label="Valor por mês" value="Sem carga horária" tone="blue" />);
+    const valueElement = screen.getByText("Sem carga horária");
+
+    expect(valueElement.style.getPropertyValue("--hero-value-size")).toBe("");
+  });
+
+  it("still announces a sentence value politely", () => {
+    render(<HeroPanel icon={IconClock} label="Valor por mês" value="Sem carga horária" tone="blue" />);
+    const valueElement = screen.getByText("Sem carga horária");
+
+    expect(valueElement).toHaveAttribute("aria-live", "polite");
   });
 
   it("omits the footer separator when there is no footer", () => {

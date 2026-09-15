@@ -178,7 +178,15 @@ describe("DaySummary", () => {
 
     expect(screen.getByText("DSR sobre os extras")).toBeInTheDocument();
     expect(screen.getByText(/Súmula 172 do TST/)).toBeInTheDocument();
-    expect(screen.getByText(/feriados não entram/)).toBeInTheDocument();
+    expect(screen.getByText(/Feriados não entram/)).toBeInTheDocument();
+  });
+
+  it("keeps the DSR assumption and its holiday gap in the same caption", () => {
+    renderSummary({ firstTierMinutes: 120, grossHourlyRate: 13.6364 });
+
+    const caption = screen.getByText(/Súmula 172 do TST/);
+    expect(caption).toHaveTextContent("Súmula 172 do TST");
+    expect(caption).toHaveTextContent("Feriados não entram");
   });
 
   it("leaves the DSR out of a day without any variable pay", () => {

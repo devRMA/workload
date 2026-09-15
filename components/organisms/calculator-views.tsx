@@ -76,8 +76,8 @@ export function CalculatorViews({ activeView }: { activeView: CalculatorView }) 
             além de você vê seus horários ou seu salário.
           </p>
           <p>
-            Os valores são uma estimativa para você se organizar — não substituem seu holerite nem valem como registro
-            oficial de ponto, e nada aqui é orientação jurídica ou contábil.
+            Os valores são uma estimativa para você se organizar. Não substituem seu holerite, não valem como registro
+            oficial de ponto e nada aqui é orientação jurídica ou contábil.
           </p>
           <p>
             Não entram na conta: FGTS, benefícios e adicionais da sua convenção coletiva, o 13º salário e o terço de

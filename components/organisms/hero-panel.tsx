@@ -21,6 +21,8 @@ interface HeroPanelProps {
 }
 
 export function HeroPanel({ icon: Icon, label, value, tone, badge, media, footer, children }: HeroPanelProps) {
+  const isFigure = /\d/.test(value);
+
   return (
     <div
       className={cn(
@@ -40,11 +42,17 @@ export function HeroPanel({ icon: Icon, label, value, tone, badge, media, footer
           {media}
           <p
             aria-live="polite"
-            className="text-numeral numeric whitespace-nowrap text-[length:var(--hero-value-size)]"
+            className={cn(
+              isFigure
+                ? "text-numeral numeric whitespace-nowrap text-[length:var(--hero-value-size)]"
+                : "text-title text-balance",
+            )}
             style={
-              {
-                "--hero-value-size": `clamp(2.5rem, ${VALUE_INLINE_SIZE_CQI / Math.max(1, value.length)}cqi, 6rem)`,
-              } as CSSProperties
+              isFigure
+                ? ({
+                    "--hero-value-size": `clamp(2.5rem, ${VALUE_INLINE_SIZE_CQI / Math.max(1, value.length)}cqi, 6rem)`,
+                  } as CSSProperties)
+                : undefined
             }
           >
             {value}

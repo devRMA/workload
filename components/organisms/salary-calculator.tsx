@@ -31,7 +31,7 @@ import { CalculatorLayout } from "../templates/calculator-layout";
 import { TaxDetailsPanel } from "./tax-details-panel";
 
 const DETAILS_PANEL_ID = "tax-details";
-const MISSING_VALUE = "—";
+const MISSING_VALUE = "Sem carga horária";
 
 export function SalaryCalculator() {
   const {
@@ -122,9 +122,7 @@ export function SalaryCalculator() {
 
             {hasGrossSalary ? null : (
               <AlertBanner icon={IconAlertTriangle} tone="danger" title="Informe o seu salário bruto" className="mb-lg">
-                <p>
-                  Sem ele os valores abaixo continuam em R$ 0,00 — e esse zero não é o seu salário, é a falta do dado.
-                </p>
+                <p>Sem ele os valores abaixo continuam em R$ 0,00. Esse zero não é o seu salário, é a falta do dado.</p>
               </AlertBanner>
             )}
 

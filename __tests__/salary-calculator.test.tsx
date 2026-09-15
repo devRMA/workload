@@ -159,7 +159,7 @@ describe("SalaryCalculator", () => {
     render(<SalaryCalculator />);
 
     expect(screen.getByRole("alert")).toHaveTextContent("Informe a carga horária mensal");
-    expect(screen.getByText("—")).toBeInTheDocument();
+    expect(screen.getByText("Sem carga horária")).toBeInTheDocument();
     expect(screen.getByText("Informe a carga horária mensal para calcular")).toBeInTheDocument();
   });
 
@@ -167,7 +167,15 @@ describe("SalaryCalculator", () => {
     render(<SalaryCalculator />);
 
     expect(screen.getAllByRole("alert")[0]).toHaveTextContent("Informe o seu salário bruto");
-    expect(screen.getByText(/esse zero não é o seu salário/)).toBeInTheDocument();
+    expect(screen.getByText(/Esse zero não é o seu salário/)).toBeInTheDocument();
+  });
+
+  it("keeps the zero and the disclaimer that it is not the salary in the same banner", () => {
+    render(<SalaryCalculator />);
+
+    const banner = screen.getAllByRole("alert")[0];
+    expect(banner).toHaveTextContent("R$ 0,00");
+    expect(banner).toHaveTextContent("Esse zero não é o seu salário");
   });
 
   it("warns when the monthly divisor does not match the declared journey", () => {

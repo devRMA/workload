@@ -232,7 +232,7 @@ export function DaySummary({
         {restDayPay > 0 ? (
           <p className="text-caption text-ink-subtle text-pretty">
             O DSR (Súmula 172 do TST) supõe que estes extras se repitam em todos os dias úteis do mês e conta só os
-            domingos — feriados não entram.
+            domingos. Feriados não entram.
           </p>
         ) : null}
 

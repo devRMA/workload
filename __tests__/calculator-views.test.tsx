@@ -66,8 +66,20 @@ describe("CalculatorViews", () => {
     render(<CalculatorViews activeView="work" />);
 
     expect(screen.getByText(/fica salvo apenas neste navegador/)).toBeInTheDocument();
-    expect(screen.getByText(/não substituem seu holerite/)).toBeInTheDocument();
+    expect(screen.getByText(/Não substituem seu holerite/)).toBeInTheDocument();
     expect(screen.getByText(/orientação jurídica ou contábil/)).toBeInTheDocument();
+  });
+
+  it("keeps every disclaimer clause in the same footer paragraph", () => {
+    render(<CalculatorViews activeView="work" />);
+
+    const disclaimer = screen.getByText(/Não substituem seu holerite/);
+    expect(disclaimer).toHaveTextContent("estimativa");
+    expect(disclaimer).toHaveTextContent("Não substituem seu holerite");
+    expect(disclaimer).toHaveTextContent("não valem como registro oficial de ponto");
+    expect(disclaimer).toHaveTextContent("orientação jurídica ou contábil");
+
+    expect(screen.getByText(/prorrogação da jornada noturna depois das 5h/)).toHaveTextContent("Súmula 60 do TST");
   });
 
   it("names what the calculation leaves out", () => {
