@@ -24,7 +24,7 @@ export function buildStructuredData(view: CalculatorView): string {
       {
         "@type": "WebApplication",
         "@id": `${url}#app`,
-        name: `WorkLoad — ${VIEW_HEADINGS[view]}`,
+        name: `WorkLoad: ${VIEW_HEADINGS[view]}`,
         url,
         description: VIEW_DESCRIPTIONS[view],
         applicationCategory: "BusinessApplication",

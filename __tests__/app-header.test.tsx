@@ -9,7 +9,7 @@ vi.mock("@/lib/analytics", () => ({
   safeGAEvent: vi.fn(),
 }));
 
-const HEADING = "Calculadora de jornada de trabalho, horas extras e banco de horas";
+const HEADING = "Calculadora de jornada de trabalho, horas extras e saldo do dia";
 
 const themeState: { resolvedTheme: string | undefined; setTheme: () => void } = {
   resolvedTheme: undefined,

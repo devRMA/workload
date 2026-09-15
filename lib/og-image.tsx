@@ -11,7 +11,7 @@ const INK_MUTED = "#a6abb5";
 
 const OG_CONTENT: Record<CalculatorView, { title: string; subtitle: string }> = {
   work: {
-    title: "Jornada, horas extras e banco de horas",
+    title: "Jornada de trabalho, horas extras e saldo do dia",
     subtitle: "A que horas você pode sair, quanto já trabalhou e quanto tem de hora extra.",
   },
   salary: {

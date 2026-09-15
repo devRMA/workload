@@ -30,12 +30,12 @@ describe("Home", () => {
 describe("metadata", () => {
   it("describes the journey view with its own canonical", () => {
     expect(metadata.title).toEqual({
-      absolute: "Calculadora de Jornada, Horas Extras e Banco de Horas | WorkLoad",
+      absolute: "Calculadora de Jornada, Horas Extras e Saldo do Dia | WorkLoad",
     });
     expect(metadata.description).toContain("hora extra");
     expect(metadata.alternates).toEqual({ canonical: "/" });
     expect(metadata.openGraph).toMatchObject({
-      title: "Calculadora de Jornada, Horas Extras e Banco de Horas",
+      title: "Calculadora de Jornada, Horas Extras e Saldo do Dia",
       url: "/",
     });
   });
