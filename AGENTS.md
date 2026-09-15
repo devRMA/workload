@@ -184,6 +184,13 @@ Every agent updates `STATUS.md` when it finishes: its gate's state, the run numb
 
 `evidence/` is gitignored — screenshots are large, regenerable, and not review material.
 
+### How a criterion is written
+
+Promoted from the lesson ledger at 0005's G10, after three confirmations each. Binding on every agent that writes an acceptance criterion, a verification cell, a "Done when", or a guard — `product-manager`, `tech-lead`, and every reviewer that names evidence.
+
+- **State a prohibition as the search over the whole boundary it names, never as a file and a line.** "No `X` in `app/globals.css:69`" ships the rule with an exception; "no `X` anywhere in the tree, asserted by a test" is the rule. The boundary is the whole class of file the rule governs, including the documents — and a criterion satisfiable by editing one line is not a criterion.
+- **Never name a verification command that has not been run in this tree, by the agent naming it.** A tool the repo ships is not a tool that works here, and a criterion whose evidence path is inoperable proves nothing in either direction. Run it once, paste what it printed, and write the criterion against that. If it cannot run, the criterion is not written until the reason is fixed or the criterion is replaced by one that can.
+
 ---
 
 ## 6. Compound engineering — the squad gets smarter

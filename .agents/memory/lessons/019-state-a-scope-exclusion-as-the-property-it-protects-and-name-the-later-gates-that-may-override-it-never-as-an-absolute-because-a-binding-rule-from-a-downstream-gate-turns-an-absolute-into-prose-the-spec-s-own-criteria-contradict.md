@@ -5,7 +5,7 @@ applies-to: product-manager
 domain: spec
 spec: 0005
 created: 2026-09-15
-confirmed: 0
+confirmed: 2
 ---
 
 ## What happened

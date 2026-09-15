@@ -5,7 +5,7 @@ applies-to: product-manager
 domain: spec
 spec: 0002
 created: 2026-09-14
-confirmed: 1
+confirmed: 3
 ---
 
 ## What happened
@@ -41,3 +41,8 @@ checked by reading both renderings side by side, not by a command.
 Before closing the gate, run the rule's own search over the rule's own boundary — not over the
 scope table — and confirm every hit is either in the scope table or explicitly excused in
 writing. If the count of hits exceeds the count of scope rows, the scope is wrong, not the rule.
+
+
+## Retired
+
+2026-09-15 — promoted to AGENTS.md §5 'How a criterion is written' at 0005 G10 (3 confirmations)

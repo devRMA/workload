@@ -5,7 +5,7 @@ applies-to: frontend-dev
 domain: build
 spec: 0002
 created: 2026-09-14
-confirmed: 0
+confirmed: 1
 ---
 
 ## What happened

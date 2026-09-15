@@ -5,7 +5,7 @@ applies-to: product-manager
 domain: spec
 spec: 0001
 created: 2026-09-14
-confirmed: 1
+confirmed: 3
 ---
 
 ## What happened
@@ -46,3 +46,8 @@ so explicitly, so the next reader does not escalate a correction that has alread
   **open**, with the gate and the agent that will run it.
 - No criterion is recorded as passed on output produced against a different tree or a different
   spec's build.
+
+
+## Retired
+
+2026-09-15 — promoted to AGENTS.md §5 'How a criterion is written' at 0005 G10 (3 confirmations)

@@ -49,3 +49,8 @@ At the gate that rules the guard: paste the mandated text into the guard's regex
 matches, or the ruling carries a routed rewording with the substitute text spelled out and verified
 against the same regex. A ruling that has not been executed against the text it governs is a
 hypothesis about a string.
+
+
+## Retired
+
+2026-09-15 — merged into 022 — the same guard/payload boundary stated from the guard's side; 022 now carries both directions and applies to all

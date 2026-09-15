@@ -50,3 +50,8 @@ For each evidence command a plan names:
   absent from the root is **not** resolvable.
 - Confirm the tool wrote a file into `evidence/` with a timestamp from this run. A gate that
   reports a tool's result with no artefact, no stdout and no exit code has not run it.
+
+
+## Retired
+
+2026-09-15 — merged into 012 — same rule from the plan side; promoted with it to AGENTS.md §5
