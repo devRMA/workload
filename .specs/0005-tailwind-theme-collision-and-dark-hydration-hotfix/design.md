@@ -4,7 +4,7 @@
 > Verdict: **PASS with rulings.** The token decision is ratified; the geometry targets below are
 > binding; `DESIGN.md` §§393–559 is replaced by the prose in §6.
 
-## What this gate is deciding
+## 1. What this gate is deciding
 
 This spec draws nothing. It repairs two defects whose only design content is a **geometry the
 system already intended and the compiler silently discarded**, plus one **first-paint condition**
@@ -27,13 +27,13 @@ silence as permission.
 **No new token is proposed. No token value changes. No string changes.** Two observations that
 argue for a future change are recorded in §9 as notes, deliberately not acted on here.
 
-## References
+### 1.1 References
 
 | Site | Technique borrowed | Why it fits this audience |
 |---|---|---|
 | — | None. | This spec introduces no new pattern; borrowing one would be the redesign the spec's § Out of scope forbids. |
 
-## Hierarchy
+### 1.2 Hierarchy
 
 Unchanged on both routes. For the record, so the zero-diff claim in AC6 has a stated baseline:
 
@@ -519,3 +519,375 @@ rewrite has a number to respect instead of a guess.
 
 A string that grows past these budgets stops fitting on one line and re-opens LR2. That is the
 constraint a future `content-writer` inherits from this gate.
+
+---
+
+## 6. Ruling on `DESIGN.md` — what replaces §§393–559
+
+`DESIGN.md` is mine and deleting the named scale makes eight of its statements false. Below is the
+**exact replacement text**, site by site, so `frontend-dev` substitutes rather than composes and
+`release-manager` can check the result mechanically. Nothing outside these sites changes.
+
+The governing principle of the rewrite: **the names carried a rhythm, not a value. The rhythm moves
+to the prose; the value moves to a number.** A step named `--spacing-lg` told you 24px and implied
+"a card's padding on a phone". The numeric `6` tells you 24px and implies nothing, so the prose has
+to say what the name used to. That is a net gain in honesty — the rhythm was always the rule and the
+name was always a mnemonic free to drift from it.
+
+### 6.1 Line 393 — the spacing scale
+
+> **Spacing scale.** Base unit 4px (`--spacing: 0.25rem`), and the scale is Tailwind's numeric one,
+> derived from that single multiplier — `p-6` is `calc(var(--spacing) * 6)` = 24px. **There is no
+> named spacing scale and there must never be one again.** A key in that namespace does not merely
+> name a value: in Tailwind 4 the `--spacing-*` namespace also feeds the container scale, so
+> declaring one named `3xl` silently redefines `max-w-3xl` — and it did, rendering the legal
+> disclosure footer as a 64px column at every viewport for two whole specs while every check in the
+> repository passed.
+> The eight sanctioned steps are therefore written as numbers: **0.5, 2, 3, 4, 6, 8, 12, 16** — that
+> is **2, 8, 12, 16, 24, 32, 48, 64 px** at a 16px root — and everything else is a bug. The rhythm
+> they express, which is the part that was ever worth naming: **2** is a hairline offset inside a
+> control; **8** binds a label to its field; **12** separates sibling rows; **16** is the internal
+> padding of a compact control; **24** is a card's padding on a phone and the gap between cards;
+> **32** is a card's padding from `sm` up; **48** separates major regions; **64** is the page's top
+> and bottom breathing room. Inside an arbitrary value, read the multiplier, never a hard-coded
+> length: `calc(var(--spacing) * 8)`, not `2rem`.
+
+**Run 2 (B8).** Two phrases of that blockquote changed and nothing else did: the sentence now reads
+"A key in that namespace" and "declaring one named `3xl`" where run 1 named the two retired keys
+literally. The teaching clause — the 64px legal disclosure, two whole specs, every check passing —
+is byte for byte what it was. Run against case 4's regex the blockquote returns `[]`; `max-w-3xl`,
+`--spacing-*`, `--spacing: 0.25rem` and `calc(var(--spacing) * 6)` all survive, none of them being a
+non-numeric suffix. **Only the blockquote is substituted into `DESIGN.md:393`.** The commentary
+above it is this document's own prose about the rewrite, is not part of the replacement text, and
+must not travel into `DESIGN.md` — it still names a retired key, which is legitimate here and a
+guard failure there.
+
+### 6.2 Line 395 — container and gutter
+
+> **Container.** `--container-app` is `80rem` up to 1919px and `100rem` from 1920px — 1280px at a
+> 16px root, 1700px at the 17px root it shares that breakpoint with, and 1800px from 2560px where
+> the root steps to 18px. It is deliberately **not** a key in Tailwind's container scale
+> (`3xs`…`7xl`), which is why `max-w-app` kept resolving correctly on the very page where
+> `max-w-3xl` did not. The page gutter is `px-4` (16px) below `sm`, `px-6` (24px) from `sm`, `px-8`
+> (32px) from `lg`, each scaling with the root above 1920px.
+
+### 6.3 Line 397 — the two-column split
+
+Replace the sticky-offset clause only:
+
+> …the hero moves to the right, and it sticks at `calc(var(--header-height) + var(--spacing) * 8)`
+> while the form scrolls.
+
+### 6.4 Lines 401–407 — the density table
+
+Three cells are wrong after the migration and four were already wrong. Replacement rows:
+
+| Width | Columns | Root size | Gutter | Card padding | Notes |
+|---|---|---|---|---|---|
+| **390** (phone) | 1, hero first | 16px | 16px | 24px | Bottom tab bar floats above `env(safe-area-inset-bottom)`; content reserves `pb-16` (64px) below. Form fields are full width; date and time stack. |
+| **768** (tablet) | 1, hero first | 16px | 24px | 32px | Paired fields go two-up at `sm` (640px). Header shows the live clock. |
+| **1440** (laptop) | 12 → 7/5 | 16px | 32px | 32px | Container 1280px. Hero sticky. This is the width the system is drawn at. |
+| **2560** (QHD) | 12 → 7/5 | 18px | **36px** | **36px** | Container **1800px**. **The layout does not change — the whole system scales**, because every value is in `rem`. The gutter and the card padding are the same `px-8`/`p-8` they are at 1440; they measure 36px because the root is 18px, not because anything was redeclared. |
+| **3840** (4K) | 12 → 7/5 | 18px | **36px** | **36px** | Container stays **1800px** and the root size stays 18px. Beyond QHD the viewer is further away, not closer; adding a third column or more scale would break the one-glance reading. Extra width becomes margin, deliberately. |
+
+The `1600px` in the old 2560 and 3840 rows was a pre-existing arithmetic slip, not a value this spec
+changes: `--container-app: 100rem` against an 18px root has always computed 1800px. Same for the
+`32px` gutters. **Correcting a document to match the CSS that already ships is not a token value
+change** and does not touch AC6 — no pixel moves; the description of the pixels becomes true.
+
+### 6.5 Line 417 — the Eight Steps Rule, restated, plus one new rule
+
+> **The Eight Steps Rule.** If a gap is not one of `0.5, 2, 3, 4, 6, 8, 12, 16` — 2, 8, 12, 16, 24,
+> 32, 48, 64 px at a 16px root — it is wrong. There is no `p-5` and there is no `p-10`.
+>
+> **The Numeric Scale Rule.** The `--spacing-*` namespace in `@theme` is **empty and stays empty**;
+> only the bare `--spacing` multiplier is declared. Any key of the form `--spacing-<name>` silently
+> overrides the container-scale entry of the same name, which is how a legally required disclosure
+> shipped 64 pixels wide. A unit test over `app/globals.css` asserts the namespace holds no
+> non-numeric suffix, and that test is **part of this rule, not an implementation detail of it** —
+> the rule cannot be enforced by reading, because its violation is invisible in the file that causes
+> it and visible only in an unrelated component's rendered width.
+
+### 6.6 Lines 492, 501, 542, 559 — the four incidental mentions
+
+| Line | Today | Replacement |
+|---|---|---|
+| 492 (Fields) | "sits `--spacing-xs` (8px) above its control… the wrapper's `space-y-xs`" · "separated by `--spacing-lg` (24px)" | "sits 8px (`space-y-2`) above its control… the wrapper's `space-y-2`" · "separated by 24px (`gap-6`)" |
+| 501 (Cards) | "a 1px `--color-line-faint` rule with `--spacing-lg` above and below" | "…with 24px (`space-y-6`) above and below" |
+| 542 (Navigation) | "the sticky aside offset (`--header-height + --spacing-xl`)" | "the sticky aside offset (`calc(var(--header-height) + var(--spacing) * 8)`)" |
+| 559 (Iconography) | "**Gap to adjacent text** is `--spacing-xs` (8px) at 16px, `--spacing-sm` (12px) at 20 and 24px" | "**Gap to adjacent text** is `gap-2` (8px) at 16px, `gap-3` (12px) at 20 and 24px" |
+
+### 6.7 The frontmatter — `spacing:` is rekeyed
+
+`DESIGN.md`'s YAML frontmatter is the machine-readable record of the system, and it carries:
+
+```yaml
+spacing:
+  hair: "2px"
+  xs: "8px"
+  sm: "12px"
+  md: "16px"
+  lg: "24px"
+  xl: "32px"
+  2xl: "48px"
+  3xl: "64px"
+```
+
+Those keys are the deleted names. **Command V3 does not match them** — it greps for
+`--spacing-<name>` — so AC12 as written would pass with the frontmatter still declaring a scale that
+no longer exists: the "criterion pinned to one pattern instead of to the boundary" failure lesson 006
+names. Replacement:
+
+```yaml
+spacing:
+  "0.5": "2px"
+  "2": "8px"
+  "3": "12px"
+  "4": "16px"
+  "6": "24px"
+  "8": "32px"
+  "12": "48px"
+  "16": "64px"
+```
+
+**Ruling for `plan.md`:** AC12's verification is the boundary, not V3. The check is that `DESIGN.md`
+contains no `--spacing-<non-numeric>` **and** no `spacing:` frontmatter key that is not a number.
+`tech-lead` writes it that way, or AC12 ships with an exception.
+
+### 6.8 What in `DESIGN.md` does **not** change
+
+Stated so that a reconciliation pass does not wander: the `colors`, `typography`, `rounded` and
+`components` frontmatter blocks; the Overview, Design Read and Dials, Colors, Typography, Elevation
+& Depth, Shapes and Components prose; every named rule other than the Eight Steps Rule; and the
+`rounded` scale, whose keys are `xs…2xl` and which is **safe**, because `--radius-*` is not shared
+with any other Tailwind namespace. The `components` block's `padding: "24px"` and `"32px"` literals
+describe rendered values rather than reference tokens, and stay exactly as they are.
+
+---
+
+## 7. D2 — what the user must see on first paint
+
+D2 is filed as a hygiene defect, and `spec.md` is right that its cost is "a flash and a console
+line". But "no console error" is a criterion about the developer's experience, and a fix can satisfy
+it while leaving the user's experience unchanged — `suppressHydrationWarning` does exactly that, and
+the spec's § Non-goals already forbids it for that reason. The forbidding needs a positive
+counterpart: **something a person can look at and say yes or no to.** That is this section.
+
+### 7.1 The criterion
+
+The element is the theme toggle at `components/organisms/app-header.tsx:53-70`: a ghost icon
+`Button`, 44×44, `aria-label="Alternar tema"`, rendering `IconSun` or `IconMoon` from `resolvedTheme`.
+
+**On a cold load, with an empty cache, in a production build:**
+
+| Theme | At first paint | Between first paint and interactive | After hydration |
+|---|---|---|---|
+| **Light** (`prefers-color-scheme: light`, no stored preference) | `IconMoon`, 20px, `--color-ink-muted`, in a 44×44 target at the header's right edge | **nothing changes** | `IconMoon`, identical |
+| **Dark** (`prefers-color-scheme: dark`, no stored preference) | `IconSun`, 20px, `--color-ink-muted`, same position | **nothing changes** | `IconSun`, identical |
+
+Four clauses, each of which some plausible fix fails:
+
+1. **The glyph is theme-correct at first paint.** Not corrected a moment later — correct in the first
+   frame that contains the header. Today a dark visitor's first frame shows `IconMoon` on a dark
+   page, which is the wrong glyph *and* the wrong affordance: it offers to switch to the theme they
+   are already in.
+2. **No substitution occurs at any point.** No `IconMoon`→`IconSun` swap, no placeholder glyph, no
+   empty button, no skeleton, no spinner, no `opacity` fade-in on mount. The spec's § Non-goals
+   already bars the skeleton; this clause is what makes that check performable.
+3. **No layout shift.** The 44×44 target and the header's `justify-between` row are identical in
+   every frame. This element's contribution to CLS is **0.000**, before and after.
+4. **The accessible name never changes.** `aria-label="Alternar tema"` is static and theme-independent
+   — it always was — so there is nothing for a screen reader to re-announce and **no live region is
+   introduced.** A fix that makes the label theme-dependent would create an announcement on load and
+   is rejected.
+
+### 7.2 What this rules out, and why that is a design ruling rather than an implementation one
+
+`spec.md` leaves the mechanism to `tech-lead` ("CSS `dark:`/`not-dark:` toggling both icons, or a
+mount guard — not settled here"). I am not settling the mechanism. I am settling the **observable
+result**, and clause 1 combined with clause 2 eliminates an entire family of mechanisms as a
+consequence:
+
+> **A mount guard renders the resting state from React state that does not exist on the server.**
+> Whatever it renders in the first frame — a placeholder, `null`, or the light-theme glyph — is
+> either a substitution (clause 2) or the wrong glyph in dark (clause 1). It removes the console
+> error by making the server and client agree on something *wrong*, and the user still watches the
+> icon change.
+
+So the resting glyph must be **decided at paint time by the theme itself**, which in this codebase
+means the `.dark` class that `next-themes` sets before first paint, read by CSS. The shape that
+satisfies every clause: render **both** icons server-side, both `aria-hidden="true"`, and let the
+`dark` variant decide which one has `display`. `app/globals.css:3` declares
+`@custom-variant dark (&:where(.dark, .dark *))`, so the variant is available and is driven by the
+same class the pre-paint script writes. The exact utility pair is `frontend-dev`'s to write and
+`tech-lead`'s to specify; `display` rather than `opacity` or `visibility`, so the hidden glyph
+contributes no box and clause 3 holds by construction.
+
+**`disableTransitionOnChange` on `ThemeProvider` (`app/layout.tsx:66`) stays.** A theme swap is a
+state change, not a transition; animating it would reintroduce a flash by design after this spec
+removed one by accident.
+
+### 7.3 How it is observed
+
+Design-side criteria, to be turned into checks by `tech-lead` alongside AC8's `pageerror` listener:
+
+- In a Playwright context with `colorScheme: "dark"` against the production build, a screenshot of
+  the header bounding box taken at first contentful paint and again after `networkidle` is
+  **pixel-identical**. The same in `colorScheme: "light"`.
+- The glyph visible in dark is the sun. This is the one clause that needs a human or a stable
+  selector rather than a diff, because two identical frames of the *wrong* icon would pass a
+  self-comparison.
+- `layout-shift` entries attributable to the header: none.
+
+AC8's zero-`pageerror` requirement stays exactly as written. §7 is additive to it: a fix that clears
+AC8 and fails 7.1 is a rejection at G6.
+
+---
+
+## 8. Accessibility
+
+### 8.1 Roles and semantics — unchanged, restated for the repaired subtrees
+
+| Element | Role | Notes |
+|---|---|---|
+| DS1 | `<footer>` → `contentinfo` (it is a direct child of `<body>`'s main flow region) with four `<p>` and one `<a>` | Server-rendered, no `aria-hidden`, no `sr-only`, not inside a `details` or a `[hidden]` — **LR3 satisfied by construction and unchanged by this spec.** |
+| DS4 dialog | native `<dialog>` + `showModal()`, `aria-modal="true"`, `aria-labelledby="privacy-settings-title"` | Focus trap and inert background are the platform's, not ours. |
+| DS4 telemetry control | `role="switch"` + `aria-checked` + `aria-labelledby="telemetry-consent-label"` | The name is the visible purpose label — LGPD art. 8º §4º's "finalidade determinada" is the accessible name, which is the right binding. |
+| DS4 essential control | `aria-hidden="true"` decorative pill; "Sempre ativo" is the text that carries the meaning | Correct: it is not a control, so it must not present as one. |
+| Ad slot | plain `<div>`, no role | Renders `null` when ads are disabled. |
+| Theme toggle | `<button>` with static `aria-label` | §7.1 clause 4. |
+
+### 8.2 Tab order
+
+Unchanged. Within the settings dialog, DOM order is the tab order and both are correct:
+
+1. Close control (`absolute right-4 top-4`, first in DOM — a user tabbing once gets the escape hatch)
+2. Telemetry switch
+3. "Salvar Preferências"
+
+The essential row contributes no tab stop. `Esc` closes via the native `<dialog>`. Focus returns to
+the *Configurar* trigger on close. The stacking change in §3.3.1 is a `flex-direction` change and
+**does not reorder the DOM**, so the visual order and the tab order stay in agreement at 390 — which
+is the thing a `flex-col` can silently break and does not here.
+
+### 8.3 Contrast — every text-on-surface pair in the repaired subtrees, both themes
+
+WCAG 2.2 AA: 4.5:1 for text below 18.66px bold / 24px regular, 3:1 for graphical objects and UI
+component boundaries. Computed from the hex values in `DESIGN.md`'s frontmatter, which are the
+sRGB renderings of the `oklch()` declarations in `app/globals.css`.
+
+| Pair | Light | Dark | Floor | Verdict |
+|---|---|---|---|---|
+| DS1 footer text — `ink-subtle` on `canvas` | **4.84:1** | **5.74:1** | 4.5 | pass |
+| DS4 purpose label — `ink` on `surface-sunken` | **14.31:1** | **16.34:1** | 4.5 | pass |
+| DS4 purpose caption — `ink-subtle` on `surface-sunken` | **4.59:1** | **5.51:1** | 4.5 | pass (light is the tight one) |
+| DS4 "Sempre ativo" — `accent-ink` on `surface-sunken` | **5.87:1** | **8.86:1** | 4.5 | pass |
+| DS4 save action — `ink-onfill` on `accent` | **5.58:1** | **5.58:1** | 4.5 | pass |
+| DS4 switch track ON — `accent` vs `surface-sunken` | **5.06:1** | **3.25:1** | 3.0 | pass |
+| DS4 switch track OFF — `line-strong` vs `surface-sunken` | **3.06:1** | **3.64:1** | 3.0 | pass (light is the tight one) |
+| DS4 knob vs ON track — `ink-onfill` vs `accent` | **5.58:1** | **5.58:1** | 3.0 | pass |
+| DS4 knob vs OFF track — `ink-onfill` vs `line-strong` | **3.37:1** | **4.99:1** | 3.0 | pass |
+| Reset dialog body — `ink-muted` on `surface-raised` | **5.87:1** | **6.68:1** | 4.5 | pass |
+| Theme toggle icon — `ink-muted` on `surface` | **5.87:1** | **7.49:1** | 3.0 | pass |
+| Theme toggle hover — `ink` on `surface-sunken` | **14.31:1** | **16.34:1** | 3.0 | pass |
+| Focus ring on canvas — `focus` vs `canvas` | **5.34:1** | **9.23:1** | 3.0 | pass |
+| Focus ring on raised — `focus` vs `surface-raised` | **5.58:1** | **7.52:1** | 3.0 | pass |
+
+**No colour changes in this spec, so no ratio changes.** The table is here because a geometry fix
+is the moment a reviewer stops looking at colour, and because two pairs — the DS4 caption in light
+at 4.59:1 and the OFF track in light at 3.06:1 — sit close enough to their floors that a future
+token nudge would break them silently. Both are recorded so the next person knows they have 0.09
+and 0.06 of headroom, not "plenty".
+
+### 8.4 Live regions
+
+**None added, none needed.** No value in this spec updates as the user types; the calculator's own
+live-updating regions are untouched. `AlertBanner`'s `role="alert"`/`role="status"` split
+(`alert-banner.tsx:22`) stands. §7.1 clause 4 keeps the theme toggle silent.
+
+### 8.5 Touch targets
+
+Every interactive element in the repaired subtrees is ≥44×44 today and stays so: the telemetry
+switch is `h-11 w-11` around a `h-6 w-11` track, the close control is `size="icon"` (44×44), the
+save action is `h-14` (56px), the theme toggle is `size="icon"`. The §3.3.1 stack **increases** the
+vertical room around the switch at 390 rather than reducing it.
+
+---
+
+## 9. System change, questions, and notes not acted on
+
+### 9.1 System change — **human approval point**
+
+`AGENTS.md` §4 makes a `DESIGN.md` system change a human approval point. There is one, it is the
+subject of `spec.md` scope item 7, and it is flagged here in its own right rather than assumed
+pre-approved by the spec:
+
+> **Change:** the named spacing scale `--spacing-hair/xs/sm/md/lg/xl/2xl/3xl` is deleted from
+> `app/globals.css` and from `DESIGN.md` (prose §§393–559 and the `spacing:` frontmatter block),
+> replaced by Tailwind's numeric scale derived from `--spacing: 0.25rem`.
+>
+> **What it replaces:** eight named tokens, by an exact 1:1 numeric mapping (§2.1), compiled and
+> verified against Tailwind 4.3.3.
+>
+> **Value impact:** none. Not one rendered pixel changes because of the mapping. The only pixels that
+> move are the four collapsed widths the collision caused, plus the 390-only stack in §3.3.1.
+>
+> **Justification:** the named namespace is shared with Tailwind's container scale, and the sharing
+> is not configurable — it cost a legally required disclosure two specs of illegibility while every
+> automated check passed. An empty namespace is the only form of this scale that cannot collide
+> again.
+>
+> **Cost accepted:** the eight steps lose their mnemonics. §6.1 moves the rhythm those mnemonics
+> carried into the prose, where it was always the actual rule.
+
+**No new token is added.** No new type step, no new curve, no new elevation level, no new colour
+role, no new breakpoint.
+
+### 9.2 Questions routed to `tech-lead` (G4), not decided here
+
+| # | Question | My position | Who rules |
+|---|---|---|---|
+| Q1 | LR4 clause 1 says "content-box"; LR1 says `getBoundingClientRect()`. At 1440 they give 446px and 512px, and 446 < 480. | Measure the panel at `cookie-consent.tsx:85` by `getBoundingClientRect().width`, per `legal.md` §4's own "512px … satisfies this". `plan.md` states the basis explicitly. | `labor-law-analyst` confirms at G6 |
+| Q2 | LR2 demands ≥40 chars/line from a **37-character** string. Unsatisfiable at any width. | An element whose text occupies one line box satisfies LR2 by definition; the ratio applies only where `lineBoxes > 1`. My geometry puts both DS4 captions on one line box at both viewports regardless. | `labor-law-analyst` |
+| Q3 | §3.3.1's `flex-col` below `sm` moves pixels at 390, which `spec.md` § Out of scope forbids and `legal.md` LR2 compels. | LR2 wins (`AGENTS.md` §4 rule 8), and the subtree is one AC6 already exempts — but the scope sentence should be amended rather than quietly overridden. | `tech-lead` → `product-manager` |
+| Q4 | AC12's verification (command V3) cannot see the `spacing:` frontmatter keys in `DESIGN.md`. | Restate AC12 over the boundary: no `--spacing-<non-numeric>` **and** no non-numeric `spacing:` key (§6.7). | `tech-lead` |
+| Q5 | §3.6: DS3 computes to ≈32 chars/line at 390, below LR2, on a surface `legal.md` records as passing. | Not this spec's defect and not this spec's fix — `AlertBanner` is a shared atom. Measure it at G6; if confirmed, it is its own spec. | `labor-law-analyst` → `product-manager` |
+
+### 9.3 Notes deliberately not acted on
+
+Recorded so they are not lost, and so that nobody reads their absence from the build as an oversight.
+
+- **N1 — the footer's measure at 1440 is ≈86 characters per line.** Comfortably above LR2's floor
+  and comfortably above the 45–75 character measure that reads well. `max-w-3xl` was the intent the
+  code already carried and `spec.md`'s open question rules that this spec **repairs an intent rather
+  than forms a new one**; narrowing it would be a redesign and would put a second, arguable pixel
+  delta inside the one subtree AC6 needs to be unambiguous. A future spec may set a prose measure
+  cap for `DESIGN.md`. Not here.
+- **N2 — `globals.css` carries a raw `0.75rem` in the `dialog > div` starting transform.** It is a
+  raw value outside the collided namespace. Rewriting it to `calc(var(--spacing) * 3)` would be
+  value-preserving and is exactly the "tidying while migrating" that `spec.md` § Non-goals forbids
+  and AC6 would have to absorb. Left alone.
+- **N4 — nothing in `components/` uses `useReducedMotion`.** `grep -rn "useReducedMotion\|prefers-reduced" components/` returns zero.
+  The global `@media (prefers-reduced-motion: reduce)` block clamps CSS `transition-property`, which
+  does not reach `motion`'s JS-driven inline-style animations: the consent banner's 100px slide and
+  the telemetry knob's translate both play at full amplitude under reduced motion. This is a real
+  accessibility gap, it predates this spec, and it is outside its scope. Its own spec.
+- **N5 — DS3, §3.6.** Above, as Q5.
+
+---
+
+## 10. What this gate binds on the build
+
+The design gate passes when all of the following hold, in addition to `spec.md`'s AC1–AC13 and
+`legal.md`'s LR1–LR4:
+
+| # | Criterion |
+|---|---|
+| D-AC1 | The `@theme` block declares **no** `--spacing-<non-numeric>` key, and the mapping used is exactly §2.1's — no value differs by so much as a `0.0625rem`. |
+| D-AC2 | The five arbitrary-value sites use `calc(var(--spacing) * N)` (§2.2), not a hard-coded `rem`. |
+| D-AC3 | The four surfaces measure §3.2–§3.5's widths at 390 and 1440, in **both** themes, against the production build. |
+| D-AC4 | Both DS4 toggle rows occupy **one line box** per caption at 390 and at 1440 (§3.3.1), with the stack applied below `sm` only. |
+| D-AC5 | The theme toggle satisfies §7.1's four clauses, verified by the header screenshot pair in §7.3, in addition to AC8's zero `pageerror`. |
+| D-AC6 | `DESIGN.md` reads as §6 specifies — prose **and** frontmatter — with no retired name surviving anywhere in the file. |
+| D-AC7 | No new token, type step, curve, elevation level or breakpoint appears in `app/globals.css`. The diff to that file is deletions plus nothing. |
+| D-AC8 | Every contrast pair in §8.3 still measures what it measures. A geometry fix that changes a colour has exceeded this gate. |

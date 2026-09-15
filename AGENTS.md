@@ -21,7 +21,7 @@ That framing decides every trade-off in this repo:
 | Framework | Next.js (App Router), React 19, TypeScript strict |
 | Styling | Tailwind CSS 4 — CSS-first, tokens in `app/globals.css`. There is no `tailwind.config.ts`. |
 | Utilities | `clsx` + `tailwind-merge` via `cn()` in `lib/utils.ts` |
-| Icons | `lucide-react` |
+| Icons | `@tabler/icons-react` |
 | Motion | `motion` (Framer Motion v13) |
 | Theming | `next-themes` — dark and light both ship |
 | Dates | `date-fns` |
