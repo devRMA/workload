@@ -12,10 +12,10 @@ interface StatBoxProps extends React.HTMLAttributes<HTMLDivElement> {
 export function StatBox({ label, value, subValue, icon, variant = "default", className, ...props }: StatBoxProps) {
   return (
     <div
-      className={cn("flex flex-col gap-xs rounded-lg border border-line bg-surface-sunken p-md", className)}
+      className={cn("flex flex-col gap-2 rounded-lg border border-line bg-surface-sunken p-4", className)}
       {...props}
     >
-      <div className="flex items-center gap-xs text-overline uppercase text-ink-muted">
+      <div className="flex items-center gap-2 text-overline uppercase text-ink-muted">
         {icon}
         <span>{label}</span>
       </div>

@@ -26,8 +26,8 @@ export function AppHeader({ heading }: { heading: string }) {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 bg-chrome backdrop-blur-chrome backdrop-saturate-(--saturate-chrome) border-b border-line">
-      <div className="max-w-app mx-auto px-md sm:px-lg lg:px-xl h-(--header-height) flex items-center justify-between">
-        <div className="flex items-center gap-sm">
+      <div className="max-w-app mx-auto px-4 sm:px-6 lg:px-8 h-(--header-height) flex items-center justify-between">
+        <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-md bg-accent flex items-center justify-center">
             <IconWallet className="text-ink-onfill" size={24} stroke={1.75} aria-hidden="true" />
           </div>
@@ -42,10 +42,10 @@ export function AppHeader({ heading }: { heading: string }) {
           </div>
         </div>
 
-        <div className="flex items-center gap-md">
+        <div className="flex items-center gap-4">
           <div
             aria-hidden="true"
-            className="hidden md:flex items-center gap-xs bg-surface-sunken rounded-sm px-md py-xs text-label numeric text-ink-muted"
+            className="hidden md:flex items-center gap-2 bg-surface-sunken rounded-sm px-4 py-2 text-label numeric text-ink-muted"
           >
             <IconClock className="w-4 h-4 text-accent-ink" aria-hidden="true" />
             <span>{currentTime === null ? PLACEHOLDER_CLOCK : formatClockTime(currentTime)}</span>

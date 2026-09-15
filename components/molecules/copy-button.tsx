@@ -48,7 +48,7 @@ export function CopyButton({ value, label, onCopied }: CopyButtonProps) {
   };
 
   return (
-    <div className="flex items-center gap-sm">
+    <div className="flex items-center gap-3">
       <span role="status" className="text-caption font-semibold text-right empty:hidden">
         {STATUS_MESSAGES[status]}
       </span>

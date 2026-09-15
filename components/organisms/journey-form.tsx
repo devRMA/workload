@@ -75,9 +75,9 @@ export function JourneyForm({
   const [isConfirmingReset, setIsConfirmingReset] = useState(false);
 
   return (
-    <div className="bg-surface rounded-xl p-lg sm:p-xl shadow-card border border-line">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-md mb-xl">
-        <div className="flex items-start gap-md">
+    <div className="bg-surface rounded-xl p-6 sm:p-8 shadow-card border border-line">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <div className="flex items-start gap-4">
           <div>
             <h2 className="text-title">Sua Jornada</h2>
             <p className="text-body-sm text-ink-muted text-pretty">
@@ -98,7 +98,7 @@ export function JourneyForm({
             />
           </button>
         </div>
-        <div className="space-y-xs sm:text-right">
+        <div className="space-y-2 sm:text-right">
           <fieldset className="grid grid-cols-2 gap-1 bg-surface-sunken p-1.5 rounded-lg sm:ml-auto sm:inline-grid sm:w-fit">
             <legend className="sr-only">Modo de cálculo da saída</legend>
             {EXIT_MODES.map(({ label, isManual }) => (
@@ -124,8 +124,8 @@ export function JourneyForm({
         </div>
       </div>
 
-      <CollapsiblePanel id={SETTINGS_PANEL_ID} isOpen={showSettings} className="mb-xl">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-lg bg-surface-sunken p-lg rounded-lg border border-line">
+      <CollapsiblePanel id={SETTINGS_PANEL_ID} isOpen={showSettings} className="mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-surface-sunken p-6 rounded-lg border border-line">
           <DurationField
             id="daily-journey"
             label="Tempo de Trabalho Diário"
@@ -175,13 +175,13 @@ export function JourneyForm({
           icon={IconAlertTriangle}
           tone="danger"
           title="Confira seus horários"
-          className="mb-lg"
+          className="mb-6"
         >
           <p>{issue.message}</p>
         </AlertBanner>
       ) : null}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-lg mb-xl">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <DateTimeInput
           label="Entrada"
           icon={IconLogin}
@@ -219,12 +219,12 @@ export function JourneyForm({
         />
       </div>
 
-      <div className="flex items-center justify-between pt-lg border-t border-line-faint">
+      <div className="flex items-center justify-between pt-6 border-t border-line-faint">
         <button
           type="button"
           aria-label="Resetar Horários"
           onClick={() => setIsConfirmingReset(true)}
-          className="flex min-h-11 items-center gap-xs -mx-2 rounded-md px-2 text-label text-ink-muted transition-colors duration-(--duration-fast) ease-standard hover:text-negative-ink ring-focus"
+          className="flex min-h-11 items-center gap-2 -mx-2 rounded-md px-2 text-label text-ink-muted transition-colors duration-(--duration-fast) ease-standard hover:text-negative-ink ring-focus"
         >
           <IconRotate className="w-4 h-4" aria-hidden="true" />
           Resetar Horários
@@ -235,16 +235,16 @@ export function JourneyForm({
         isOpen={isConfirmingReset}
         onClose={() => setIsConfirmingReset(false)}
         labelledBy={RESET_DIALOG_TITLE_ID}
-        className="w-full max-w-md rounded-2xl border border-line bg-surface-raised p-xl shadow-raised edge-lit"
+        className="w-full max-w-md rounded-2xl border border-line bg-surface-raised p-8 shadow-raised edge-lit"
       >
-        <div className="space-y-lg">
+        <div className="space-y-6">
           <h2 id={RESET_DIALOG_TITLE_ID} className="text-display">
             Resetar os horários?
           </h2>
           <p className="text-body text-ink-muted">
             Entrada, almoço, saída e as configurações da jornada voltam aos valores padrão. Não dá para desfazer.
           </p>
-          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-sm">
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
             <Button variant="outline" onClick={() => setIsConfirmingReset(false)}>
               Cancelar
             </Button>

@@ -13,7 +13,7 @@ export function CalculatorPage({ view, children }: { view: CalculatorView; child
       />
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:z-100 focus:m-md focus:rounded-md focus:bg-surface-raised focus:p-md focus:text-ink focus:shadow-raised"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-100 focus:m-4 focus:rounded-md focus:bg-surface-raised focus:p-4 focus:text-ink focus:shadow-raised"
       >
         Pular para o conteúdo principal
       </a>

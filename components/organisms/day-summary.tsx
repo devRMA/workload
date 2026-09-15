@@ -50,7 +50,7 @@ function DayTimeline({ breakdown, times }: Pick<DaySummaryProps, "breakdown" | "
   if (total === 0) return null;
 
   return (
-    <div className="space-y-xs">
+    <div className="space-y-2">
       <div className="flex h-3 w-full overflow-hidden rounded-full bg-surface-sunken" aria-hidden="true">
         {breakdown.segments.map(({ kind, minutes }) => (
           <div key={kind} className={SEGMENT_BAR_CLASSES[kind]} style={{ width: `${(minutes / total) * 100}%` }} />
@@ -77,7 +77,7 @@ function TotalRow({
 }) {
   return (
     <div
-      className="flex items-baseline justify-between gap-md"
+      className="flex items-baseline justify-between gap-4"
       aria-live={live ? "polite" : undefined}
       aria-atomic={live ? true : undefined}
     >
@@ -132,14 +132,14 @@ export function DaySummary({
   const restDayPay = restDayPayOnOvertime(variablePay, splitMonthDays(new Date(times.entry)));
 
   return (
-    <div className="bg-surface rounded-xl p-lg sm:p-xl shadow-card border border-line space-y-lg">
+    <div className="bg-surface rounded-xl p-6 sm:p-8 shadow-card border border-line space-y-6">
       <h3 className="text-heading">Seu Dia</h3>
 
       <DayTimeline breakdown={breakdown} times={times} />
 
-      <div className="space-y-sm">
+      <div className="space-y-3">
         {stretches.map(({ kind, icon: Icon, label, endsAt, minutes }, index) => (
-          <div key={kind} className="flex items-center gap-sm text-body-sm">
+          <div key={kind} className="flex items-center gap-3 text-body-sm">
             <span className={cn("h-2.5 w-2.5 shrink-0 rounded-full", SEGMENT_BAR_CLASSES[kind])} aria-hidden="true" />
             <Icon className="w-4 h-4 shrink-0 text-ink-muted" aria-hidden="true" />
             <span className="font-medium">{label}</span>
@@ -152,7 +152,7 @@ export function DaySummary({
         ))}
 
         {breakdown.nightBonusMinutes > 0 ? (
-          <div className="flex items-center gap-sm text-body-sm">
+          <div className="flex items-center gap-3 text-body-sm">
             <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-night" aria-hidden="true" />
             <IconMoonStars className="w-4 h-4 shrink-0 text-night-ink" aria-hidden="true" />
             <span className="font-medium">Hora noturna reduzida</span>
@@ -164,7 +164,7 @@ export function DaySummary({
         ) : null}
       </div>
 
-      <div className="space-y-xs border-t border-line-faint pt-lg">
+      <div className="space-y-2 border-t border-line-faint pt-6">
         <TotalRow
           label={breakdown.isInProgress ? "Trabalhado até agora" : "Trabalhado no dia"}
           value={formatHoursAndMinutes(breakdown.workedMinutes)}
@@ -177,8 +177,8 @@ export function DaySummary({
         ) : null}
       </div>
 
-      <div className="space-y-sm border-t border-line-faint pt-lg">
-        <div className="flex items-baseline justify-between gap-md">
+      <div className="space-y-3 border-t border-line-faint pt-6">
+        <div className="flex items-baseline justify-between gap-4">
           <span className="text-body-sm font-semibold text-ink">
             {breakdown.remainingMinutes > 0 ? "Saldo se você sair no horário" : "Saldo do dia"}
           </span>
@@ -187,8 +187,8 @@ export function DaySummary({
           </span>
         </div>
 
-        <div className="space-y-xs">
-          <div className="flex items-center gap-sm text-body-sm">
+        <div className="space-y-2">
+          <div className="flex items-center gap-3 text-body-sm">
             <IconBolt className="w-4 h-4 shrink-0 text-overtime-ink" aria-hidden="true" />
             <span>Extra {firstTierRate}%</span>
             <span className="ml-auto numeric font-semibold">{formatHoursAndMinutes(firstTierMinutes)}</span>
@@ -198,7 +198,7 @@ export function DaySummary({
               </span>
             )}
           </div>
-          <div className="flex items-center gap-sm text-body-sm">
+          <div className="flex items-center gap-3 text-body-sm">
             <IconBolt className="w-4 h-4 shrink-0 text-overtime-ink" aria-hidden="true" />
             <span>Extra {extraTierRate}%</span>
             <span className="ml-auto numeric font-semibold">{formatHoursAndMinutes(extraTierMinutes)}</span>
@@ -208,7 +208,7 @@ export function DaySummary({
               </span>
             )}
           </div>
-          <div className="flex items-center gap-sm text-body-sm">
+          <div className="flex items-center gap-3 text-body-sm">
             <IconMoonStars className="w-4 h-4 shrink-0 text-night-ink" aria-hidden="true" />
             <span>Adicional noturno 20%</span>
             <span className="ml-auto numeric font-semibold">{formatHoursAndMinutes(nightMinutes)}</span>
@@ -219,7 +219,7 @@ export function DaySummary({
             )}
           </div>
           {restDayPay > 0 ? (
-            <div className="flex items-center gap-sm text-body-sm">
+            <div className="flex items-center gap-3 text-body-sm">
               <IconCalendarMonth className="w-4 h-4 shrink-0 text-positive-ink" aria-hidden="true" />
               <span>DSR sobre os extras</span>
               <span className="ml-auto w-24 text-right numeric font-semibold text-positive-ink">
@@ -240,7 +240,7 @@ export function DaySummary({
           <Link
             href={VIEW_PATHS.salary}
             scroll={false}
-            className="flex min-h-11 w-full items-center justify-center rounded-md border border-dashed border-line-strong p-sm text-center text-body-sm text-ink-muted transition-colors duration-(--duration-fast) ease-standard hover:border-accent hover:text-accent-ink ring-focus"
+            className="flex min-h-11 w-full items-center justify-center rounded-md border border-dashed border-line-strong p-3 text-center text-body-sm text-ink-muted transition-colors duration-(--duration-fast) ease-standard hover:border-accent hover:text-accent-ink ring-focus"
           >
             Quer ver quanto isso vale em reais? Calcule o valor da sua hora →
           </Link>

@@ -32,7 +32,7 @@ export function ExtraEntryRow({
   onRemove,
 }: ExtraEntryRowProps) {
   return (
-    <div className="flex gap-sm">
+    <div className="flex gap-3">
       <div className="flex-1 min-w-0">
         <Input
           type="text"

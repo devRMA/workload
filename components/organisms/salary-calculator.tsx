@@ -74,8 +74,8 @@ export function SalaryCalculator() {
     <CalculatorLayout
       main={
         <>
-          <div className="bg-surface rounded-xl p-lg sm:p-xl shadow-card border border-line">
-            <div className="flex items-center gap-md mb-xl">
+          <div className="bg-surface rounded-xl p-6 sm:p-8 shadow-card border border-line">
+            <div className="flex items-center gap-4 mb-8">
               <div className="p-3 bg-accent-soft rounded-md">
                 <IconCalculator className="text-accent-ink" size={24} stroke={1.75} aria-hidden="true" />
               </div>
@@ -88,7 +88,7 @@ export function SalaryCalculator() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-lg mb-xl">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
               <Field id="salario-bruto" label="Salário Bruto (R$)" className="sm:col-span-2">
                 <CurrencyInput
                   id="salario-bruto"
@@ -121,7 +121,7 @@ export function SalaryCalculator() {
             </div>
 
             {hasGrossSalary ? null : (
-              <AlertBanner icon={IconAlertTriangle} tone="danger" title="Informe o seu salário bruto" className="mb-lg">
+              <AlertBanner icon={IconAlertTriangle} tone="danger" title="Informe o seu salário bruto" className="mb-6">
                 <p>Sem ele os valores abaixo continuam em R$ 0,00. Esse zero não é o seu salário, é a falta do dado.</p>
               </AlertBanner>
             )}
@@ -131,7 +131,7 @@ export function SalaryCalculator() {
                 icon={IconAlertTriangle}
                 tone="danger"
                 title="Informe a carga horária mensal"
-                className="mb-lg"
+                className="mb-6"
               >
                 <p>
                   Sem ela não dá para saber quanto vale a sua hora. Para a jornada de 8h48 por dia o divisor é 220 horas
@@ -145,7 +145,7 @@ export function SalaryCalculator() {
                 icon={IconAlertTriangle}
                 tone="warning"
                 title="A carga mensal não combina com a jornada diária"
-                className="mb-lg"
+                className="mb-6"
               >
                 <p>
                   Pela Súmula 431 do TST, a jornada que você informou corresponde ao divisor {coherentMonthlyHours}{" "}
@@ -160,7 +160,7 @@ export function SalaryCalculator() {
               onClick={() => setShowDetails(!showDetails)}
               aria-expanded={showDetails}
               aria-controls={DETAILS_PANEL_ID}
-              className="w-full flex items-center justify-between gap-md p-md rounded-lg border border-line hover:bg-surface-sunken transition-colors duration-(--duration-fast) ease-standard ring-focus"
+              className="w-full flex items-center justify-between gap-4 p-4 rounded-lg border border-line hover:bg-surface-sunken transition-colors duration-(--duration-fast) ease-standard ring-focus"
             >
               <span className="flex flex-col items-start gap-0.5 text-left">
                 <span className="text-body font-medium">Impostos e Descontos</span>
@@ -173,7 +173,7 @@ export function SalaryCalculator() {
               )}
             </button>
 
-            <CollapsiblePanel id={DETAILS_PANEL_ID} isOpen={showDetails} className="mt-lg">
+            <CollapsiblePanel id={DETAILS_PANEL_ID} isOpen={showDetails} className="mt-6">
               <TaxDetailsPanel
                 dependents={dependents}
                 onDependentsChange={setDependents}
@@ -192,7 +192,7 @@ export function SalaryCalculator() {
             </CollapsiblePanel>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-md" aria-live="polite">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" aria-live="polite">
             <StatBox
               label="Salário Líquido"
               value={formatCurrency(stats.netSalary)}
@@ -226,8 +226,8 @@ export function SalaryCalculator() {
           tone="blue"
           footer={
             <>
-              <p className="text-body-sm mb-xs">Resumo Financeiro</p>
-              <div className="grid grid-cols-2 gap-md">
+              <p className="text-body-sm mb-2">Resumo Financeiro</p>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-overline uppercase">Bruto</p>
                   <p className="text-heading numeric">{formatCurrency(grossSalary)}</p>
@@ -240,10 +240,10 @@ export function SalaryCalculator() {
             </>
           }
         >
-          <p className="mt-md text-body font-medium text-ink-onfill/90">
+          <p className="mt-4 text-body font-medium text-ink-onfill/90">
             {hasMonthlyHours ? supportingRate : "Informe a carga horária mensal para calcular"}
           </p>
-          <div className="mt-lg">
+          <div className="mt-6">
             <PeriodSelector value={period} onChange={setPeriod} />
           </div>
         </HeroPanel>

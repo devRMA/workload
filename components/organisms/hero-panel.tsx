@@ -26,19 +26,19 @@ export function HeroPanel({ icon: Icon, label, value, tone, badge, media, footer
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-2xl p-xl lg:p-2xl text-ink-onfill shadow-accent transition-[background-color] duration-(--duration-slow) ease-standard",
+        "relative overflow-hidden rounded-2xl p-8 lg:p-12 text-ink-onfill shadow-accent transition-[background-color] duration-(--duration-slow) ease-standard",
         TONE_CLASSES[tone],
       )}
     >
-      <div className="relative z-10 space-y-lg lg:space-y-xl">
-        <div className="flex items-center justify-between gap-md">
-          <div className="flex items-center gap-sm">
+      <div className="relative z-10 space-y-6 lg:space-y-8">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
             <Icon size={24} stroke={1.75} aria-hidden="true" />
             <span className="text-overline uppercase">{label}</span>
           </div>
           {badge}
         </div>
-        <div className="@container space-y-md text-center">
+        <div className="@container space-y-4 text-center">
           {media}
           <p
             aria-live="polite"
@@ -59,7 +59,7 @@ export function HeroPanel({ icon: Icon, label, value, tone, badge, media, footer
           </p>
           {children}
         </div>
-        {footer ? <div className="pt-lg lg:pt-xl border-t border-ink-onfill/15">{footer}</div> : null}
+        {footer ? <div className="pt-6 lg:pt-8 border-t border-ink-onfill/15">{footer}</div> : null}
       </div>
     </div>
   );

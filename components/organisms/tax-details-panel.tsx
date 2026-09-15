@@ -46,8 +46,8 @@ export function TaxDetailsPanel({
   const toManualAmount = (rawValue: string) => (rawValue ? parseCurrency(rawValue) : null);
 
   return (
-    <div className="space-y-lg bg-surface-sunken p-lg rounded-lg border border-line">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-lg">
+    <div className="space-y-6 bg-surface-sunken p-6 rounded-lg border border-line">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <Field id="dependentes" label="Dependentes">
           <Input
             id="dependentes"

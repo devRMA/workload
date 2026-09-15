@@ -136,14 +136,14 @@ rounded:
   2xl: "32px"
   full: "9999px"
 spacing:
-  hair: "2px"
-  xs: "8px"
-  sm: "12px"
-  md: "16px"
-  lg: "24px"
-  xl: "32px"
-  2xl: "48px"
-  3xl: "64px"
+  "0.5": "2px"
+  "2": "8px"
+  "3": "12px"
+  "4": "16px"
+  "6": "24px"
+  "8": "32px"
+  "12": "48px"
+  "16": "64px"
 components:
   button-primary:
     backgroundColor: "{colors.accent}"
@@ -390,21 +390,21 @@ Weights are limited to four: `--font-weight-normal` 400, `--font-weight-medium` 
 
 The spatial model is a single column that earns a second one only when there is genuinely room for both.
 
-**Spacing scale.** Base unit 4px (`--spacing: 0.25rem`), but only eight steps are sanctioned and everything else is a bug: **2, 8, 12, 16, 24, 32, 48, 64** (`--spacing-hair`, `-xs`, `-sm`, `-md`, `-lg`, `-xl`, `-2xl`, `-3xl`). The rhythm they express: 8px binds a label to its field, 12px separates sibling rows, 16px is the internal padding of a compact control, 24px is a card's padding on a phone and the gap between cards, 32px is a card's padding from `sm` up, 48px separates major regions, 64px is the page's top and bottom breathing room.
+**Spacing scale.** Base unit 4px (`--spacing: 0.25rem`), and the scale is Tailwind's numeric one, derived from that single multiplier — `p-6` is `calc(var(--spacing) * 6)` = 24px. **There is no named spacing scale and there must never be one again.** A key in that namespace does not merely name a value: in Tailwind 4 the `--spacing-*` namespace also feeds the container scale, so declaring one named `3xl` silently redefines `max-w-3xl` — and it did, rendering the legal disclosure footer as a 64px column at every viewport for two whole specs while every check in the repository passed. The eight sanctioned steps are therefore written as numbers: **0.5, 2, 3, 4, 6, 8, 12, 16** — that is **2, 8, 12, 16, 24, 32, 48, 64 px** at a 16px root — and everything else is a bug. The rhythm they express, which is the part that was ever worth naming: **2** is a hairline offset inside a control; **8** binds a label to its field; **12** separates sibling rows; **16** is the internal padding of a compact control; **24** is a card's padding on a phone and the gap between cards; **32** is a card's padding from `sm` up; **48** separates major regions; **64** is the page's top and bottom breathing room. Inside an arbitrary value, read the multiplier, never a hard-coded length: `calc(var(--spacing) * 8)`, not `2rem`.
 
-**Container.** `--container-app` is `80rem` (1280px) up to 1919px and `100rem` (1600px) from 1920px. The page gutter is `--spacing-md` (16px) below `sm`, `--spacing-lg` (24px) from `sm`, `--spacing-xl` (32px) from `lg`.
+**Container.** `--container-app` is `80rem` up to 1919px and `100rem` from 1920px — 1280px at a 16px root, 1700px at the 17px root it shares that breakpoint with, and 1800px from 2560px where the root steps to 18px. It is deliberately **not** a key in Tailwind's container scale (`3xs`…`7xl`), which is why `max-w-app` kept resolving correctly on the very page where `max-w-3xl` did not. The page gutter is `px-4` (16px) below `sm`, `px-6` (24px) from `sm`, `px-8` (32px) from `lg`, each scaling with the root above 1920px.
 
-**The two-column split.** Below `lg` (1024px) everything is one column and **the hero comes first** — the person on a phone must see the answer before the inputs that produced it. At `lg` and above, a 12-column grid splits 7 (form and summary) / 5 (hero), the hero moves to the right, and it sticks at `--header-height + --spacing-xl` while the form scrolls.
+**The two-column split.** Below `lg` (1024px) everything is one column and **the hero comes first** — the person on a phone must see the answer before the inputs that produced it. At `lg` and above, a 12-column grid splits 7 (form and summary) / 5 (hero), the hero moves to the right, and it sticks at `calc(var(--header-height) + var(--spacing) * 8)` while the form scrolls.
 
 **Density at the five reference widths.**
 
 | Width | Columns | Root size | Gutter | Card padding | Notes |
 |---|---|---|---|---|---|
-| **390** (phone) | 1, hero first | 16px | 16px | 24px | Bottom tab bar floats above `env(safe-area-inset-bottom)`; content reserves `--spacing-3xl` below. Form fields are full width; date and time stack. |
+| **390** (phone) | 1, hero first | 16px | 16px | 24px | Bottom tab bar floats above `env(safe-area-inset-bottom)`; content reserves `pb-16` (64px) below. Form fields are full width; date and time stack. |
 | **768** (tablet) | 1, hero first | 16px | 24px | 32px | Paired fields go two-up at `sm` (640px). Header shows the live clock. |
 | **1440** (laptop) | 12 → 7/5 | 16px | 32px | 32px | Container 1280px. Hero sticky. This is the width the system is drawn at. |
-| **2560** (QHD) | 12 → 7/5 | 18px | 32px | 32px | Container 1600px. **The layout does not change — the whole system scales**, because every value is in `rem`. The card that was 1280px of content is now physically the same size on a larger panel instead of a postage stamp in a field of margin. |
-| **3840** (4K) | 12 → 7/5 | 18px | 32px | 32px | Container stays 1600px and the root size stays 18px. Beyond QHD the viewer is further away, not closer; adding a third column or more scale would break the one-glance reading. Extra width becomes margin, deliberately. |
+| **2560** (QHD) | 12 → 7/5 | 18px | **36px** | **36px** | Container **1800px**. **The layout does not change — the whole system scales**, because every value is in `rem`. The gutter and the card padding are the same `px-8`/`p-8` they are at 1440; they measure 36px because the root is 18px, not because anything was redeclared. |
+| **3840** (4K) | 12 → 7/5 | 18px | **36px** | **36px** | Container stays **1800px** and the root size stays 18px. Beyond QHD the viewer is further away, not closer; adding a third column or more scale would break the one-glance reading. Extra width becomes margin, deliberately. |
 
 Root scaling is the mechanism: `html` is 16px, 17px from 1920px, 18px from 2560px. Nothing else in the system knows this happened.
 
@@ -414,7 +414,9 @@ Root scaling is the mechanism: `html` is 16px, 17px from 1920px, 18px from 2560p
 
 **The Answer-First Rule.** On any viewport under 1024px, the hero panel is the first thing in the DOM order and the first thing on screen. Inputs come after the answer they produce.
 
-**The Eight Steps Rule.** If a gap is not one of 2, 8, 12, 16, 24, 32, 48, 64, it is wrong. There is no 20px and no 40px.
+**The Eight Steps Rule.** If a gap is not one of `0.5, 2, 3, 4, 6, 8, 12, 16` — 2, 8, 12, 16, 24, 32, 48, 64 px at a 16px root — it is wrong. There is no `p-5` and there is no `p-10`.
+
+**The Numeric Scale Rule.** The `--spacing-*` namespace in `@theme` is **empty and stays empty**; only the bare `--spacing` multiplier is declared. Any key of the form `--spacing-<name>` silently overrides the container-scale entry of the same name, which is how a legally required disclosure shipped 64 pixels wide. A unit test over `app/globals.css` asserts the namespace holds no non-numeric suffix, and that test is **part of this rule, not an implementation detail of it** — the rule cannot be enforced by reading, because its violation is invisible in the file that causes it and visible only in an unrelated component's rendered width.
 
 **The Scale-Don't-Reflow Rule.** Above 1920px the product gets bigger, not busier. New columns, new panels and revealed-on-wide content are forbidden.
 
@@ -489,7 +491,7 @@ Two mechanisms apply to all of them:
 
 ### Fields — `form-field.tsx`, `currency-field.tsx`, `duration-field.tsx`, `date-time-input.tsx`
 
-Label (`--text-label`, `--color-ink-muted`) sits `--spacing-xs` (8px) above its control; an optional hint (`text-caption text-ink-subtle`, the 8px offset coming from the wrapper's `space-y-xs`) sits below: **4.75:1** on surface, **4.61:1** on sunken (light); **5.23:1** / **5.50:1** (dark). One hint style, defined once, used by `Field`, `DurationField`, the journey settings and the salary calculator. Fields in a group are separated by `--spacing-lg` (24px). A label icon is 16px in `--color-ink-muted` unless it is a data icon, in which case it takes that data hue's `-ink` token.
+Label (`--text-label`, `--color-ink-muted`) sits 8px (`space-y-2`) above its control; an optional hint (`text-caption text-ink-subtle`, the 8px offset coming from the wrapper's `space-y-2`) sits below: **4.75:1** on surface, **4.61:1** on sunken (light); **5.23:1** / **5.50:1** (dark). One hint style, defined once, used by `Field`, `DurationField`, the journey settings and the salary calculator. Fields in a group are separated by 24px (`gap-6`). A label icon is 16px in `--color-ink-muted` unless it is a data icon, in which case it takes that data hue's `-ink` token.
 
 `date-time-input` is two controls under one label: the date field flexes, the time field is a fixed 8rem, and they stack below `sm` with a 12px gap. Both carry the same error state together — a date and a time are one answer.
 
@@ -498,7 +500,7 @@ The journey settings panel is one `grid grid-cols-1 sm:grid-cols-2 gap-lg`: the 
 ### Cards — `journey-form.tsx`, `day-summary.tsx`, `salary-calculator.tsx`
 
 - **Corner:** `--radius-xl` (28px). **Background:** `--color-surface`. **Border:** 1px `--color-line`. **Shadow:** `--shadow-card` in light, none in dark. **Padding:** 24px below `sm`, 32px from `sm`.
-- Internal sections are separated by a 1px `--color-line-faint` rule with `--spacing-lg` above and below. Recessed sub-panels (journey settings, tax details) are `--color-surface-sunken` at `--radius-lg`.
+- Internal sections are separated by a 1px `--color-line-faint` rule with 24px (`space-y-6`) above and below. Recessed sub-panels (journey settings, tax details) are `--color-surface-sunken` at `--radius-lg`.
 
 ### Hero panel — `components/molecules/hero-panel.tsx`
 
@@ -539,7 +541,7 @@ Track `--color-ink-onfill` at 20%; the worked arc `--color-ink-onfill` solid; th
 
 ### Navigation — `app-header.tsx`, the tab bar in `calculator-views.tsx`
 
-- **Header:** `--header-height` tall — the token itself steps from 4rem (64px) to 5rem (80px) at `md` (48rem) in the base layer, so the header's own height, the content's top padding, and the sticky aside offset (`--header-height + --spacing-xl`) all derive from that one value instead of drifting independently — `--color-chrome` + `--blur-chrome`, bottom edge is a `--color-line` hairline that fades in only once the page has scrolled — a scroll edge effect, not a permanent rule. The logo mark is a 40px `--radius-md` `--color-accent` tile. The live clock is `--text-label` tabular in `--color-ink-muted`.
+- **Header:** `--header-height` tall — the token itself steps from 4rem (64px) to 5rem (80px) at `md` (48rem) in the base layer, so the header's own height, the content's top padding, and the sticky aside offset (`calc(var(--header-height) + var(--spacing) * 8)`) all derive from that one value instead of drifting independently — `--color-chrome` + `--blur-chrome`, bottom edge is a `--color-line` hairline that fades in only once the page has scrolled — a scroll edge effect, not a permanent rule. The logo mark is a 40px `--radius-md` `--color-accent` tile. The live clock is `--text-label` tabular in `--color-ink-muted`.
 - **Tab bar:** floats at the bottom, `--color-chrome` + `--blur-chrome`, `--radius-lg` track, `--shadow-raised`, sitting above `env(safe-area-inset-bottom)`. Active tab is the Primary button; inactive is Ghost. `aria-current="page"` on the active one.
 
 ### Modals — `components/atoms/modal-dialog.tsx`
@@ -556,7 +558,7 @@ Height and opacity animate together over `--duration-base` with `--ease-out`. Th
 - **Stroke width 2** (`stroke` prop) at 16 and 20; **1.75** at 24 and above, so the weight stays optically constant as the icon grows.
 - **Colour is `currentColor`** by default. The only icons with an independent colour are the data icons, which take their hue's `-ink` token: `IconBolt` = overtime, `IconMoonStars` = night, `IconTrendingUp` = positive, `IconTrendingDown` = negative, `IconAlertTriangle` = the tone of its banner.
 - **Every icon is `aria-hidden="true"`.** The accessible name comes from adjacent text or the control's `aria-label`. An icon-only control without an `aria-label` does not ship.
-- **Gap to adjacent text** is `--spacing-xs` (8px) at 16px, `--spacing-sm` (12px) at 20 and 24px, with `items-center`.
+- **Gap to adjacent text** is `gap-2` (8px) at 16px, `gap-3` (12px) at 20 and 24px, with `items-center`.
 - One idea, one icon. No icon is used for two meanings and no meaning gets two icons.
 
 ### Named Rules

@@ -65,12 +65,12 @@ export function DateTimeInput({
   };
 
   return (
-    <div className={cn("space-y-xs", className)}>
+    <div className={cn("space-y-2", className)}>
       <Label htmlFor={inputId}>
         <Icon className="w-4 h-4" aria-hidden="true" />
         {label}
       </Label>
-      <div className="flex flex-col sm:flex-row gap-sm">
+      <div className="flex flex-col sm:flex-row gap-3">
         <div className="flex-1 min-w-0">
           <MaskedInput
             id={inputId}
