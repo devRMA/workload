@@ -49,3 +49,8 @@ for restatement.
 - Before/after pairs are produced by the *same* command; the artefact of record contains both
   verbatim outputs, not two prose summaries.
 - Any implicit default the figure depends on is pinned explicitly in the script.
+
+
+## Retired
+
+2026-09-15 — subsumed by AGENTS.md §5 'How a criterion is written' — promoted from 012/008 at 0005's G10, which mandates pinning a criterion to a quantity and to a command run in this tree; the residual clause (never pin to a line a framework prints) is a case of it. Zero confirmations in three cycles

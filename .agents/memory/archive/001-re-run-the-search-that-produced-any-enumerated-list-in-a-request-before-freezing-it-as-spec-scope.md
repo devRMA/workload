@@ -5,7 +5,7 @@ applies-to: product-manager
 domain: spec
 spec: 0002
 created: 2026-09-14
-confirmed: 2
+confirmed: 3
 ---
 
 ## What happened
@@ -39,3 +39,8 @@ criteria will fail.
 The spec's evidence table cites a runnable command, not "team request", as the source of
 any count or enumeration. Running that command reproduces the spec's list exactly, with
 no extra rows and no missing ones.
+
+
+## Retired
+
+2026-09-15 — promoted to .agents/agents/product-manager.md § How a scope section is written at 0006 G10 (3 confirmations; 0006's G1 scoped five AlertBanner consumers from a re-run search instead of the one reported line)

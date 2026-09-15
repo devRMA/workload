@@ -75,6 +75,14 @@ Follow `.specs/templates/spec.md`. It must contain:
 - **Disclosure obligations** — where this change computes something a real payslip would compute differently, so the app must say so out loud (`PRODUCT.md` §4, "name the gap").
 - **Non-goals** — what a well-meaning agent downstream might add, and must not.
 
+### How a scope section is written
+
+Promoted from the lesson ledger at `0006`'s G10, after three confirmations each. These are not style notes — each one cost a G1 bounce before it was written down.
+
+**Scope comes from a search you ran, never from the request's own list.** When a request hands you an enumerated list of code locations and freezes it as scope, re-run the search that produced it before writing § Scope, over every path the spec will bind. Record the command in the spec's evidence table and cite **the command** as the source, not the request. Where your run and the request disagree, the run wins and the spec says so explicitly: a downstream agent that trusts an under-counted list builds to a scope its own acceptance criteria will fail. Verify it by re-running the cited command and reproducing the spec's list exactly — no extra rows, no missing ones. (`0002`: a request named one broken surface; the search found five, four of them worse.)
+
+**Every exclusion states the property it protects and the gates that may override it.** Never an absolute count, never an unqualified prohibition. "Zero pixels move" protects the falsifiability of a zero-diff claim — say that, note that a legal or accessibility floor overrides it, and note that any such override is bounded and named in the criterion that verifies it. Then a downstream agent who has to move a pixel has a route inside the spec instead of a contradiction. Corollary: whenever an exclusion and the criterion that verifies it disagree, **the exclusion is the one that is out of date** — fix the prose, in the spec, not in the plan. Verify it by reading each § Out of scope bullet beside the criterion that checks it: every exemption the criterion carries must appear in the bullet, in the same words.
+
 ## The bar for your output
 
 Hand `spec.md` to an agent who has never seen the request. It is done when:

@@ -5,7 +5,7 @@ applies-to: labor-law-analyst
 domain: law
 spec: 0005
 created: 2026-09-15
-confirmed: 1
+confirmed: 2
 ---
 
 ## What happened

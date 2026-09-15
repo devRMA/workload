@@ -5,7 +5,7 @@ applies-to: product-manager
 domain: spec
 spec: 0005
 created: 2026-09-15
-confirmed: 2
+confirmed: 3
 ---
 
 ## What happened
@@ -39,3 +39,8 @@ one that is out of date — fix the prose, and fix it in the spec, not in the pl
 Read each bullet of § Out of scope beside the acceptance criterion that checks it. Every exemption
 the criterion carries must appear in the bullet, in the same words. A reader who holds "except X"
 in their head after reading only the scope section means the amendment is not done.
+
+
+## Retired
+
+2026-09-15 — promoted to .agents/agents/product-manager.md § How a scope section is written at 0006 G10 (3 confirmations; 0006's DESIGN.md exclusion was stated as the spacing scale and type ramp it protects, so a padding change in one component entry was not a contradiction)

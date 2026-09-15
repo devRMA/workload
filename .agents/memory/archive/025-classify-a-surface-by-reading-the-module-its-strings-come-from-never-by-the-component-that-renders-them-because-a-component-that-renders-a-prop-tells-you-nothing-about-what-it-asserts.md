@@ -72,3 +72,8 @@ was inferred, not read.
 And run it backwards: for each surface recorded as carrying nothing, name the strongest string in its
 set and state why it still carries nothing. The surfaces that get misclassified are never the ones an
 author paused over.
+
+
+## Retired
+
+2026-09-15 — merged into 024 — the same boundary from the spec side (classify by reading the module, write the reason not the label); 024 now carries both halves and applies to all
