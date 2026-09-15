@@ -10,7 +10,7 @@ import { formatClockTime, PLACEHOLDER_CLOCK } from "@/lib/utils";
 
 export function AppHeader({ heading }: { heading: string }) {
   const currentTime = useCurrentTime();
-  const { setTheme, resolvedTheme } = useTheme();
+  const { setTheme } = useTheme();
 
   useEffect(() => {
     safeGAEvent("session_metadata", {
@@ -54,7 +54,7 @@ export function AppHeader({ heading }: { heading: string }) {
             variant="ghost"
             size="icon"
             onClick={() => {
-              const newTheme = resolvedTheme === "dark" ? "light" : "dark";
+              const newTheme = document.documentElement.classList.contains("dark") ? "light" : "dark";
               setTheme(newTheme);
               safeGAEvent("toggle_theme", {
                 theme: newTheme,
@@ -63,11 +63,8 @@ export function AppHeader({ heading }: { heading: string }) {
             title="Alternar tema"
             aria-label="Alternar tema"
           >
-            {resolvedTheme === "dark" ? (
-              <IconSun className="w-5 h-5" aria-hidden="true" />
-            ) : (
-              <IconMoon className="w-5 h-5" aria-hidden="true" />
-            )}
+            <IconMoon className="w-5 h-5 dark:hidden" aria-hidden="true" data-theme-icon="moon" />
+            <IconSun className="hidden w-5 h-5 dark:block" aria-hidden="true" data-theme-icon="sun" />
           </Button>
         </div>
       </div>
