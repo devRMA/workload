@@ -33,10 +33,17 @@ describe("AlertBanner", () => {
     expect(container.querySelector("svg")).toHaveAttribute("aria-hidden", "true");
   });
 
-  it("exposes the given id so a field can point to it", () => {
-    render(<AlertBanner id="journey-issue" icon={IconAlertTriangle} tone="danger" title="Confira seus horários" />);
+  it("keeps the id on the element that carries the role", () => {
+    const { container } = render(
+      <AlertBanner id="journey-issue" icon={IconAlertTriangle} tone="danger" title="Confira seus horários">
+        <p>A saída precisa vir depois da volta do almoço.</p>
+      </AlertBanner>,
+    );
 
-    expect(screen.getByRole("alert")).toHaveAttribute("id", "journey-issue");
+    const banner = screen.getByRole("alert");
+    expect(banner).toHaveAttribute("id", "journey-issue");
+    expect(banner.contains(container.querySelector("svg"))).toBe(true);
+    expect(banner.contains(screen.getByText("A saída precisa vir depois da volta do almoço."))).toBe(true);
   });
 
   it("merges custom className", () => {
@@ -45,5 +52,27 @@ describe("AlertBanner", () => {
     );
 
     expect(container.firstElementChild?.className).toContain("mb-6");
+  });
+
+  it("keeps the body text out of the icon's row", () => {
+    const { container } = render(
+      <AlertBanner icon={IconAlertTriangle} tone="danger" title="Confira seus horários">
+        <p>A saída precisa vir depois da volta do almoço.</p>
+      </AlertBanner>,
+    );
+
+    const iconRow = container.querySelector("svg")?.parentElement;
+    expect(iconRow?.contains(screen.getByText("Confira seus horários"))).toBe(true);
+    expect(iconRow?.contains(screen.getByText("A saída precisa vir depois da volta do almoço."))).toBe(false);
+  });
+
+  it("adds no focusable element to the banner", () => {
+    const { container } = render(
+      <AlertBanner icon={IconAlertTriangle} tone="danger" title="Confira seus horários">
+        <p>A saída precisa vir depois da volta do almoço.</p>
+      </AlertBanner>,
+    );
+
+    expect(container.querySelectorAll("a, button, input, select, textarea, [tabindex]")).toHaveLength(0);
   });
 });
