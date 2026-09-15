@@ -1127,3 +1127,151 @@ frontmatter.
 | The new counts are taken in the shared tree | A number that disagrees with the isolated copy, in either direction. Neither number is reportable until the copy is run (lesson 029). |
 | `evidence/measurements-*` is regenerated "to be consistent" after T6 | The directories lose files or change timestamps; the before-baseline's 98 files are unreproducible once the instrument is gone, and AC6's one-time diff cannot be re-derived. They are frozen artefacts, not build output. |
 | The 3px LR2a margin is treated as closed because D4 is written | A future ramp step lands with no wide-viewport case inside its band. The sentence is a pointer, not a guard — `reports/legal.md` F2 keeps `product-manager` as owner for the spec that opens the ramp. |
+
+---
+
+## G9 triage — run 1, ruled
+
+`web-standards-auditor` rejected on **F1** (`categories:performance` 0.74–0.76 against the ≥ 0.93
+budget, both routes, all 6 runs, LCP 5.5–6.1 s at 89–90 % Render Delay) and asked the question it
+correctly refused to answer alone: **is this the preview environment, or a regression in this
+diff?** `labor-law-analyst` passed the same gate at run 1.
+
+**It is neither.** Measured, not reasoned about (`AGENTS.md` §5, lesson 012): the metric is not a
+function of the artifact under review, and it is not a function of the preview host either. Every
+number below was collected in one 6-minute window on this machine, with one `@lhci/cli 0.15.1` /
+`lighthouse 12.6.1` / `HeadlessChrome 153` runner, against the **unmodified** `.lighthouserc.js`
+budget. Raw LHRs and the summary table:
+`.specs/0006-salary-alert-legibility/evidence/g9-control-build-ab/` (gitignored, regenerable).
+
+### The four measurements
+
+**1 — The alias hypothesis is dead.** The branch alias and the deployment alias for the *same*
+build (`72795dc9`) serve identical transport: HTTP 200, no redirect hop, `X-Vercel-Cache: HIT`,
+TTFB 0.16–0.29 s on both (`evidence/.../transport-headers.txt`). Lighthouse against both, 3 runs
+each, route `/`:
+
+| Host | Build | `performance` | LCP (ms) |
+|---|---|---|---|
+| `workload-gqbii5wdl-…` (deployment alias) | `72795dc9` = this PR head | 0.73 · 0.74 · 0.78 | 6452 · 6338 · 5756 |
+| `workload-git-fix-design-taste-preflight-…` (branch alias) | same build | 0.75 · 0.75 · 0.76 | 5922 · 6065 · 5711 |
+
+Same build, two aliases, same numbers inside the run-to-run spread. **The alias is not the cause**,
+and the `og:image` branch-alias finding carried into `0004` is unrelated to it.
+
+**2 — The control build is the decisive one.** `0005`'s G9 deployment — `workload-8kqr9212j-…`,
+an artifact frozen a week ago that **this diff cannot have touched**, and which that gate measured
+at `performance` 0.98 / LCP 2.43 s — re-measured now, in the same window, on the same runner:
+
+| Host | Build | `performance` | LCP (ms) | measured at 0005's G9 |
+|---|---|---|---|---|
+| `workload-8kqr9212j-…` | `0005`'s G9 deployment, unchanged | **0.72 · 0.76 · 0.75** | **5770 · 5680 · 6065** | **0.98 / 2430** |
+
+An unchanged artifact moved from 0.98 to 0.72–0.76 with no commit between the two readings.
+**Whatever moved is outside every build in this PR stack.** This single row disposes of the
+"regression in this diff" branch: a defect `0006` introduced cannot appear in a deployment that
+predates `0006`.
+
+**3 — It is not a preview-host property either.** Production, the custom domain, a different build,
+no `*.vercel.app` alias, no platform toolbar (neither alias serves `vercel.live/…/feedback.js` any
+more — that too has changed since `0005`):
+
+| Host | `performance` | LCP (ms) | Render Delay share |
+|---|---|---|---|
+| `workload.devrma.com` | 0.91 · 0.76 · 0.75 | 3259 · 5594 · 5613 | 75 % · 89 % · 89 % |
+
+Production fails the same budget with the same shape. Extending the `*.vercel.app` carve-out to
+`performance` would therefore have been **wrong**, and would have hidden a real failure on the
+domain users actually load.
+
+**4 — The shape is architectural, and it has a name already.** In 11 of the 12 runs,
+`largest-contentful-paint` equals `interactive` **to the millisecond** (e.g. 6452 = 6452,
+5711 = 5711). FCP lands at 1.15–2.27 s — the shell paints on time — and the LCP element then waits
+for TTI. The reason is in the source, not in the network: `hooks/use-current-time.ts` returns `null`
+on the first render, so `components/organisms/hero-panel.tsx`'s numeric `<p>` has **no
+server-rendered text**; it cannot become an LCP candidate until hydration finishes. Load Delay and
+Load Time are 0 ms in every run because there is nothing to load — the pixel is gated on JS, not on
+bytes. Script transfer is flat across the stack (0005: 239 975 B · 0006: **239 647 B**, 328 bytes
+*smaller*), so no bundle growth is available as an explanation either.
+
+And the user-visible reality is fine: a real chromium at 4× CPU throttle with no network simulation
+paints that element once, at **448 ms** (0005 build) and **560 ms** (0006 build), a single LCP
+candidate with no churn from the 1 s clock tick
+(`evidence/.../real-browser-lcp.txt`). The 5–6 s figure is Lighthouse's *simulated* mobile profile
+applied to an LCP element that is structurally bound to TTI — which is precisely, word for word,
+`0004`'s carried finding (`.specs/0004-lcp-render-delay/STATUS.md`, "the client-gated hero
+numeral", "82 % of the metric is render delay; resource load time is zero").
+
+### The ruling
+
+1. **F1 is upheld as a real finding and is *not* attributable to `0006`.** The auditor was right to
+   reject what it could not attribute, right to refuse the `seo` carve-out for `performance`, and
+   right to route instead of bounce. Nothing about the report needs correcting; it measured
+   accurately and named the limit of what it could conclude.
+2. **F1 does not bounce to `frontend-dev`, and no task is added to this spec.** There is no lever
+   for it inside `0006`'s scope — the diff is one `className` on one atom — and lesson **011** is
+   exactly this rule: *a numeric acceptance criterion needs a lever inside this spec's own scope and
+   a margin wider than its instrument's spread, or it belongs to another spec.* Here the instrument's
+   own spread on a **fixed artifact** is 0.72 → 0.98, twenty-six points, against a margin of
+   nineteen. Lesson **010** is confirmed a second way: the phase attribution (Render Delay ≡ TTI gap)
+   points at a file this spec does not open.
+3. **`0006` closes G9 and proceeds.** Both halves of the gate now have a verdict a `tech-lead` can
+   sign: `labor-law-analyst` **pass**, and `web-standards-auditor`'s own report records that every
+   check that gate owns — LR2a geometry at 40/40 consumer measurements, axe 0 violations, contrast
+   5.05–7.22:1, reduced motion, **CLS 0 on all 6 runs**, no overflow at four widths, DS1/DS2/DS4 —
+   holds on the deployed artifact and reproduces G6 byte for byte. The fix this spec shipped is
+   verified live. A budget failure that reproduces on a week-old build and on production is not a
+   reason the legibility fix does not land (`AGENTS.md` §4 rule 1 is about *this spec's* criteria;
+   F1 is inside none of AC4, AC5, AC6, AC10 or AC11 — AC10's own Lighthouse clause,
+   `categories:accessibility`, reads 1.00 on all 6 runs).
+4. **The bounce counts as one, and `preview` stands at 1 of 2.** It is recorded as *routed, not
+   re-worked*: nothing goes back to `frontend-dev`, `product-designer` or `content-writer`, so no
+   re-review of `0006` is required and G9 is not re-run.
+5. **F1 is carried to `0004`** with the instrument it needs, below. `0004` is already the spec whose
+   subject is this element and this phase; opening a seventh spec for it would split one finding
+   across two.
+6. **The rule that stops this being re-litigated at every G9** — a control-build run — is written
+   into `.agents/agents/web-standards-auditor.md` §G9, below. It does not lower the budget and it
+   does not exempt `performance`.
+
+### What `0004` must now measure, and from where
+
+Appended to `.specs/0004-lcp-render-delay/STATUS.md` so `product-manager` has it at G1:
+
+- **A control build in the same session is mandatory before any before/after claim.** `0004`'s whole
+  subject is a number whose instrument moved 26 points on a frozen artifact in one week. Any
+  "improved by X ms" claim must be a *difference measured in one window* against the pre-fix
+  deployment, never against a figure copied out of an older report.
+- **Three hosts, not one:** the spec's own preview deployment alias, the pre-fix control deployment,
+  and `workload.devrma.com`. Production is now known to fail the same budget — it is the host the
+  target actually exists for, and it is where the fix has to show.
+- **The acceptance criterion is the phase, not the score.** The provable, lever-bound statement is
+  *`largest-contentful-paint` must stop equalling `interactive`* — i.e. the hero `<p>` must carry
+  server-rendered text and become an LCP candidate at FCP. That is falsifiable on a single LHR
+  (`audits.interactive.numericValue` vs `audits['largest-contentful-paint'].numericValue`) and it is
+  immune to the runner drift that makes the 0.93 score unstable. The 2 500 ms absolute target stays
+  as `0004`'s goal; the phase equality is what a gate can score without re-deriving this triage.
+- **The real-browser probe is part of the evidence, not a substitute for it.**
+  `evidence/g9-control-build-ab/lcp-candidate-probe.mjs` enumerates LCP candidates under CDP CPU
+  throttling and is what proves the field experience (448–560 ms) differs from the lab number; both
+  belong in `0004`'s before/after.
+- **`PRODUCT.md` §4 gate is unchanged and still comes first** — what the hero may paint before
+  hydration is a product and disclosure decision, per `0004`'s own second binding.
+
+### Lighthouse output — where it belongs
+
+Ruled, and nothing needs to be gitignored. `lhci` writes `lhr-*.report.html`, `lhr-*.report.json`
+and `manifest.json` into **`.lighthouseci/`**, which `.gitignore:16` already covers
+(`git check-ignore -v .lighthouseci/manifest.json` confirms). No `*.report.*` or `manifest.json`
+exists at the repository root in this tree and `git status` is clean of them — the files the auditor
+saw were the `.lighthouseci/` contents, already ignored. Two standing rules, added to §G9:
+
+- **Never pass `--upload.outputDir` pointing anywhere but `.lighthouseci/` or the spec's own
+  `.specs/NNNN-*/evidence/`** (also gitignored, `.gitignore:55`). Both are safe; the repository root
+  is not, and `manifest.json` at the root would collide with nothing but would be committed by the
+  next `git add`.
+- **Copy the LHRs you cite into the spec's `evidence/` before the next `lhci` run**, because `lhci
+  collect` wipes `.lighthouseci/` on start. This triage learned it the hard way: collecting the
+  control runs destroyed G9's own six LHRs. They are regenerable, gitignored, and every number they
+  carried is quoted in `reports/audit-preview.md` and reproduced by the runs above — no evidence of
+  record was lost — but the next gate should not have to rely on that.

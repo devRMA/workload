@@ -344,3 +344,299 @@ written to and no git command that changes state was run.
   this report is a reading from that run.
 - Cross-check: identical, to the centésimo, to `evidence/measurements-after/chromium-*.json` on every
   cell the developer also recorded.
+
+---
+
+# 0006 — Legal verification (G9)
+
+## G9 — verification against the deployed preview
+
+> Owner: labor-law-analyst · Gate: `preview` (G9) · Run 1 · 2026-09-15
+
+**Verdict: pass.**
+
+The deployment reproduces every figure in my G6 section **to the centésimo, in 64 of 64 banner
+cells**, and it does so on a build I did not make, served over a network I do not control, in a
+browser profile that starts empty. G6 measured a local production build; this is the artefact a user
+loads. Nothing contradicts G6 and one thing closes: **the art. 66 string, which G6 recorded as an
+inference rather than a reading, is now read** (§G9.4).
+
+`legal.md` §5's deferral rule is **not invoked** at G9 either, on the same ground and with more
+cells behind it: DS5, DS6 and DS7 satisfy LR2a in **48 of 48 LR-domain cells** on the deployment.
+`legal.md` §12 stays empty. No human signature was required before G8 and none is required now.
+
+**Target:** `https://workload-git-fix-design-taste-preflight-devrmas-projects.vercel.app`, PR #39,
+head `72795dc`, `mergeStateStatus: CLEAN`.
+
+### G9.1 — How I measured, and what I did not touch
+
+- **The working tree was never written to.** No file in the repository was created, edited or
+  deleted by this gate, and no git command that changes state was run. The probe, its output and its
+  JSON live in the session scratchpad. `git status` is clean and `HEAD` is `72795dc`, unchanged.
+- **The instrument is my own and it is the third independent one on these numbers.** It is not
+  `tests/e2e/support/legibility.ts`, not the developer's spec file, not the JSON under
+  `evidence/measurements-after/`, and not the script I wrote at G6 — that one drove a localhost
+  build; this one drives an origin over HTTPS from a cold context. Body paragraph selected by
+  **excluding the title's text**, never by index, for the reason G6 gives.
+- **State was seeded through `localStorage` before first paint**, not typed into the form. That is
+  deliberate: a UI drive measures the app after a controlled re-render and can race it (lesson 029's
+  flake); a seeded context measures the page the user gets. It is also the only way to reach the
+  art. 66 banner, which needs a **previous** journey — `hooks/use-work-calculator.ts:158-192`,
+  `previousExit` is the stored `lastExit` and is read only when the stored `entry` is on an earlier
+  calendar day.
+- **72 cells**: 8 banner instances (C1, C2, C3, C4, and **all four** of C5) × 4 viewports (390×844,
+  1440×900, 2560×1440, 3840×2160) × 2 themes = **64**, plus 8 cells for DS1 and DS2 measured in the
+  same page load, plus the DS4 dialog and a traceability read of `/custo-da-hora` in both themes.
+- Both sides of every comparison are `getBoundingClientRect().width`; line boxes are a `Range` over
+  the element's text content deduplicated on rounded `top` — `legal.md` §9.3's method, unchanged
+  across G2, G6 and G9.
+
+### G9.2 — LR2a on the deployment · **48 of 48 LR-domain cells pass**
+
+`legal.md` §3.2: `bodyText.getBoundingClientRect().width ≥ surfaceRoot.getBoundingClientRect().width − 32`.
+
+| Viewport | root font | body font | surfaceRoot W | bodyText B | spend | floor (W−32) | margin | Verdict |
+|---|---|---|---|---|---|---|---|---|
+| 390×844 | 16px | 14px | **308.00** | **282.00** | 26.00 | 276.00 | +6.00 | **pass** |
+| 1440×900 | 16px | 14px | **667.33** | **641.33** | 26.00 | 635.33 | +6.00 | **pass** |
+| 2560×1440 | 18px | 15.75px | **961.00** | **932.00** | 29.00 | 929.00 | +3.00 | **pass** |
+| 3840×2160 | 18px | 15.75px | **961.00** | **932.00** | 29.00 | 929.00 | +3.00 | **pass** |
+
+**Identical in all 64 cells** — every instance, both routes, both tones, both themes. The two themes
+differ in no geometric quantity on the deployment, as on the local build. **These are the same
+numbers as my G6 §3 table, digit for digit**, and the same as the developer's. Three independent
+instruments, two builds, two transports, one set of figures.
+
+The body paragraph's left edge sits **13.00 px** from the banner root's left edge at 390/1440 and
+**14.50 px** at 2560/3840 — 1px border + `px-3` resolved against the root ramp, i.e. exactly the
+root's own content edge. `iconIntersectsBody` is **false in all 64 cells**. The icon is out of the
+body's column on the deployed artefact, which is the whole of what this spec shipped.
+
+**The chrome budget is respected and not overspent**: 26.00 ≤ 32 and 29.00 ≤ 32. G6's finding F2 —
+that the spend is in `rem` while the budget is in `px`, so the 18px row passes with only 3.00px of
+headroom — is **confirmed on the deployment** and stays what G6 made it: carried, owned by
+`product-manager`, attached to the spec that next opens the root ramp. Not a defect: 29 ≤ 32.
+
+### G9.3 — LR2b where it binds, and the 390 residual · reported, never absorbed
+
+**Where it binds — 1440×900, every surface.** The five values my brief named are reproduced exactly;
+the sixth is new to G9.
+
+| Surface | chars | line boxes | cpl @1440 | G6 | Verdict |
+|---|---|---|---|---|---|
+| **DS5 / C2** — divisor 220 | 111 | 2 | **55.50** | 55.50 | pass |
+| **DS6 / C3** — Súmula 431 mismatch | 174 | 2 | **87.00** | 87.00 | pass |
+| **DS7 / C5a** — art. 59 + Súmula 376 | 207 | 3 | **69.00** | 69.00 | pass |
+| **DS7 / C5b** — art. 71 *caput* + §4º | 203 | 3 | **67.67** | 67.67 | pass |
+| **DS7 / C5c** — art. 71 §1º + §4º | 184 | 2 | **92.00** | 92.00 | pass |
+| **DS7 / C5d** — art. 66 | 182 | 3 | **60.67** | *inferred ≥ 58.67* | pass — **now measured** |
+| C1 (quality) | 97 | 2 | 48.50 | 48.50 | pass |
+| C4 (quality) | 52 | 1 | — | — | exempt, single line box |
+
+At 2560 and 3840 every surface is at 87.00 cpl or better or exempt on one line box. LR2b does not
+bind there and passes anyway.
+
+**The residual at 390 — `legal.md` §3.3, AC11.** Body text computes to **14px** at 390, read with
+`getComputedStyle` on the deployed page. 14 > 12, so LR2b does not bind, per §3.2. Both themes
+identical:
+
+| Surface | chars | line boxes | **cpl @390** | G6 | Shortfall vs. 40 |
+|---|---|---|---|---|---|
+| **DS5 / C2** | 111 | 3 | **37.00** | 37.00 | −3.00 |
+| **DS6 / C3** | 174 | 5 | **34.80** | 34.80 | −5.20 |
+| **DS7 / C5a** | 207 | 6 | **34.50** | 34.50 | −5.50 |
+| **DS7 / C5b** | 203 | 6 | **33.83** | 33.83 | −6.17 |
+| **DS7 / C5c** | 184 | 5 | **36.80** | 36.80 | −3.20 |
+| **DS7 / C5d** | 182 | 5 | **36.40** | — | −3.60 |
+| C1 (quality) | 97 | 3 | **32.33** | 32.33 | −7.67 |
+| C4 (quality) | 52 | 2 | **26.00** | 26.00 | −14.00 |
+
+**The residual is reported here because it is not absorbed anywhere.** It is the same residual, on
+the artefact the user loads, and the human has already answered the question that could close it:
+`spec.md` § Decisions carried in, **D-Q1** — accept ~24–32 cpl at 390 and treat LR2a as the whole of
+the obligation at that viewport, rather than shrink the disclosure type. `legal.md` §13 Q1 is
+therefore **settled, not open**, and I record it as settled so the next analyst does not re-derive
+the argument for a third time. What survives the decision is the obligation to keep measuring: these
+values are each surface's **floor** under §3.2's non-regression clause, now set on a deployment
+rather than on a local build, and **C5d's 36.40 joins the set**.
+
+### G9.4 — The citations, read off the deployed page · **all six strings, including art. 66**
+
+Read verbatim from the rendered DOM of the preview, not from the source and not from the G6 run.
+Checked against `legal.md` §6.2 and §6.3, which settled what each string asserts against its norm.
+
+| Surface | Rendered text on the deployment | Norm | Claim and citation in one flow |
+|---|---|---|---|
+| **DS5 / C2** | *"Sem ela não dá para saber quanto vale a sua hora. Para a jornada de 8h48 por dia o divisor é 220 horas por mês."* | divisor 220 (§6.3) | yes |
+| **DS6 / C3** | *"Pela Súmula 431 do TST, a jornada que você informou corresponde ao divisor 220 horas por mês, e não 200. Usar um divisor maior do que o devido reduz o valor de cada hora sua."* | Súmula 431 (§6.4, X1) | yes — norm, both divisors, consequence |
+| **DS7 / C5a** | *"O art. 59 da CLT limita a jornada extra a 2 horas por dia. Todas as horas trabalhadas continuam devidas a você (Súmula 376 do TST). A irregularidade está na extrapolação, e a sanção recai sobre o empregador."* | CLT art. 59 *caput*; Súmula 376, I, do TST | yes |
+| **DS7 / C5b** | *"Jornada acima de 6 horas exige no mínimo 1 hora de intervalo (art. 71 da CLT), que norma coletiva pode reduzir para 30 minutos. O tempo suprimido é devido com acréscimo de 50%, de natureza indenizatória."* | CLT art. 71 *caput*, §4º; art. 611-A, XII | yes |
+| **DS7 / C5c** | *"Jornada acima de 4 horas e de até 6 horas exige um intervalo de no mínimo 15 minutos (art. 71, §1º, da CLT). O tempo suprimido é devido com acréscimo de 50%, de natureza indenizatória."* | CLT art. 71, §1º, §4º | yes |
+| **DS7 / C5d** | *"O art. 66 da CLT garante no mínimo 11 horas seguidas de descanso entre duas jornadas. O tempo suprimido costuma ser pago como hora extra, e a irregularidade recai sobre o empregador."* | CLT art. 66 | yes — **first reading, see below** |
+
+**Byte-identical to `lib/compliance.ts:33,47,56,65` and to the JSX of C2 and C3.** AC7 holds on the
+deployed artefact: this spec changed no character of any disclosure, and the icon moving rows
+orphaned no citation from its claim. The structural reason G6 gave is confirmed by reading rather
+than by inspection — every body arrives as a single `<p>`, so claim and citation are in one
+paragraph, one flow, one element, at every viewport.
+
+**The art. 66 inference is closed, and one figure in it was wrong.** G6 §5 could not render C5d and
+said so, bounding it instead: *"176 characters … at 1440 it occupies at most 3 line boxes → cpl ≥
+58.67."* Measured on the deployment: **182 characters, 3 line boxes, 60.67 cpl at 1440; 5 boxes and
+36.40 cpl at 390; LR2a passes in all 8 of its cells.** The conclusion held and the character count
+did not — I estimated 176 and it is 182. The estimate was conservative in the safe direction, but
+the point stands and is the reason G6 was right to label it an inference: **a count I did not take
+is a count I got wrong by six.** The banner was reached by seeding a previous journey whose exit is
+less than eleven hours before today's entry; it renders, it is `role="status"`, it is visible,
+opaque, displayed, on screen, and inside no collapsed region.
+
+### G9.5 — `lib/` is untouched and the deployment serves the same numbers
+
+**Untouched, verified from the commit range rather than asserted.** Spec `0006` is
+`d8d12a6..72795dc`; `git diff --stat d8d12a6..HEAD -- lib/` is **empty**. The whole of this spec's
+source diff is `DESIGN.md`, `components/atoms/alert-banner.tsx`, `__tests__/alert-banner.test.tsx`
+and four files under `tests/e2e/`. `legal.md` §8 — *"this spec introduces, alters, reads and removes
+no table"* — holds on what actually shipped.
+
+**What the deployment serves**, read off `/custo-da-hora` at 1440 with a gross salary of
+R$ 5.000,00, **identical in light and dark**:
+
+| On screen | Traces to | Verdict |
+|---|---|---|
+| Total descontos **R$ 501,51** | `RGPS_BRACKETS_2026` — 7,5% até 1.621,00 · 9% até 2.902,84 · 12% até 4.354,27 · 14% até 8.475,55; recomputed by hand at G6: 121,575 + 115,3656 + 174,1716 + 90,4022 = 501,5144 → **501,51** | **pass** |
+| IRRF **R$ 0,00** (inside the total) | `exemptionCeiling` + Lei nº 15.270/2025 reduction — a gross of exactly R$ 5.000,00 is exempt | **pass** |
+| Salário líquido **R$ 4.498,49** | 5.000,00 − 501,51 | **pass** |
+| **R$ 20,45** por hora · **R$ 0,34** por minuto | 4.498,49 / 220 = 20,4477 → 20,45; ÷60 → 0,34 | **pass** |
+| Bruto **R$ 5.000,00**, ganhos extras **+R$ 0,00** | the inputs, unchanged | **pass** |
+| Divisor **220** in C2 and C3 | `lib/salary-period.ts:3-6,41-43` — 8,8 × 5 × 5. Number correct; **citation over-extended, X1** | pass on the number |
+| *"Tabelas de INSS e IRRF de 2026, em vigor desde 01/01/2026 · Portaria Interministerial MPS/MF nº 13, de 09/01/2026"* | `LEGAL_YEAR_2026.year`, `.effectiveFrom`, `.source` | **pass** |
+
+**No user-visible number without a table**, and the year and the portaria are in the same view as the
+figures — `PRODUCT.md` §4's *"the year is part of the answer"*, discharged on the artefact rather
+than on a build. Per my brief I confirmed the **deployment serves** these; I did not re-verify the
+tables against primary sources, which was done digit by digit at `0002` G6 and by hand at `0005` G9.
+
+Art. 73 (`lib/night-shift.ts`) and Súmula 172 (`lib/weekly-rest.ts`) are untouched by the commit
+range above; the DSR disclosure is rendered and read verbatim in §G9.6 below.
+
+### G9.6 — Spec `0005`'s repaired surfaces, on the same pages · **no regression**
+
+| Surface | Measured on the deployment | Verdict |
+|---|---|---|
+| **DS1** — the legal footer, `#main-content > footer` | **358.00 px** wide at 390, **768.00 px** at 1440, **864.00 px** at 2560/3840. Four paragraphs, 12px, cpl at 390: **50.00 · 56.67 · 52.38 · 56.50**; at 1440: 75.00 · 85.00 · 104.75 · 113.00 | **pass** — LR2b binds here (12px ≤ 12) and every paragraph clears 40 at both viewports |
+| **DS2** — the DSR caption, `day-summary.tsx` | 12px at 390/1440, 13.5px at 2560+. 134 chars: **44.67 cpl at 390** (3 boxes), **67.00 at 1440** (2 boxes), single line box at 2560/3840. Text verbatim: *"O DSR (Súmula 172 do TST) supõe que estes extras se repitam em todos os dias úteis do mês e conta só os domingos. Feriados não entram."* | **pass** — binds at 390 and clears it |
+| **DS4** — the privacy dialog | panel **512.00 px**; the three `text-caption` explanations render on one line box each (41, 12 and 37 chars); controls present and inside the panel | **pass** |
+
+358 at 390 and 768 at 1440 are the figures `0005` G9 recorded. DS1's third paragraph — the gap list —
+is on screen in full at every viewport, and its clause *"o valor do intervalo suprimido"* is the one
+DS7/C5b and C5c discharge a second time at the moment the gap becomes concrete. The two statements
+agree on the deployment, which is what §G9.7 audits.
+
+### G9.7 — Disclosure audit · is each one visible next to its number, on the deployment?
+
+| Required by | Where it must appear | Visible? |
+|---|---|---|
+| `PRODUCT.md` §4 — the gap list (DS1 P3): FGTS, convenção coletiva, 13º, terço de férias, INSS/IRRF sobre extras, **Súmula 60** prorrogação, feriados, **o valor do intervalo suprimido**, insalubridade/periculosidade, and the RPPS-federal-only caveat | Footer of both routes, same view as the figures | **yes** — read verbatim, 419 chars, 8 line boxes at 390, 52.38 cpl |
+| `PRODUCT.md` §4 — the year and the norm that set the tables | Beside the figures | **yes** — 2026, 01/01/2026, Portaria Interministerial MPS/MF nº 13 de 09/01/2026 |
+| `legal.md` §2.5 — DS7/C5: the suppressed interval owed with a 50% acréscimo, indenizatória, named where the user has just crossed art. 71 | Beside the journey | **yes**, at 33.83–36.80 cpl on a phone instead of the ~24–32 it shipped at |
+| `legal.md` §2.2 — DS5, DS6: the divisor and the mismatch | Beside the hourly-rate inputs | **yes** |
+| `legal.md` §2.2 — DS7/C5d: art. 66's 11-hour interregno and that the suppressed time is usually paid as overtime | Beside the journey | **yes** — rendered and measured for the first time |
+| Súmula 172 (DS2) — what the DSR assumes and that feriados are excluded | Beside the DSR figure | **yes** |
+
+**None is inside a collapsed panel, a closed `<details>` or an `aria-expanded="false"` region.**
+Asserted directly on the deployment for all eight banner instances in all 64 cells:
+`visibility: visible`, `opacity: 1`, `display: block`, `insideClosedDetails: false`,
+`insideCollapsed: false`, `onScreen: true`.
+
+### G9.8 — Findings
+
+Nothing blocking. One new, two confirmed carried.
+
+#### F-G9-1 — DS2 has no browser-level assertion · **medium** · *not this spec's, and I am willing to leave it standing, with an owner*
+
+My brief asked me to rule on this rather than note it, so I rule.
+
+- **What is actually unasserted.** DS2's **content** is asserted, at unit level:
+  `__tests__/day-summary.test.tsx:176-195` proves the caption exists, that it contains
+  *"Súmula 172 do TST"*, that the assumption and the feriados gap stay in one caption, and that it
+  does not appear on a day with no variable pay. What has **no** assertion anywhere is DS2's
+  **rendered geometry** — LR1, LR2b, LR3 in a real browser at a real viewport.
+  `tests/e2e/disclosure-legibility.spec.ts` covers DS1 and DS4 and never reaches DS2.
+- **Therefore the failure mode it leaves open is narrowing, not disappearance.** A regression that
+  deleted this disclosure, emptied it, or dropped its citation fails a unit test today. A regression
+  that squeezes it into a 64px column — which is exactly what `0005` was about — would ship silently.
+  That is a real gap and it is smaller than "no automated assertion".
+- **Ruling: I leave it standing, and it is not a reason to reject `0006`.** Three grounds. It
+  pre-exists this spec and this spec did not widen it — `0006`'s diff does not touch
+  `day-summary.tsx` or any caption. It is **measured on the deployment today**, in this report, at
+  44.67 cpl at 390 and 67.00 at 1440, with 12px type where LR2b binds — so the surface is not
+  unverified, it is unautomated, and a written measurement with a commit and a date is the same
+  instrument a test is, run once instead of on every push. And rejecting a green release for a
+  coverage gap in a surface outside the spec's scope spends the veto on something `AGENTS.md` §4
+  rule 8 did not give it to me for.
+- **What makes leaving it standing legitimate, and the condition attached.** It is carried debt only
+  while its measured value is on record. §G9.6 puts it on record with a floor: **44.67 cpl at 390 and
+  67.00 at 1440, 12px, on `72795dc`.** If a later spec touches `day-summary.tsx`, the caption's type,
+  or `DESIGN.md`'s caption scale, **that spec adds DS2 to `disclosure-legibility.spec.ts`'s route/
+  viewport/theme matrix** — the instrument already exists and the addition is a table row.
+- **Owner:** `product-manager`, to place it on the first spec that opens any of those three; the
+  instrument is `qa-engineer`'s to write once it is placed. `qa-engineer` surfaced it honestly at G6
+  run 2 and is not the one who can schedule it.
+
+#### Carried, confirmed on the deployment, **not re-triaged**
+
+- **X1** — `lib/salary-period.ts:40` and `components/organisms/salary-calculator.tsx:151` attribute a
+  general `jornada semanal × 5` divisor rule to **Súmula 431 do TST**, whose text covers only *40
+  horas semanais → divisor 200*. The over-extension is visible on the deployment, unchanged and as
+  expected: C3 renders *"Pela Súmula 431 do TST … divisor 220 horas por mês, e não 200."* The
+  numbers are right. **Still recorded with an owner in four places** — `legal.md` §10.1 X1 and §13
+  Q2, `spec.md` § Carried debt and § Out of scope, `STATUS.md` decisions log, and my G6 §8. Owner:
+  `product-manager`, next spec that legitimately opens `lib/salary-period.ts`, from an environment
+  that can reach `planalto.gov.br`. Confirmed, not reopened.
+- **G6 F2** — the LR2a margin is 3.00px at an 18px root, because the atom's padding is in `rem` and
+  the budget is in `px`. Reproduced on the deployment (29.00 spend at 2560 and 3840). Passes. Owner:
+  `product-manager`, on the spec that next opens the root font ramp.
+- **`0005` G9-F2** — `lib/legal-tables.ts:48`'s `sourceUrl` names a commercial aggregator rather than
+  the primary text of Portaria Interministerial MPS/MF nº 13/2026. Routed to
+  `.specs/0003-citation-registry/`. Not this spec's; not reopened.
+- **G6 F1** — AC11's residual table in `reports/qa.md`. **Closed, and I checked rather than assumed
+  it**: `reports/qa.md:243-256` now carries the per-consumer table at 390×844 in both themes, with
+  both LR2a widths and the cpl, and its rows read 37.00, 34.80 and the rest — the same figures as my
+  G6 §4.2 and as §G9.3 above. Three written records of the residual, from three measurements. A
+  residual that is written down is a residual that survives.
+
+### G9.9 — §5's deferral rule, at the last gate that could have invoked it
+
+`legal.md` §5 binds: *if `0006` ships without DS5, DS6 and DS7 satisfying LR2a, that is a knowing
+deferral of an LR-domain defect live in production, and it costs the human's written acceptance in
+§12 before `release-manager` closes G8.*
+
+**On the deployed artefact, DS5, DS6 and DS7 satisfy LR2a in 48 of 48 cells** — six LR-domain banner
+instances × four viewports × two themes — with margins of +6.00px and +3.00px and no cell closer
+than 3.00px to the floor. G8 closed on an empty §12 and that was the correct state; G9 confirms it
+on the artefact rather than on the build G8 read about. **`legal.md` §12 stays empty. No human
+signature is required and none should be sought.**
+
+The LR2b residual at 390 is expressly outside that clause and stays outside it. It is reported in
+§G9.3, its floors are now set on a deployment, and the lever that would close it was decided by the
+human at D-Q1 in favour of keeping the type and accepting the measure.
+
+### G9.10 — What would have made me reject here, and did not
+
+Stated because a pass at the last gate is worth only as much as the rejections it was prepared to
+issue. Any one of these would have been a reject on the deployment, independently of every gate that
+passed before it:
+
+1. A user-visible number on the rendered page with no table behind it — checked in §G9.5, none.
+2. A figure that differs between the local build and the deployment, or between the two themes —
+   checked in 64 geometric cells and in two full traceability reads, none.
+3. A citation separated from its claim by the icon's new row — checked verbatim on six strings,
+   §G9.4, none.
+4. An LR-domain disclosure failing LR2a on the artefact — 48 of 48 pass, §G9.2.
+5. A required disclosure rendered but collapsed, hidden or off-screen — checked as a property, not by
+   eye, §G9.7, none.
+6. Any of `0005`'s repaired surfaces regressed on a page it now shares with a changed atom —
+   checked, §G9.6, none.
+
+**Verdict: pass.** The numbers the deployment shows are the numbers `legal.md` settled, and the
+disclosures it owes are visible where it owes them.

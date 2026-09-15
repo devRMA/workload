@@ -252,3 +252,43 @@ Recorded with their owners so they are inherited rather than rediscovered:
 
 **None.** No lesson in `LESSONS.md` has reached 3 confirmations. The two closest are 016 and 017
 (`tech-lead`, 0002) and 022 and 029 (`all`, cross-cutting), each at 2.
+
+---
+
+## G10 — carried debt, owners and landing places
+
+Appended by `tech-lead` at G10, not by `release-manager`. This replaces nothing above: § *Carried
+forward, not fixed here* named the four items, and this names who picks each one up and **what has to
+be open for them to pick it up**. An item with no landing place is rediscovered; an item with a
+trigger is inherited. Full reasoning in `STATUS.md` § *G10 — the close*.
+
+| # | Owner | Trigger — the spec that must carry it |
+|---|---|---|
+| **X1** — `lib/salary-period.ts:40` and `salary-calculator.tsx:151` attribute a general `jornada semanal × 5` divisor rule to Súmula 431 do TST, whose text covers only the 40h → 200 case. Numbers right, citation over-extended. | `product-manager` places it, `labor-law-analyst` settles the replacement citation | The first spec with scope over **`lib/salary-period.ts`**, **from an environment that can reach `planalto.gov.br`** — a precondition, not a caveat: `0006`'s law gate could not reach it, and without the primary text the replacement would be sourced the same way the wrong citation was. Flagged three times across two specs; a fourth flag with no scope is a process failure, not a finding. |
+| **D3** — `DESIGN.md` § Motion lists `alert` among the animating surfaces; the atom has no transition and this spec added none. | `product-manager` places it, `product-designer` rules | The first spec with scope over **`DESIGN.md` § Motion**. Two outcomes, and the spec names which before G3: add the transition with its `prefers-reduced-motion` pair, or delete the `alert` row. |
+| **F2** — the 3.00px LR2a margin at an 18px root is a **written constraint in `DESIGN.md` § Layout** (commit `b8d4362`), not a guard, because no test can sample a type-ramp band that does not exist yet and a `px-3` source guard is the class assertion `AGENTS.md` §8 forbids. | `product-manager` places it, `qa-engineer` writes the case | The spec that **next opens the root font ramp** (`app/globals.css:214-238`). The trigger is a new ramp step: the moment a band above 18px exists, the 3px is measurable and `expectLr2a` gets the row. |
+| **F-G9-1 / DS2** — the DSR / Súmula 172 paragraph has no e2e assertion anywhere; its content is covered by `__tests__/day-summary.test.tsx:176-195`, its **rendered geometry** by nothing. | `product-manager` places it, `qa-engineer` writes the instrument | `labor-law-analyst`'s condition, preserved exactly: the open failure mode is **narrowing, not disappearance**, and the debt is valid **only while a measurement is on record** — it is, at **44.67 cpl at 390 and 67.00 at 1440, 12px, on `72795dc`**. **The first spec that opens `day-summary.tsx`, the caption's type, or `DESIGN.md`'s caption scale adds DS2 to `disclosure-legibility.spec.ts`'s route/viewport/theme matrix.** The instrument exists; the addition is a table row. |
+
+`0005`'s G9-F2 (`lib/legal-tables.ts:48`'s aggregator `sourceUrl`) stays on spec **0003** with F2–F5.
+`0006` neither reopened nor inherited it.
+
+## G10 — the performance budget fails on production
+
+Recorded here because this report is what the next release reads. **`workload.devrma.com` fails
+`.lighthouserc.js`'s `categories:performance ≥ 0.93` on route `/` — 0.91 · 0.76 · 0.75, LCP 3.26 /
+5.59 / 5.61 s against a 2 500 ms target.** Production, not the preview.
+
+It **predates `0006`** — `0005`'s frozen G9 deployment, measured at 0.98 / 2.43 s a week ago, now
+scores 0.72–0.76 / 5.7–6.1 s, and script transfer across the stack is 328 bytes *smaller*. The shape
+is architectural: `largest-contentful-paint` equals `interactive` to the millisecond in 11 of 12 runs,
+because `hooks/use-current-time.ts` returns `null` on the first render and `hero-panel.tsx`'s numeric
+`<p>` ships with no server-rendered text. The `*.vercel.app` carve-out was **not** extended to
+`performance` — doing so would have hidden this on the domain users load. It is **F1 on `0004`**, with
+the control-build instrument and the phase-equality criterion written into that spec's `STATUS.md`.
+
+## G10 — the stack
+
+**PR #39 is green, `MERGEABLE`, `CLEAN`, and now carries two specs** — `0002`/`0005`'s work plus
+`0006`'s five commits on `fix/design-taste-preflight`. **`0005`'s merge condition is unchanged: the
+stack merges whole, with #39 on top.** `0006` adds no condition and renumbers nothing. That merge is
+the only open action on this branch, and it is `release-manager`'s.
