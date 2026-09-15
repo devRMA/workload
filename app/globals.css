@@ -2,12 +2,310 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-:root {
-  color-scheme: light;
+@theme {
+  --font-sans: var(--font-inter), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --text-numeral: clamp(2.5rem, 20cqi, 6rem);
+  --text-numeral--line-height: 1;
+  --text-numeral--letter-spacing: -0.035em;
+  --text-numeral--font-weight: 700;
+
+  --text-display: 2rem;
+  --text-display--line-height: 1.1;
+  --text-display--letter-spacing: -0.024em;
+  --text-display--font-weight: 700;
+
+  --text-title: 1.5rem;
+  --text-title--line-height: 1.2;
+  --text-title--letter-spacing: -0.018em;
+  --text-title--font-weight: 600;
+
+  --text-metric: 1.5rem;
+  --text-metric--line-height: 1.15;
+  --text-metric--letter-spacing: -0.016em;
+  --text-metric--font-weight: 600;
+
+  --text-heading: 1.125rem;
+  --text-heading--line-height: 1.3;
+  --text-heading--letter-spacing: -0.011em;
+  --text-heading--font-weight: 600;
+
+  --text-input: 1.125rem;
+  --text-input--line-height: 1.2;
+  --text-input--letter-spacing: 0.005em;
+  --text-input--font-weight: 500;
+
+  --text-body: 1rem;
+  --text-body--line-height: 1.55;
+  --text-body--letter-spacing: 0em;
+  --text-body--font-weight: 400;
+
+  --text-body-sm: 0.875rem;
+  --text-body-sm--line-height: 1.5;
+  --text-body-sm--letter-spacing: 0.003em;
+  --text-body-sm--font-weight: 400;
+
+  --text-label: 0.875rem;
+  --text-label--line-height: 1.2;
+  --text-label--letter-spacing: 0.005em;
+  --text-label--font-weight: 500;
+
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1.45;
+  --text-caption--letter-spacing: 0.01em;
+  --text-caption--font-weight: 400;
+
+  --text-overline: 0.6875rem;
+  --text-overline--line-height: 1.2;
+  --text-overline--letter-spacing: 0.08em;
+  --text-overline--font-weight: 600;
+
+  --spacing: 0.25rem;
+  --spacing-hair: 0.125rem;
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 0.75rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  --spacing-3xl: 4rem;
+
+  --radius-xs: 0.5rem;
+  --radius-sm: 0.75rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.25rem;
+  --radius-xl: 1.75rem;
+  --radius-2xl: 2rem;
+  --radius-full: 9999px;
+
+  --container-app: 80rem;
+  --header-height: 4rem;
+  --breakpoint-wide: 120rem;
+
+  --blur-chrome: 20px;
+  --blur-scrim: 8px;
+  --saturate-chrome: 180%;
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --duration-instant: 100ms;
+  --duration-fast: 160ms;
+  --duration-base: 220ms;
+  --duration-slow: 320ms;
+  --duration-data: 600ms;
+
+  --shadow-card: 0 1px 2px rgb(15 17 22 / 0.04), 0 8px 24px -16px rgb(15 17 22 / 0.12);
+  --shadow-raised: 0 2px 6px rgb(15 17 22 / 0.06), 0 20px 48px -24px rgb(15 17 22 / 0.22);
+  --shadow-press: 0 1px 1px rgb(15 17 22 / 0.06);
+  --shadow-accent: 0 8px 24px -12px color-mix(in oklab, var(--color-accent) 45%, transparent);
+
+  --color-canvas: oklch(0.984 0.003 264); /* #f9fafc */
+  --color-surface: oklch(1 0 264); /* #ffffff */
+  --color-surface-sunken: oklch(0.966 0.005 264); /* #f2f4f7 */
+  --color-surface-raised: oklch(1 0 264); /* #ffffff */
+
+  --color-ink: oklch(0.255 0.018 264); /* #1e232c */
+  --color-ink-muted: oklch(0.505 0.018 264); /* #5f656f */
+  --color-ink-subtle: oklch(0.539 0.017 264); /* #696f79 — 4.61:1 on sunken */
+  --color-ink-onfill: oklch(1 0 264); /* #ffffff — theme-invariant */
+
+  --color-line: oklch(0.912 0.006 264); /* #e0e2e6 */
+  --color-line-faint: oklch(0.945 0.005 264); /* #ebedf0 */
+  --color-line-strong: oklch(0.64 0.014 264); /* #888c95 — 3.05:1 on sunken */
+
+  --color-accent: oklch(0.525 0.182 262); /* #2a62d1 */
+  --color-accent-hover: oklch(0.462 0.18 262); /* #184fbb */
+  --color-accent-active: oklch(0.424 0.168 262); /* #1245a8 */
+  --color-accent-ink: oklch(0.492 0.184 262); /* #1f57c7 */
+  --color-accent-soft: oklch(0.9573 0.0145 264.5); /* #ecf1fb */
+
+  --color-focus: var(--color-accent);
+
+  --color-positive: oklch(0.545 0.135 152); /* #188646 */
+  --color-positive-ink: oklch(0.47 0.12 152); /* #0a6d37 */
+  --color-positive-soft: oklch(0.958 0.0132 159.91); /* #eaf4ee */
+  --color-positive-deep: oklch(0.425 0.108 152); /* #085e2f — theme-invariant hero fill */
+
+  --color-negative: oklch(0.545 0.198 25); /* #ca262e */
+  --color-negative-ink: oklch(0.52 0.192 25); /* #bf2029 */
+  --color-negative-soft: oklch(0.9522 0.0163 12.79); /* #faebec */
+  --color-negative-deep: oklch(0.445 0.165 25); /* #9b171f — theme-invariant hero fill */
+
+  --color-overtime: oklch(0.655 0.135 70); /* #c48019 */
+  --color-overtime-ink: oklch(0.525 0.105 70); /* #905e16 */
+  --color-overtime-soft: oklch(0.9691 0.0147 80.71); /* #faf4ea */
+  --color-overtime-arc: oklch(0.88 0.145 70); /* #ffc563 — theme-invariant, hero fills only */
+
+  --color-night: oklch(0.56 0.21 300); /* #8a4ada */
+  --color-night-ink: oklch(0.505 0.2 300); /* #793bc3 */
+  --color-night-soft: oklch(0.9597 0.018 303.42); /* #f4effc */
+
+  --color-chrome: oklch(1 0 264 / 0.72);
+  --color-scrim: oklch(0.178 0.01 264 / 0.6); /* theme-invariant */
+  --color-edge-highlight: oklch(1 0 264 / 0);
+  --color-selection: var(--color-accent-soft);
 }
 
 .dark {
-  color-scheme: dark;
+  --color-canvas: oklch(0.178 0.01 264); /* #0f1116 */
+  --color-surface: oklch(0.222 0.012 264); /* #181b21 */
+  --color-surface-sunken: oklch(0.198 0.011 264); /* #13161b */
+  --color-surface-raised: oklch(0.262 0.013 264); /* #21252b */
+
+  --color-ink: oklch(0.965 0.004 264); /* #f2f3f6 */
+  --color-ink-muted: oklch(0.74 0.016 264); /* #a6abb5 */
+  --color-ink-subtle: oklch(0.645 0.016 264); /* #898e98 */
+
+  --color-line: oklch(0.302 0.013 264); /* #2b2e35 */
+  --color-line-faint: oklch(0.268 0.012 264); /* #23262c */
+  --color-line-strong: oklch(0.543 0.018 264); /* #6a707a — 3.08:1 on raised */
+
+  --color-accent-ink: oklch(0.775 0.105 262); /* #91b6f9 */
+  --color-accent-soft: oklch(0.2835 0.0531 263.81); /* #1c2944 */
+  --color-focus: var(--color-accent-ink);
+
+  --color-positive: oklch(0.7 0.15 152); /* #46b86e */
+  --color-positive-ink: oklch(0.79 0.145 152); /* #6ad58b */
+  --color-positive-soft: oklch(0.2866 0.0338 170.4); /* #183028 */
+
+  --color-negative: oklch(0.66 0.185 25); /* #ee5955 */
+  --color-negative-ink: oklch(0.735 0.15 25); /* #f98078 */
+  --color-negative-soft: oklch(0.2762 0.0491 6.36); /* #3c1d24 */
+
+  --color-overtime: oklch(0.76 0.145 70); /* #eb9f37 */
+  --color-overtime-ink: oklch(0.815 0.13 70); /* #f8b35d */
+  --color-overtime-soft: oklch(0.3127 0.031 76.56); /* #3a2f1f */
+
+  --color-night: oklch(0.68 0.16 300); /* #a87eeb */
+  --color-night-ink: oklch(0.775 0.125 300); /* #c2a3fa */
+  --color-night-soft: oklch(0.2904 0.0616 297.34); /* #2f2446 */
+
+  --color-chrome: oklch(0.222 0.012 264 / 0.72);
+  --color-edge-highlight: oklch(1 0 264 / 0.06);
+
+  --shadow-card: none;
+  --shadow-raised: 0 20px 48px -28px rgb(0 0 0 / 0.6);
+  --shadow-press: none;
+}
+
+@utility numeric {
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+
+@utility ring-focus {
+  &:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+}
+
+@utility edge-lit {
+  box-shadow: inset 0 1px 0 0 var(--color-edge-highlight);
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  .dark {
+    color-scheme: dark;
+  }
+
+  html {
+    font-size: 100%;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (min-width: 48rem) {
+    :root {
+      --header-height: 5rem;
+    }
+  }
+
+  @media (min-width: 120rem) {
+    html {
+      font-size: 106.25%;
+    }
+    :root {
+      --container-app: 100rem;
+    }
+  }
+
+  @media (min-width: 160rem) {
+    html {
+      font-size: 112.5%;
+    }
+  }
+
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background-color: var(--color-selection);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  /* A native <dialog> animates in and out only if display and overlay are part of the transition. */
+  dialog {
+    opacity: 0;
+    transition:
+      opacity var(--duration-slow) var(--ease-out),
+      display var(--duration-slow) allow-discrete,
+      overlay var(--duration-slow) allow-discrete;
+  }
+
+  dialog[open] {
+    opacity: 1;
+  }
+
+  dialog > div {
+    transform: scale(0.96) translateY(0.75rem);
+    transition: transform var(--duration-slow) var(--ease-out);
+  }
+
+  dialog[open] > div {
+    transform: none;
+  }
+
+  dialog::backdrop {
+    opacity: 0;
+    transition:
+      opacity var(--duration-slow) var(--ease-out),
+      display var(--duration-slow) allow-discrete,
+      overlay var(--duration-slow) allow-discrete;
+  }
+
+  dialog[open]::backdrop {
+    opacity: 1;
+  }
+
+  @starting-style {
+    dialog[open],
+    dialog[open]::backdrop {
+      opacity: 0;
+    }
+
+    dialog[open] > div {
+      transform: scale(0.96) translateY(0.75rem);
+    }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -17,8 +315,27 @@
   *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    transition-property: opacity, color, background-color, border-color, outline-color !important;
+    transition-duration: var(--duration-fast) !important;
     scroll-behavior: auto !important;
   }
   /* biome-ignore-end lint/complexity/noImportantStyles: scoped to the reduced-motion reset */
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --color-chrome: var(--color-surface);
+    --blur-chrome: 0px;
+    --blur-scrim: 0px;
+    --saturate-chrome: 100%;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --color-line: var(--color-line-strong);
+    --color-line-faint: var(--color-line-strong);
+    --color-chrome: var(--color-surface);
+    --blur-chrome: 0px;
+  }
 }

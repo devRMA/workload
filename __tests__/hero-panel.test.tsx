@@ -47,7 +47,7 @@ describe("HeroPanel", () => {
 
   it("still asks for a finite size when there is no value to show", () => {
     const { container } = render(<HeroPanel icon={Clock} label="Valor" value="" tone="blue" />);
-    const valueElement = container.querySelector<HTMLElement>("p.font-black");
+    const valueElement = container.querySelector<HTMLElement>("p[aria-live]");
 
     expect(readValueCqi(valueElement as HTMLElement)).toBeGreaterThan(0);
   });

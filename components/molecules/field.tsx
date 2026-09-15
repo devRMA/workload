@@ -13,14 +13,14 @@ interface FieldProps {
 
 export function Field({ id, label, labelIcon, hint, className, children }: FieldProps) {
   return (
-    <div className={cn("space-y-3", className)}>
+    <div className={cn("space-y-xs", className)}>
       <Label htmlFor={id}>
         {labelIcon}
         {label}
       </Label>
       {children}
       {hint ? (
-        <p id={`${id}-hint`} className="text-xs leading-relaxed text-neutral-600 dark:text-neutral-400 text-pretty">
+        <p id={`${id}-hint`} className="text-caption text-ink-subtle text-pretty">
           {hint}
         </p>
       ) : null}

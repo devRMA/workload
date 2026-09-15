@@ -146,7 +146,6 @@ export function WorkCalculator() {
 
   return (
     <CalculatorLayout
-      className="selection:bg-emerald-500/30"
       main={
         <>
           <JourneyForm
@@ -194,7 +193,7 @@ export function WorkCalculator() {
           badge={
             <span
               aria-hidden="true"
-              className="bg-white/20 px-3 py-1 lg:px-4 lg:py-1.5 rounded-full text-xs lg:text-sm font-bold tabular-nums"
+              className="bg-ink-onfill/20 px-3 py-1 rounded-full text-caption font-semibold numeric"
             >
               {currentTime === null ? PLACEHOLDER_CLOCK : formatClockTime(currentTime)}
             </span>
@@ -202,18 +201,16 @@ export function WorkCalculator() {
           media={
             <div aria-hidden="true">
               <ProgressRing progressPercent={breakdown.progressPercent} overtimePercent={breakdown.overtimePercent}>
-                <span className="text-xs font-bold uppercase tracking-wider text-white/80">
-                  {timerData.statusLabel}
-                </span>
-                <span className="text-2xl font-black tabular-nums">{timerData.statusTime}</span>
+                <span className="text-overline uppercase text-ink-onfill/90">{timerData.statusLabel}</span>
+                <span className="text-metric numeric">{timerData.statusTime}</span>
               </ProgressRing>
             </div>
           }
           footer={
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-2">
-                <LogIn className="w-4 h-4 lg:w-5 lg:h-5" aria-hidden="true" />
-                <span className="text-xs lg:text-sm font-bold tabular-nums">Entrada às {formatTimeLabel(entry)}</span>
+            <div className="flex items-center justify-between gap-md">
+              <div className="flex items-center gap-xs">
+                <LogIn className="w-4 h-4" aria-hidden="true" />
+                <span className="text-caption font-semibold numeric">Entrada às {formatTimeLabel(entry)}</span>
               </div>
               <CopyButton
                 value={exitLabel}
@@ -227,7 +224,7 @@ export function WorkCalculator() {
             </div>
           }
         >
-          <p className="text-sm font-medium text-white/80">{exitDescription}</p>
+          <p className="text-body-sm font-medium text-ink-onfill/90">{exitDescription}</p>
         </HeroPanel>
       }
     />

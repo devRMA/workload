@@ -25,20 +25,14 @@ export function CalculatorPage({ children }: { children: ReactNode }) {
       />
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:p-4 focus:bg-white focus:text-black"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-100 focus:m-md focus:rounded-md focus:bg-surface-raised focus:p-md focus:text-ink focus:shadow-raised"
       >
         Pular para o conteúdo principal
       </a>
-      <main className="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 transition-colors duration-500">
+      <main className="min-h-screen bg-canvas text-ink">
         <AppHeader />
 
         {children}
-
-        <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-          <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-indigo-500/5 blur-[120px] rounded-full" />
-          <div className="absolute top-[20%] -right-[10%] w-[30%] h-[30%] bg-emerald-500/5 blur-[120px] rounded-full" />
-          <div className="absolute -bottom-[10%] left-[20%] w-[50%] h-[50%] bg-indigo-500/5 blur-[120px] rounded-full" />
-        </div>
       </main>
     </>
   );

@@ -11,10 +11,10 @@ import { restDayPayOnOvertime, splitMonthDays } from "@/lib/weekly-rest";
 import { AlertBanner } from "../atoms/alert-banner";
 
 const SEGMENT_BAR_CLASSES: Record<DaySegmentKind, string> = {
-  morning: "bg-emerald-400",
-  lunch: "bg-neutral-300 dark:bg-neutral-600",
-  afternoon: "bg-emerald-600",
-  overtime: "bg-amber-500",
+  morning: "bg-positive/70",
+  lunch: "bg-line-strong",
+  afternoon: "bg-positive",
+  overtime: "bg-overtime",
 };
 
 interface JourneyTimes {
@@ -42,16 +42,13 @@ function DayTimeline({ breakdown, times }: Pick<DaySummaryProps, "breakdown" | "
   if (total === 0) return null;
 
   return (
-    <div className="space-y-2">
-      <div
-        className="flex h-3 w-full overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800"
-        aria-hidden="true"
-      >
+    <div className="space-y-xs">
+      <div className="flex h-3 w-full overflow-hidden rounded-full bg-surface-sunken" aria-hidden="true">
         {breakdown.segments.map(({ kind, minutes }) => (
           <div key={kind} className={SEGMENT_BAR_CLASSES[kind]} style={{ width: `${(minutes / total) * 100}%` }} />
         ))}
       </div>
-      <div className="flex justify-between text-xs font-medium text-neutral-500 dark:text-neutral-400 tabular-nums">
+      <div className="flex justify-between text-caption numeric text-ink-subtle">
         <span>{formatTimeLabel(times.entry)}</span>
         <span>{breakdown.isInProgress ? "agora" : formatTimeLabel(times.exit)}</span>
       </div>
@@ -61,9 +58,9 @@ function DayTimeline({ breakdown, times }: Pick<DaySummaryProps, "breakdown" | "
 
 function TotalRow({ label, value, emphasis }: { label: string; value: string; emphasis?: boolean }) {
   return (
-    <div className="flex items-baseline justify-between gap-4">
-      <span className={cn("text-sm", emphasis ? "font-bold" : "text-neutral-600 dark:text-neutral-400")}>{label}</span>
-      <span className={cn("tabular-nums", emphasis ? "text-lg font-black" : "font-bold")}>{value}</span>
+    <div className="flex items-baseline justify-between gap-md">
+      <span className={cn("text-body-sm", emphasis ? "font-semibold text-ink" : "text-ink-muted")}>{label}</span>
+      <span className={cn("numeric font-semibold", emphasis ? "text-heading" : "")}>{value}</span>
     </div>
   );
 }
@@ -107,39 +104,39 @@ export function DaySummary({
   const restDayPay = restDayPayOnOvertime(variablePay, splitMonthDays(new Date(times.entry)));
 
   return (
-    <div className="bg-white dark:bg-neutral-900 rounded-3xl p-6 sm:p-8 shadow-sm border border-neutral-200 dark:border-neutral-800 space-y-6">
-      <h3 className="text-lg font-bold">Seu Dia</h3>
+    <div className="bg-surface rounded-xl p-lg sm:p-xl shadow-card border border-line space-y-lg">
+      <h3 className="text-heading">Seu Dia</h3>
 
       <DayTimeline breakdown={breakdown} times={times} />
 
-      <div className="space-y-3">
+      <div className="space-y-sm">
         {stretches.map(({ kind, icon: Icon, label, endsAt, minutes }, index) => (
-          <div key={kind} className="flex items-center gap-3 text-sm">
+          <div key={kind} className="flex items-center gap-sm text-body-sm">
             <span className={cn("h-2.5 w-2.5 shrink-0 rounded-full", SEGMENT_BAR_CLASSES[kind])} aria-hidden="true" />
-            <Icon className="w-4 h-4 shrink-0 text-neutral-500 dark:text-neutral-400" aria-hidden="true" />
+            <Icon className="w-4 h-4 shrink-0 text-ink-muted" aria-hidden="true" />
             <span className="font-medium">{label}</span>
-            <span className="text-neutral-500 dark:text-neutral-400 tabular-nums">
+            <span className="text-ink-muted numeric">
               {formatTimeLabel(startsAt[index])} →{" "}
               {index === stretches.length - 1 && breakdown.isInProgress ? "agora" : formatTimeLabel(endsAt)}
             </span>
-            <span className="ml-auto font-bold tabular-nums">{formatHoursAndMinutes(minutes)}</span>
+            <span className="ml-auto numeric font-semibold">{formatHoursAndMinutes(minutes)}</span>
           </div>
         ))}
 
         {breakdown.nightBonusMinutes > 0 ? (
-          <div className="flex items-center gap-3 text-sm">
-            <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-indigo-500" aria-hidden="true" />
-            <MoonStar className="w-4 h-4 shrink-0 text-indigo-500" aria-hidden="true" />
+          <div className="flex items-center gap-sm text-body-sm">
+            <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-night" aria-hidden="true" />
+            <MoonStar className="w-4 h-4 shrink-0 text-night-ink" aria-hidden="true" />
             <span className="font-medium">Hora noturna reduzida</span>
-            <span className="text-neutral-500 dark:text-neutral-400">art. 73 da CLT</span>
-            <span className="ml-auto font-bold tabular-nums text-indigo-600 dark:text-indigo-400">
+            <span className="text-ink-muted">art. 73 da CLT</span>
+            <span className="ml-auto numeric font-semibold text-night-ink">
               +{formatHoursAndMinutes(breakdown.nightBonusMinutes)}
             </span>
           </div>
         ) : null}
       </div>
 
-      <div className="space-y-2 border-t border-neutral-100 dark:border-neutral-800 pt-6">
+      <div className="space-y-xs border-t border-line-faint pt-lg">
         <TotalRow
           label={breakdown.isInProgress ? "Trabalhado até agora" : "Trabalhado no dia"}
           value={formatHoursAndMinutes(breakdown.workedMinutes)}
@@ -151,57 +148,52 @@ export function DaySummary({
         ) : null}
       </div>
 
-      <div className="space-y-3 border-t border-neutral-100 dark:border-neutral-800 pt-6">
-        <div className="flex items-baseline justify-between gap-4">
-          <span className="text-sm font-bold">
+      <div className="space-y-sm border-t border-line-faint pt-lg">
+        <div className="flex items-baseline justify-between gap-md">
+          <span className="text-body-sm font-semibold text-ink">
             {breakdown.remainingMinutes > 0 ? "Saldo se você sair no horário" : "Saldo do dia"}
           </span>
-          <span
-            className={cn(
-              "text-2xl font-black tabular-nums",
-              isPositiveBalance ? "text-emerald-700 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400",
-            )}
-          >
+          <span className={cn("text-metric numeric", isPositiveBalance ? "text-positive-ink" : "text-negative-ink")}>
             {formatSignedHoursAndMinutes(balanceMinutes)}
           </span>
         </div>
 
-        <div className="space-y-2">
-          <div className="flex items-center gap-3 text-sm">
-            <Zap className="w-4 h-4 shrink-0 text-amber-500" aria-hidden="true" />
+        <div className="space-y-xs">
+          <div className="flex items-center gap-sm text-body-sm">
+            <Zap className="w-4 h-4 shrink-0 text-overtime-ink" aria-hidden="true" />
             <span>Extra {firstTierRate}%</span>
-            <span className="ml-auto font-bold tabular-nums">{formatHoursAndMinutes(firstTierMinutes)}</span>
+            <span className="ml-auto numeric font-semibold">{formatHoursAndMinutes(firstTierMinutes)}</span>
             {firstTierPay === null ? null : (
-              <span className="w-24 text-right font-bold tabular-nums text-emerald-700 dark:text-emerald-400">
+              <span className="w-24 text-right numeric font-semibold text-positive-ink">
                 {formatCurrency(firstTierPay)}
               </span>
             )}
           </div>
-          <div className="flex items-center gap-3 text-sm">
-            <Zap className="w-4 h-4 shrink-0 text-orange-600" aria-hidden="true" />
+          <div className="flex items-center gap-sm text-body-sm">
+            <Zap className="w-4 h-4 shrink-0 text-overtime-ink" aria-hidden="true" />
             <span>Extra {extraTierRate}%</span>
-            <span className="ml-auto font-bold tabular-nums">{formatHoursAndMinutes(extraTierMinutes)}</span>
+            <span className="ml-auto numeric font-semibold">{formatHoursAndMinutes(extraTierMinutes)}</span>
             {extraTierPay === null ? null : (
-              <span className="w-24 text-right font-bold tabular-nums text-emerald-700 dark:text-emerald-400">
+              <span className="w-24 text-right numeric font-semibold text-positive-ink">
                 {formatCurrency(extraTierPay)}
               </span>
             )}
           </div>
-          <div className="flex items-center gap-3 text-sm">
-            <MoonStar className="w-4 h-4 shrink-0 text-indigo-500" aria-hidden="true" />
+          <div className="flex items-center gap-sm text-body-sm">
+            <MoonStar className="w-4 h-4 shrink-0 text-night-ink" aria-hidden="true" />
             <span>Adicional noturno 20%</span>
-            <span className="ml-auto font-bold tabular-nums">{formatHoursAndMinutes(nightMinutes)}</span>
+            <span className="ml-auto numeric font-semibold">{formatHoursAndMinutes(nightMinutes)}</span>
             {nightPay === null ? null : (
-              <span className="w-24 text-right font-bold tabular-nums text-emerald-700 dark:text-emerald-400">
+              <span className="w-24 text-right numeric font-semibold text-positive-ink">
                 {formatCurrency(nightPay)}
               </span>
             )}
           </div>
           {restDayPay > 0 ? (
-            <div className="flex items-center gap-3 text-sm">
-              <CalendarDays className="w-4 h-4 shrink-0 text-sky-500" aria-hidden="true" />
+            <div className="flex items-center gap-sm text-body-sm">
+              <CalendarDays className="w-4 h-4 shrink-0 text-positive-ink" aria-hidden="true" />
               <span>DSR sobre os extras</span>
-              <span className="ml-auto w-24 text-right font-bold tabular-nums text-emerald-700 dark:text-emerald-400">
+              <span className="ml-auto w-24 text-right numeric font-semibold text-positive-ink">
                 {formatCurrency(restDayPay)}
               </span>
             </div>
@@ -209,7 +201,7 @@ export function DaySummary({
         </div>
 
         {restDayPay > 0 ? (
-          <p className="text-xs leading-relaxed text-neutral-600 dark:text-neutral-400 text-pretty">
+          <p className="text-caption text-ink-subtle text-pretty">
             O DSR (Súmula 172 do TST) supõe que estes extras se repitam em todos os dias úteis do mês e conta só os
             domingos — feriados não entram.
           </p>
@@ -219,7 +211,7 @@ export function DaySummary({
           <Link
             href={VIEW_PATHS.salary}
             scroll={false}
-            className="block w-full rounded-2xl border border-dashed border-neutral-300 dark:border-neutral-700 p-3 text-center text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:border-emerald-500 hover:text-emerald-600 transition-colors"
+            className="flex min-h-11 w-full items-center justify-center rounded-md border border-dashed border-line-strong p-sm text-center text-body-sm text-ink-muted transition-colors duration-(--duration-fast) ease-standard hover:border-accent hover:text-accent-ink ring-focus"
           >
             Quer ver quanto isso vale em reais? Calcule o valor da sua hora →
           </Link>

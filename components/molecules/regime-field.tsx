@@ -25,7 +25,7 @@ export function RegimeField({ value, onChange, className }: RegimeFieldProps) {
   };
 
   return (
-    <fieldset className={cn("space-y-3", className)}>
+    <fieldset className={cn("space-y-xs", className)}>
       <legend className={labelClasses}>
         <Briefcase className="w-4 h-4" aria-hidden="true" />
         Regime de Trabalho
@@ -36,26 +36,30 @@ export function RegimeField({ value, onChange, className }: RegimeFieldProps) {
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
         aria-controls={OPTIONS_PANEL_ID}
-        className="flex w-full items-center justify-between gap-4 rounded-2xl border border-neutral-500 dark:border-neutral-600 bg-white/50 dark:bg-neutral-900/50 p-4 text-left transition-colors hover:border-blue-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+        className="flex w-full items-center justify-between gap-md rounded-md border border-line-strong bg-surface p-md text-left transition-[border-color] duration-(--duration-fast) ease-standard hover:border-ink-subtle ring-focus"
       >
         <span className="flex flex-col gap-0.5">
-          <span className="font-bold text-neutral-900 dark:text-neutral-100">{selected.label}</span>
-          <span className="text-xs leading-snug text-neutral-500 dark:text-neutral-400 text-pretty">
-            {selected.summary}
-          </span>
+          <span className="font-semibold text-ink">{selected.label}</span>
+          <span className="text-caption text-ink-subtle text-pretty">{selected.summary}</span>
         </span>
-        <span className="flex shrink-0 items-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400">
+        <span className="flex shrink-0 items-center gap-xs text-label text-accent-ink">
           {isOpen ? "Fechar" : "Alterar"}
-          <ChevronDown className={cn("w-4 h-4 transition-transform", isOpen ? "rotate-180" : "")} aria-hidden="true" />
+          <ChevronDown
+            className={cn(
+              "w-4 h-4 transition-transform duration-(--duration-base) ease-standard",
+              isOpen ? "rotate-180" : "",
+            )}
+            aria-hidden="true"
+          />
         </span>
       </button>
 
       <CollapsiblePanel id={OPTIONS_PANEL_ID} isOpen={isOpen}>
-        <div className="space-y-3">
+        <div className="space-y-sm pt-xs">
           {WORK_REGIME_INFO.map(({ value: regime, label, who, impact }) => (
             <label
               key={regime}
-              className="relative flex cursor-pointer flex-col gap-1 rounded-2xl border border-neutral-500 dark:border-neutral-600 bg-white/50 dark:bg-neutral-900/50 p-4 pr-9 transition-colors hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 has-checked:border-blue-500 has-checked:bg-blue-50 dark:has-checked:bg-blue-950/40 has-focus-visible:ring-2 has-focus-visible:ring-blue-500"
+              className="relative flex cursor-pointer flex-col gap-1 rounded-md border border-line-strong bg-surface p-md pr-9 transition-[border-color,background-color] duration-(--duration-fast) ease-standard hover:border-accent has-checked:border-accent has-checked:bg-accent-soft has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-focus"
             >
               <input
                 type="radio"
@@ -66,16 +70,16 @@ export function RegimeField({ value, onChange, className }: RegimeFieldProps) {
                 className="peer sr-only"
               />
               <Check
-                className="absolute right-3 top-4 w-4 h-4 text-blue-600 dark:text-blue-400 opacity-0 transition-opacity peer-checked:opacity-100"
+                className="absolute right-3 top-4 w-4 h-4 text-accent-ink opacity-0 transition-opacity duration-(--duration-fast) peer-checked:opacity-100"
                 aria-hidden="true"
               />
-              <span className="font-bold text-neutral-900 dark:text-neutral-100 text-pretty">{label}</span>
-              <span className="text-sm leading-relaxed text-neutral-600 dark:text-neutral-400 text-pretty">
-                {who} <span className="text-neutral-900 dark:text-neutral-200">{impact}</span>
+              <span className="font-semibold text-ink text-pretty">{label}</span>
+              <span className="text-body-sm text-ink-muted text-pretty">
+                {who} <span className="text-ink">{impact}</span>
               </span>
             </label>
           ))}
-          <p className="text-xs leading-relaxed text-neutral-500 dark:text-neutral-400 text-pretty">
+          <p className="text-caption text-ink-subtle text-pretty">
             O regime muda só o cálculo do INSS. O IRRF segue a mesma tabela para os dois.
           </p>
         </div>

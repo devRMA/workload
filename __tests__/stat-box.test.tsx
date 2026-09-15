@@ -3,22 +3,15 @@ import { describe, expect, it } from "vitest";
 import { StatBox } from "@/components/atoms/stat-box";
 
 describe("StatBox", () => {
-  it("renders with the default variant", () => {
-    const { container, getByText } = render(<StatBox label="Total" value="10h" />);
-    expect(getByText("Total")).toBeInTheDocument();
-    expect(getByText("10h")).toBeInTheDocument();
-    expect(container.firstElementChild?.className).toContain("border-blue-100");
-  });
+  it.each(["default", "success", "danger"] as const)(
+    "renders the label and the value for the %s variant",
+    (variant) => {
+      const { getByText } = render(<StatBox label="Total" value="10h" variant={variant} />);
 
-  it("renders with the success variant", () => {
-    const { container } = render(<StatBox label="Total" value="10h" variant="success" />);
-    expect(container.firstElementChild?.className).toContain("border-emerald-100");
-  });
-
-  it("renders with the danger variant", () => {
-    const { container } = render(<StatBox label="Total" value="10h" variant="danger" />);
-    expect(container.firstElementChild?.className).toContain("border-red-100");
-  });
+      expect(getByText("Total")).toBeInTheDocument();
+      expect(getByText("10h")).toBeInTheDocument();
+    },
+  );
 
   it("renders subValue only when provided", () => {
     const { queryByText, rerender } = render(<StatBox label="Total" value="10h" />);

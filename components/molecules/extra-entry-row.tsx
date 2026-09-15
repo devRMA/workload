@@ -6,7 +6,7 @@ import { Button } from "../atoms/button";
 import { Input } from "../atoms/input";
 import { CurrencyInput } from "../molecules/currency-input";
 
-const COMPACT_FIELD_CLASSES = "h-12 rounded-xl text-sm";
+const COMPACT_FIELD_CLASSES = "h-12 rounded-sm text-body-sm";
 
 interface ExtraEntryRowProps {
   name: string;
@@ -32,7 +32,7 @@ export function ExtraEntryRow({
   onRemove,
 }: ExtraEntryRowProps) {
   return (
-    <div className="flex gap-3">
+    <div className="flex gap-sm">
       <div className="flex-1 min-w-0">
         <Input
           type="text"
@@ -40,7 +40,7 @@ export function ExtraEntryRow({
           placeholder={namePlaceholder}
           value={name}
           onChange={(event) => onNameChange(event.target.value)}
-          className={`${COMPACT_FIELD_CLASSES} font-sans`}
+          className={COMPACT_FIELD_CLASSES}
         />
       </div>
       <div className="w-24 sm:w-32 shrink-0">

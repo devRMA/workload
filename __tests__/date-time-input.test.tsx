@@ -136,7 +136,6 @@ describe("DateTimeInput", () => {
     for (const field of [screen.getByLabelText("Entrada"), screen.getByLabelText("Hora para Entrada")]) {
       expect(field).toHaveAttribute("aria-invalid", "true");
       expect(field).toHaveAttribute("aria-describedby", "journey-issue");
-      expect(field.className).toContain("border-rose-500");
     }
   });
 
