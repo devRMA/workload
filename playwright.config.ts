@@ -59,8 +59,6 @@ export default defineConfig({
   webServer: {
     command: process.env.CI ? "pnpm start" : "pnpm build && pnpm start",
     url: BASE_URL,
-    // A reused server carries the NEXT_PUBLIC_* values of whoever started it; a mismatched
-    // one silently serves a different page and the suite blames the application.
     reuseExistingServer: false,
     timeout: 300_000,
     env: {

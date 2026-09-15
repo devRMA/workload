@@ -246,7 +246,7 @@ The release-manager checks truth, which no script can: whether `STATUS.md` recor
 Binding on `frontend-dev`, enforced by `qa-engineer`.
 
 - **English only.** Every identifier, file name, type, test name and commit message is in English. User-visible strings are pt-BR — and they are the only Portuguese in the repository.
-- **No comments** unless the *why* is genuinely non-obvious — a workaround, a hidden constraint, a subtle invariant, a legal citation that explains a magic number. Never narrate what the code does. Never reference a task, spec, or PR in a comment. If code needs a comment to be followed, refactor it instead.
+- **No comments.** Enforced by `__tests__/comment-free-code.test.ts` across `app/`, `components/`, `hooks/`, `lib/`, `scripts/`, `__tests__/`, `tests/` and the root config files, with two exemptions and no others: a tooling directive (`biome-ignore`, `@ts-expect-error`, `v8 ignore`), and — in `lib/` only — a comment citing a Brazilian norm. Never narrate what the code does. Never reference a task, spec, or PR in a comment: the reader of a failing assertion never sees it and the section number drifts. Put the reasoning in the identifier or the test description, or refactor until it needs none.
 - **Descriptive names.** No single letters, no abbreviations that are not domain terms. `index`, not `i`. `overtimeMinutes`, not `ot`.
 - **Atomic design**: `components/atoms/` → `molecules/` → `organisms/` → `templates/`. Place files at the level the plan names.
 - **TypeScript strict.** No `any`. `unknown` only at a trust boundary, immediately narrowed. No `@ts-ignore`, no `!` to silence the compiler.
