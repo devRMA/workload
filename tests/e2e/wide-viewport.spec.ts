@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { driveC5, driveUntil, expectLr2a, measureSurface, waitForStableBoundingBox } from "./support/legibility";
 
 const WIDE_VIEWPORTS = [
   { name: "QHD", width: 2560, height: 1440 },
@@ -34,6 +35,24 @@ for (const { name, width, height } of WIDE_VIEWPORTS) {
       );
 
       expect(unreachableControls).toEqual([]);
+    });
+
+    test("keeps the alert banner's chrome inside its budget", async ({ page }) => {
+      const root = page.getByRole("status").filter({ hasText: "Você passou de 2h extras hoje" });
+      const bodyText = root.locator("p").nth(1);
+      const label = `C5 / ${width}x${height} light`;
+
+      await driveUntil(
+        () => driveC5(page),
+        () => root.isVisible(),
+        label,
+      );
+
+      await waitForStableBoundingBox(root);
+
+      const measurement = await measureSurface(root, bodyText);
+
+      expectLr2a(measurement, label);
     });
   });
 }
