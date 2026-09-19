@@ -1,6 +1,9 @@
-import { expect, type Locator, type Page } from "@playwright/test";
+import { expect, type Locator, type Page, test } from "@playwright/test";
 
 export const LR2A_CHROME_BUDGET_PX = 32;
+export const LR2B_MEASURE_FLOOR_CPL = 40;
+export const DS1_EXPECTED_PARAGRAPHS = 4;
+export const DS4_EXPECTED_PARAGRAPHS = 5;
 
 export interface SurfaceMeasurement {
   surfaceRootWidth: number;
@@ -32,11 +35,35 @@ export async function lineBoxesAndCharacters(locator: Locator): Promise<{ lineBo
   });
 }
 
-export async function assertLr2b(locator: Locator) {
+export async function assertLr2b(locator: Locator): Promise<"measured" | "exempt"> {
   const { lineBoxes, characters } = await lineBoxesAndCharacters(locator);
-  if (lineBoxes > 1) {
-    expect(characters / lineBoxes).toBeGreaterThanOrEqual(40);
+  if (lineBoxes === 1) return "exempt";
+
+  expect(characters / lineBoxes).toBeGreaterThanOrEqual(LR2B_MEASURE_FLOOR_CPL);
+  return "measured";
+}
+
+export async function assertLr2bAcrossParagraphs(surface: Locator, expectedParagraphs: number, label: string) {
+  const paragraphs = await surface.locator("p").all();
+  expect(
+    paragraphs,
+    `${label} — LG1.2: the surface rendered ${paragraphs.length} paragraphs, expected ${expectedParagraphs}`,
+  ).toHaveLength(expectedParagraphs);
+
+  let measured = 0;
+  let exempt = 0;
+  for (const paragraph of paragraphs) {
+    if ((await assertLr2b(paragraph)) === "measured") {
+      measured += 1;
+    } else {
+      exempt += 1;
+    }
   }
+
+  test.info().annotations.push({
+    type: "lr2b-coverage",
+    description: `${label} — measured ${measured} + exempt ${exempt} = ${expectedParagraphs}`,
+  });
 }
 
 export async function assertLr1(locator: Locator) {
