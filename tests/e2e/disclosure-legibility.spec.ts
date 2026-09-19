@@ -2,8 +2,11 @@ import { expect, test } from "@playwright/test";
 import {
   assertLr1,
   assertLr2b,
+  assertLr2bAcrossParagraphs,
   assertLr3,
+  DS1_EXPECTED_PARAGRAPHS,
   DS1_FOOTER_SELECTOR,
+  DS4_EXPECTED_PARAGRAPHS,
   DS4_PANEL_SELECTOR,
   openPrivacySettings,
 } from "./support/legibility";
@@ -31,11 +34,11 @@ test.describe("Disclosure legibility — DS1, the legal footer", () => {
           await assertLr2b(footer);
           await assertLr3(page, route, footer, "Tudo o que você digita fica salvo apenas neste navegador");
 
-          const paragraphs = footer.locator("p");
-          await expect(paragraphs).toHaveCount(route === "/" ? 5 : 4);
-          for (const paragraph of await paragraphs.all()) {
-            await assertLr2b(paragraph);
-          }
+          await assertLr2bAcrossParagraphs(
+            footer,
+            route === "/" ? 5 : DS1_EXPECTED_PARAGRAPHS,
+            `DS1 ${route} ${viewport.width}x${viewport.height} ${theme}`,
+          );
         });
       }
     }
@@ -58,10 +61,11 @@ test.describe("Disclosure legibility — DS4, the privacy settings dialog", () =
           await assertLr1(panel);
           await assertLr3(page, route, panel, 'aria-labelledby="privacy-settings-title"');
 
-          const captions = await panel.locator("p.text-caption").all();
-          for (const caption of captions) {
-            await assertLr2b(caption);
-          }
+          await assertLr2bAcrossParagraphs(
+            panel,
+            DS4_EXPECTED_PARAGRAPHS,
+            `DS4 ${route} ${viewport.width}x${viewport.height} ${theme}`,
+          );
 
           const panelWidth = (await panel.boundingBox())?.width ?? 0;
           expect(panelWidth).toBeGreaterThanOrEqual(Math.min(480, viewport.width - 32));
