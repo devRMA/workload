@@ -69,8 +69,9 @@ function pricedJourney(times: DaySummaryProps["times"]) {
 
 describe("DaySummary", () => {
   it("lists every stretch of a finished day", () => {
-    renderSummary();
+    const { container } = renderSummary();
 
+    expect(container.querySelectorAll("[style*='width']")).toHaveLength(3);
     expect(screen.getByRole("heading", { name: "Seu Dia" })).toBeInTheDocument();
     expect(screen.getByText("Manhã")).toBeInTheDocument();
     expect(screen.getByText("08:00 → 12:00")).toBeInTheDocument();
@@ -108,7 +109,9 @@ describe("DaySummary", () => {
       },
     });
 
-    expect(container.querySelector(".rounded-full.bg-neutral-100")).toBeNull();
+    expect(container.querySelectorAll("[style*='width']")).toHaveLength(0);
+    expect(screen.queryByText("08:00")).toBeNull();
+    expect(screen.queryByText("17:48")).toBeNull();
     expect(screen.queryByText("Manhã")).toBeNull();
   });
 

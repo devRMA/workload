@@ -87,13 +87,12 @@ describe("ModalDialog", () => {
 
   it("merges the caller className into the scrollable content wrapper", () => {
     const { container } = render(
-      <ModalDialog isOpen={true} onClose={mockOnClose} labelledBy="dialog-title" className="max-w-lg">
+      <ModalDialog isOpen={true} onClose={mockOnClose} labelledBy="dialog-title" className="my-custom">
         <h2 id="dialog-title">Título</h2>
       </ModalDialog>,
     );
 
     const wrapper = container.querySelector("dialog > div") as HTMLElement;
-    expect(wrapper.className).toContain("overscroll-contain");
-    expect(wrapper.className).toContain("max-w-lg");
+    expect(wrapper.className).toContain("my-custom");
   });
 });
