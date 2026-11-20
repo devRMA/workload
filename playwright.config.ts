@@ -22,7 +22,7 @@ export default defineConfig({
           localStorage: [
             {
               name: "workload_cookie_consent",
-              value: JSON.stringify({ telemetry: true, timestamp: 0 }),
+              value: JSON.stringify({ telemetry: true, ads: true, timestamp: 0 }),
             },
           ],
         },
