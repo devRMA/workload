@@ -18,6 +18,12 @@ The image supplies browser binaries and system libraries. There is no runtime
 compatibility check together whenever the resolved `@playwright/test` version
 changes in `pnpm-lock.yaml`. The workflow fails early on a version mismatch.
 
+The JUnit reporter receives a process-local Git `safe.directory` setting for
+exactly `github.workspace`. GitHub mounts the host-owned checkout into the
+root-owned container; without that scoped exception, the reporter's `git
+ls-files` fails with dubious ownership even when the tests pass. No persistent
+Git configuration or wildcard directory exception is used.
+
 Lighthouse uses `/usr/bin/google-chrome`, supplied by the Ubuntu 24.04 GitHub
 runner. Node 24 and the package manager declared in `package.json` are explicitly
 set up in each job.
@@ -74,3 +80,13 @@ Keep two Playwright workers until hosted timings show browser execution is the
 critical path. Shards would duplicate image pulls and builds; the failed run
 contains no test-execution timing to justify that cost. Hosted runtime must be
 measured after publication; local timings are not a GitHub runner benchmark.
+
+The first hosted run at commit `5157fd5`,
+[`44804529870`](https://github.com/devRMA/workload/actions/runs/44804529870),
+passed checks in 1m26s and Lighthouse in 2m04s. All 173 E2E tests passed in
+2.4 minutes, but the reporter failed with Git exit 128 due to checkout ownership.
+The aggregate correctly failed. The scoped reporter exception above was then
+reproduced locally: the same `git ls-files` fails with exit 128 without the
+exception and succeeds with exit zero when the exact mounted path is trusted.
+The reporter fix still requires a successful hosted rerun before declaring CI
+green.
