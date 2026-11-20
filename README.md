@@ -97,6 +97,8 @@ Existem dezenas de calculadoras de hora extra em português. Quase nenhuma diz q
 
 Os testes verificam comportamento e nome acessível. Não afirmam classe do Tailwind — teste que espelha CSS quebra em toda mudança de design e não pega defeito nenhum.
 
+No GitHub Actions, checks, Playwright e Lighthouse rodam em paralelo. O check obrigatório `E2E Tests` só passa quando os três passam. O Playwright usa a imagem oficial com navegadores pré-instalados; os builds com e sem anúncios mantêm caches separados. Detalhes de manutenção em [`.github/CI.md`](.github/CI.md).
+
 ---
 
 ## Rodando
