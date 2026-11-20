@@ -2,11 +2,13 @@ import { render, screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
 import { describe, expect, it } from "vitest";
 import { DaySummary } from "@/components/organisms/day-summary";
-import type { DayBreakdown } from "@/lib/day-breakdown";
+import { calculateWorkStats } from "@/hooks/use-work-calculator";
+import { buildDayBreakdown, type DayBreakdown } from "@/lib/day-breakdown";
 
 type DaySummaryProps = ComponentProps<typeof DaySummary>;
 
 const MONDAY = "2025-01-06";
+const NIGHT_OVERTIME_NOTE = "A hora extra feita à noite é calculada sobre a hora já com o adicional noturno.";
 
 const TIMES = {
   entry: `${MONDAY}T08:00`,
@@ -41,6 +43,8 @@ const BASE_PROPS: DaySummaryProps = {
   balanceMinutes: 0,
   firstTierMinutes: 0,
   extraTierMinutes: 0,
+  firstTierNightMinutes: 0,
+  extraTierNightMinutes: 0,
   nightMinutes: 0,
   firstTierRate: 50,
   extraTierRate: 100,
@@ -50,6 +54,17 @@ const BASE_PROPS: DaySummaryProps = {
 
 function renderSummary(overrides: Partial<DaySummaryProps> = {}) {
   return render(<DaySummary {...BASE_PROPS} {...overrides} />);
+}
+
+function pricedJourney(times: DaySummaryProps["times"]) {
+  const stats = calculateWorkStats(times.entry, times.lunchStart, times.lunchEnd, times.exit, 480);
+  return {
+    ...stats,
+    times,
+    balanceMinutes: stats.balance,
+    breakdown: buildDayBreakdown({ ...times, expectedMinutes: 480, isManualExit: true, now: null }),
+    grossHourlyRate: 20,
+  };
 }
 
 describe("DaySummary", () => {
@@ -148,10 +163,11 @@ describe("DaySummary", () => {
   });
 
   it("invites the reader to calculate the hourly value when it is unknown", () => {
-    renderSummary({ firstTierMinutes: 60, extraTierMinutes: 30 });
+    renderSummary({ firstTierMinutes: 60, extraTierMinutes: 30, firstTierNightMinutes: 60, nightMinutes: 60 });
 
     expect(screen.getByRole("link", { name: /Calcule o valor da sua hora/ })).toHaveAttribute("href", "/custo-da-hora");
     expect(screen.queryByText(/R\$/)).toBeNull();
+    expect(screen.queryByText(NIGHT_OVERTIME_NOTE)).toBeNull();
   });
 
   it("prices both overtime tiers once the gross hourly value is known", () => {
@@ -163,6 +179,7 @@ describe("DaySummary", () => {
     expect(screen.getByText(/20,00/)).toBeInTheDocument();
     expect(screen.getByText("0h 45m")).toBeInTheDocument();
     expect(screen.queryByRole("link")).toBeNull();
+    expect(screen.queryByText(NIGHT_OVERTIME_NOTE)).toBeNull();
   });
 
   it("pays the night premium of twenty percent as money, not as a duration", () => {
@@ -171,6 +188,108 @@ describe("DaySummary", () => {
     expect(screen.getByText("Adicional noturno 20%")).toBeInTheDocument();
     expect(screen.getByText("8h 0m")).toBeInTheDocument();
     expect(screen.getByText(/21,82/)).toBeInTheDocument();
+    expect(screen.queryByText(NIGHT_OVERTIME_NOTE)).toBeNull();
+  });
+
+  it("raises the overtime line and DSR only when the night credits overlap overtime", () => {
+    const daytimeExtra = pricedJourney({
+      entry: `${MONDAY}T22:00`,
+      lunchStart: `${MONDAY}T23:45`,
+      lunchEnd: "2025-01-07T05:00",
+      exit: "2025-01-07T13:00",
+    });
+    const nightExtra = pricedJourney({
+      entry: `${MONDAY}T13:00`,
+      lunchStart: `${MONDAY}T21:00`,
+      lunchEnd: `${MONDAY}T22:00`,
+      exit: `${MONDAY}T23:45`,
+    });
+    expect(daytimeExtra).toMatchObject({
+      totalWorked: 600,
+      nightMinutes: 120,
+      firstTierMinutes: 120,
+      extraTierMinutes: 0,
+      firstTierNightMinutes: 0,
+      extraTierNightMinutes: 0,
+    });
+    expect(nightExtra).toMatchObject({
+      totalWorked: 600,
+      nightMinutes: 120,
+      firstTierMinutes: 120,
+      extraTierMinutes: 0,
+      firstTierNightMinutes: 120,
+      extraTierNightMinutes: 0,
+    });
+    const { rerender } = renderSummary(daytimeExtra);
+
+    expect(screen.getByText("Extra 50%").parentElement).toHaveTextContent(/2h 0mR\$\s60,00$/);
+    expect(screen.getByText("Adicional noturno 20%").parentElement).toHaveTextContent(/2h 0mR\$\s8,00$/);
+    expect(screen.getByText("DSR sobre os extras").parentElement).toHaveTextContent(/R\$\s10,07$/);
+    expect(screen.queryByText(NIGHT_OVERTIME_NOTE)).toBeNull();
+
+    rerender(<DaySummary {...BASE_PROPS} {...nightExtra} />);
+
+    expect(screen.getByText("Extra 50%").parentElement).toHaveTextContent(/2h 0mR\$\s64,00$/);
+    expect(screen.getByText("Adicional noturno 20%").parentElement).toHaveTextContent(/2h 0mR\$\s8,00$/);
+    expect(screen.getByText("DSR sobre os extras").parentElement).toHaveTextContent(/R\$\s10,67$/);
+    expect(screen.getAllByText(NIGHT_OVERTIME_NOTE)).toHaveLength(1);
+  });
+
+  it("prices each derived tier below, at and above the 120-minute limit", () => {
+    const expectedCases = 3;
+    const cases = [
+      ["23:44", 119, 0, "63,47", "0,00"],
+      ["23:45", 120, 0, "64,00", "0,00"],
+      ["23:46", 120, 1, "64,00", "0,73"],
+    ] as const;
+    expect(cases).toHaveLength(expectedCases);
+    let measured = 0;
+    const exempt = 0;
+    for (const [exit, first, extra, firstPay, extraPay] of cases) {
+      const day = pricedJourney({
+        entry: `${MONDAY}T13:00`,
+        lunchStart: `${MONDAY}T21:00`,
+        lunchEnd: `${MONDAY}T22:00`,
+        exit: `${MONDAY}T${exit}`,
+      });
+      expect(day).toMatchObject({
+        firstTierMinutes: first,
+        extraTierMinutes: extra,
+        firstTierNightMinutes: first,
+        extraTierNightMinutes: extra,
+      });
+      const { unmount } = renderSummary(day);
+      expect(screen.getByText("Extra 50%").parentElement?.textContent).toMatch(new RegExp(`R\\$\\s${firstPay}$`));
+      expect(screen.getByText("Extra 100%").parentElement?.textContent).toMatch(new RegExp(`R\\$\\s${extraPay}$`));
+      unmount();
+      measured += 1;
+    }
+    expect(measured + exempt).toBe(expectedCases);
+  });
+
+  it("applies each tier's rate to its own night overtime minutes", () => {
+    renderSummary({
+      firstTierMinutes: 120,
+      extraTierMinutes: 30,
+      firstTierNightMinutes: 120,
+      extraTierNightMinutes: 30,
+      nightMinutes: 150,
+      grossHourlyRate: 20,
+    });
+
+    expect(screen.getByText("Extra 50%").parentElement).toHaveTextContent(/R\$\s64,00$/);
+    expect(screen.getByText("Extra 100%").parentElement).toHaveTextContent(/R\$\s22,00$/);
+    expect(screen.getByText("Adicional noturno 20%").parentElement).toHaveTextContent(/R\$\s10,00$/);
+    expect(screen.getByText("DSR sobre os extras").parentElement).toHaveTextContent(/R\$\s14,22$/);
+    expect(screen.getAllByText(NIGHT_OVERTIME_NOTE)).toHaveLength(1);
+  });
+
+  it("rounds the overtime line and DSR only after composing their full values", () => {
+    renderSummary({ firstTierMinutes: 1, firstTierNightMinutes: 1, nightMinutes: 1, grossHourlyRate: 21.41 });
+
+    expect(screen.getByText("Extra 50%").parentElement).toHaveTextContent(/R\$\s0,57$/);
+    expect(screen.getByText("Adicional noturno 20%").parentElement).toHaveTextContent(/R\$\s0,07$/);
+    expect(screen.getByText("DSR sobre os extras").parentElement).toHaveTextContent(/R\$\s0,10$/);
   });
 
   it("adds the DSR over the habitual overtime and says what it assumes", () => {

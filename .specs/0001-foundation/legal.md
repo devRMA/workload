@@ -29,7 +29,7 @@ Everything the product computes is derived here, with its source. A number that 
 | R11 | Daily overtime limit — 2 hours | Compliance warning; the hours worked past it remain owed. |
 | R12 | Intrajourney break — 15 min between 4h and 6h | Compliance warning. |
 | R13 | Intrajourney break — 1 hour above 6h, reducible to 30 min by collective norm | Compliance warning. |
-| R14 | Interjourney rest — 11 consecutive hours | Compliance warning, measured from the previous day's stored exit. |
+| R14 | Interjourney rest — 11 consecutive hours | Compliance warning, measured from an actual exit entered for the previous stored shift. |
 
 ---
 
@@ -88,7 +88,7 @@ Urban night work is the work performed between **22:00 of one day and 05:00 of t
 | Article | Anexo II (tabela de contribuição do segurado empregado) |
 | Effective from | 2026-01-01 |
 | Superseded by | in force |
-| Source | https://www.legisweb.com.br/legislacao/?id=489284 · https://www.gov.br/previdencia/pt-br/assuntos/rpps/documentos/PortariaInterministerialMPSMF13de9dejaneirode2026.pdf |
+| Source | https://www.gov.br/previdencia/pt-br/assuntos/rpps/documentos/PortariaInterministerialMPSMF13de9dejaneirode2026.pdf |
 
 The employee's contribution is **progressive by portion**: each rate applies only to the slice of the salário-de-contribuição that falls inside its bracket, and the contribution is the sum of the slices. Above the ceiling the contribution stops growing.
 
@@ -150,6 +150,10 @@ Overtime is paid at **at least 50%** over the value of the normal hour. The norm
 
 `lib/payroll.ts`: `grossHourlyRate(grossSalary, monthlyHours) = grossSalary / monthlyHours`; `overtimePay(minutes, hourlyRate, ratePercent) = (minutes / 60) × hourlyRate × (1 + ratePercent / 100)`.
 
+The TST's OJ 97 of the SBDI-1, reaffirmed in IRR Tema 288 (final on 25/09/2025), requires the night premium to enter the base of overtime worked during the night window. For each tier, let `N` be its credited night overtime minutes, `V` the gross hourly rate and `e` the overtime percentage as a fraction. The tier adds the unrounded cross term `(N / 60) × V × 0.20 × e` to the ordinary overtime amount. The night premium line still pays `(total credited night minutes / 60) × V × 0.20` once. The resulting tier amounts and ordinary night premium enter the DSR before display rounding. [TST IRR Tema 288](https://www.tst.jus.br/documents/d/guest/livro-precedentes-trabalhistas-v182025) · [TST OJ 97](https://www.tst.jus.br/documents/10157/63003/Livro-Internet.pdf)
+
+`lib/night-shift.ts` allocates the night credits chronologically within `[22:00, 05:00)`, excluding breaks. The canonical night count and tier allocation share their clipped worked windows. Each window contributes the change in `round(cumulative real night minutes × 60 / 52.5)`; the credit interval starts at the credited work accrued before the overlap and can span both tiers. The allocation uses the same cumulative night clock across breaks and midnight. The Jornada footer links to the official Tema 288 from `NIGHT_OVERTIME_SOURCE` in `lib/legal-tables.ts`. See [.specs/0016-night-overtime-base/legal.md](../0016-night-overtime-base/legal.md).
+
 ### R9 — DSR on habitual variable pay
 
 | | |
@@ -166,7 +170,7 @@ Habitually worked overtime is included in the calculation of the paid weekly res
 DSR = variable pay in the month / working days in the month × rest days in the month
 ```
 
-where "variable pay" is the sum of both overtime tiers plus the night premium, working days are every calendar day of the month that is not a Sunday, and rest days are the Sundays. **Saturday counts as a working day** in the 5×2 week. **Holidays are not detected**, which slightly understates the DSR, and the app says so next to the number.
+where "variable pay" is the unrounded sum of both overtime tiers (including the R8 cross term where applicable) plus the ordinary night premium, working days are every calendar day of the month that is not a Sunday, and rest days are the Sundays. **Saturday counts as a working day** in the 5×2 week. **Holidays are not detected**, which slightly understates the DSR, and the app says so next to the number.
 
 `lib/weekly-rest.ts`: `splitMonthDays(reference)` and `restDayPayOnOvertime(overtimeAmount, split)`. The reference month is the month of the **entry** date the user typed.
 
@@ -240,7 +244,7 @@ A journey exceeding six hours requires a break of at least one hour; a collectiv
 Between two journeys there must be a minimum of **eleven consecutive hours** of rest.
 
 - **Boundary:** fires when the measured gap is **strictly less than 660 minutes**. Exactly 660 is lawful and silent.
-- The gap is measured from the exit stored on a **previous calendar day** to today's entry. When no earlier exit is stored, the check does not run and no warning is shown — absence of data is never reported as compliance.
+- The gap is measured from an explicitly entered, chronologically valid exit for the previous stored shift to today's entry. The exit must not be in the future when recorded. An automatic suggestion, a prefilled manual draft, or a legacy exit without provenance does not qualify. If the previous exit cannot be established or is after the current entry, the check does not run and no warning is shown — absence of data is never reported as compliance.
 
 ---
 
@@ -262,7 +266,7 @@ Progressive by portion. Each rate applies only to the slice of the salary inside
 - **Boundaries:** each upper bound is **inclusive** of the portion it closes. The implementation adds `(min(amount, ceiling) − lowerBound) × rate` for each bracket and stops as soon as `amount ≤ lowerBound`, which makes the boundary exact at the centavo with no comparison-operator ambiguity.
 - **Ceiling:** R$ 8.475,55. The maximum employee contribution is **R$ 988,09** (see E2). No portion above the ceiling contributes.
 - **Deduction column:** not applicable — this is a portion-by-portion ladder, not a table with a parcela a deduzir.
-- **Source:** Portaria Interministerial MPS/MF nº 13, de 09/01/2026, Anexo II — https://www.legisweb.com.br/legislacao/?id=489284
+- **Source:** Portaria Interministerial MPS/MF nº 13, de 09/01/2026, Anexo II — https://www.gov.br/previdencia/pt-br/assuntos/rpps/documentos/PortariaInterministerialMPSMF13de9dejaneirode2026.pdf
 
 ### INSS / RPPS federal — competence 2026
 
@@ -282,7 +286,7 @@ The four RGPS brackets above, then four more. Uncapped.
 - **Boundaries:** identical semantics to the RGPS ladder. Bracket 5 begins exactly where the RGPS ceiling ends, with no gap and no overlap.
 - **Ceiling:** none. Bracket 8 is open-ended (`Number.POSITIVE_INFINITY` in the implementation).
 - **Applicability:** **federal** servants only. State and municipal RPPS have their own rates.
-- **Source:** EC 103/2019 art. 11 + Portaria Interministerial MPS/MF nº 13, de 09/01/2026, Anexo III — https://www.legisweb.com.br/legislacao/?id=489284
+- **Source:** EC 103/2019 art. 11 + Portaria Interministerial MPS/MF nº 13, de 09/01/2026, Anexo III — https://www.gov.br/previdencia/pt-br/assuntos/rpps/documentos/PortariaInterministerialMPSMF13de9dejaneirode2026.pdf
 
 ### IRRF mensal — competence 2026
 
@@ -461,6 +465,17 @@ At least one per rule, and one on every boundary a table defines. These are test
 | Rule | R1, R2, R3, R8, R9 |
 
 *Note on the Súmula 60, II reading:* the hour worked between 05:00 and 06:00 is **not** counted as night time. See § *Out of scope*.
+
+### E12a — Same credited totals, different night overtime
+
+Both controls begin on Monday 06/01/2025 with 480 expected minutes and a gross hourly rate of R$ 20,00. Each credits 600 worked minutes, 120 overtime minutes in the 50% tier and 120 night minutes (105 real).
+
+| Control | Entry → break → exit | Credited night overtime, first / extra tier | Extra 50% | Ordinary night premium | Variable pay | DSR (4 Sundays, 27 working days) |
+|---|---|---|---|---|---|---|
+| A | 06/01 22:00 → 06/01 23:45–07/01 05:00 → 07/01 13:00 | 0 / 0 | R$ 60,00 | R$ 8,00 | R$ 68,00 | R$ 10,07 |
+| B | 06/01 13:00 → 06/01 21:00–22:00 → 06/01 23:45 | 120 / 0 | R$ 64,00 | R$ 8,00 | R$ 72,00 | R$ 10,67 |
+
+B adds `120 / 60 × 20 × 0.20 × 0.50 = R$ 4,00` to the tier. Only B shows the night overtime explanation. Rules R1–R3, R8 and R9 apply.
 
 ### E13 — Suggested exit, day journey
 

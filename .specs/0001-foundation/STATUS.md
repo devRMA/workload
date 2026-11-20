@@ -29,6 +29,8 @@ Baseline spec. It documents the calculator as it already exists, so its gates di
 
 The G6 law-check passed: `reports/legal.md`, verdict `passed`, with four minor findings all accepted by the human and recorded in `legal.md` § *Known imprecisions*. The three remaining G6 gates have not run against this spec.
 
+Stack review follow-up to R14: an automatic projection was persisted as `lastExit` and later mistaken for an actual exit. The correction requires explicit valid past input and retains that prior exit across reloads. The 660-minute boundary (CLT art. 66) is unchanged; the new evidence concerns which inputs qualify. See `__tests__/use-work-calculator.test.ts` and `__tests__/work-calculator.test.tsx`.
+
 ## Tasks
 
 The build order the artifacts describe. Every task is already reflected in the shipped tree; the ids exist so a rebuild has a dependency order and so a future bounce has something to name.

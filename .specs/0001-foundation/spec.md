@@ -44,8 +44,9 @@ Straight from `PRODUCT.md` §1. Everything in scope exists to answer one of them
 - Day summary: morning / lunch / afternoon stretches, the reduced night hour credited as extra journey time, worked vs. expected, the remaining time, and the signed day balance.
 - Overtime split into the first two hours and the hours beyond, each priced in reais at its own configurable rate, defaulting to 50% and 100%.
 - The 20% night premium (CLT art. 73, *caput*), computed on the ficta night minutes and shown as money.
+- Each overtime tier includes the night premium in the base of its credited night overtime minutes (TST IRR Tema 288 / OJ 97). The summary explains this with “A hora extra feita à noite é calculada sobre a hora já com o adicional noturno.” when a gross hourly rate and night overtime are both present. The Jornada footer links to the official precedent.
 - The DSR those variable amounts generate (Súmula 172 do TST), computed from the calendar month of the entry date.
-- Compliance warnings: the 2h daily overtime limit, the 15-minute break for a 4h–6h journey, the 1h lunch for a journey over 6h, and the 11h interregno since the previous day's exit.
+- Compliance warnings: the 2h daily overtime limit, the 15-minute break for a 4h–6h journey, the 1h lunch for a journey over 6h, and the 11h interregno when the previous shift has a valid, explicitly entered exit.
 - Journey settings: daily journey length and the two overtime rates, each carrying the norm that governs it.
 - Reset, behind a confirmation dialog.
 
@@ -63,7 +64,7 @@ Straight from `PRODUCT.md` §1. Everything in scope exists to answer one of them
 
 - Everything persists to `localStorage` and nowhere else. No account, no backend, no network call that carries a number the user typed.
 - Dark and light, both first-class, following the system by default.
-- Cookie consent gating Google Analytics; AdSense in a reserved footer slot behind the same consent, never between the user and an answer.
+- Cookie consent gating Google Analytics and AdSense separately. Ads appear in a reserved footer slot only after an explicit “Aceitar Tudo” action disclosed as enabling both, never between the user and an answer.
 - A footer that states the privacy position, the estimate disclaimer, the explicit list of what is not computed, and the year, effective date and source of the fiscal tables.
 - pt-BR only.
 
@@ -93,7 +94,7 @@ Binding on every downstream agent. Each of these is a deliberate exclusion, not 
 | AC5 | No fiscal figure appears as a literal in any UI string; every one is interpolated from `lib/legal-tables.ts`. | `grep -rn` over `components/`, `app/`, `lib/` for bracket values; `lib/payroll.ts` `WORK_REGIME_INFO[].impact` builds its text with `formatCurrency` |
 | AC6 | The footer names the table year, its effective date in `DD/MM/AAAA`, and links to the source URL, all read from `CURRENT_LEGAL_YEAR`. | `__tests__/calculator-views.test.tsx` |
 | AC7 | The overtime tiers and the night premium are priced on the **gross** hourly rate (`grossSalary / monthlyHours`), never on a net-derived rate. | `__tests__/payroll.test.ts`, `__tests__/use-gross-hourly-rate.test.ts` |
-| AC8 | The night line in the day summary renders a currency amount, not a bare duration. | `__tests__/day-summary.test.tsx` |
+| AC8 | The night line shows the ordinary night premium in reais. Night overtime increases the applicable tier's amount and the DSR input, with a caption when priced. The A/B controls in `legal.md` E12a give variable pay of R$ 68,00 and R$ 72,00. | `__tests__/day-summary.test.tsx`, `__tests__/use-work-calculator.test.ts` |
 | AC9 | The DSR line appears whenever the variable pay is above zero and carries its assumption in visible text. | `__tests__/day-summary.test.tsx`, `__tests__/weekly-rest.test.ts` |
 | AC10 | Each of the four compliance warnings fires exactly at its threshold and carries its article. | `__tests__/compliance.test.ts` |
 | AC11 | Both overtime-rate fields carry a hint naming the legal floor, bound to the input by `aria-describedby`. | `__tests__/journey-form.test.tsx` |
@@ -104,7 +105,7 @@ Binding on every downstream agent. Each of these is a deliberate exclusion, not 
 | AC16 | `pnpm test:coverage` holds 100% statements/branches/functions/lines in `lib/**` and `hooks/**`, and 90% in `app/**` and `components/**`. | `vitest.config.ts` thresholds fail the run below the bar |
 | AC17 | No horizontal overflow and no control outside the viewport at 390, 1440, 2560 and 3840. | `tests/e2e/responsive.spec.ts` |
 | AC18 | Zero axe-core violations at `critical` or `serious`, in both themes. | `node .agents/tools/preview.mjs` |
-| AC19 | Analytics load only after the user accepts telemetry, and the choice survives a reload. | `__tests__/cookie-consent.test.tsx`, `__tests__/analytics-wrapper.test.tsx`, `__tests__/consent.test.ts` |
+| AC19 | Analytics load only after telemetry acceptance; ads require their own stored approval. Older telemetry-only records never grant ads. Saving custom settings withdraws any ads approval and reloads if necessary to stop the page’s loaded script. | `__tests__/cookie-consent.test.tsx`, `__tests__/analytics-wrapper.test.tsx`, `__tests__/ad-manager.test.tsx`, `__tests__/consent.test.ts` |
 | AC20 | The footer lists every computation named in `legal.md` § *Out of scope* that a user could mistake for a promise. | Read the footer against `legal.md`; `__tests__/calculator-views.test.tsx` |
 
 ## Evidence available

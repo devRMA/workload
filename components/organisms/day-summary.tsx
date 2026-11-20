@@ -12,7 +12,7 @@ import { VIEW_PATHS } from "@/lib/calculator-view";
 import type { ComplianceWarning } from "@/lib/compliance";
 import type { DayBreakdown, DaySegmentKind } from "@/lib/day-breakdown";
 import { formatHoursAndMinutes, formatSignedHoursAndMinutes } from "@/lib/duration";
-import { nightPremiumPay } from "@/lib/night-shift";
+import { nightOvertimePremiumPay, nightPremiumPay } from "@/lib/night-shift";
 import { overtimePay } from "@/lib/payroll";
 import { cn, formatCurrency, formatTimeLabel } from "@/lib/utils";
 import { restDayPayOnOvertime, splitMonthDays } from "@/lib/weekly-rest";
@@ -38,6 +38,8 @@ interface DaySummaryProps {
   balanceMinutes: number;
   firstTierMinutes: number;
   extraTierMinutes: number;
+  firstTierNightMinutes: number;
+  extraTierNightMinutes: number;
   nightMinutes: number;
   firstTierRate: number;
   extraTierRate: number;
@@ -93,6 +95,8 @@ export function DaySummary({
   balanceMinutes,
   firstTierMinutes,
   extraTierMinutes,
+  firstTierNightMinutes,
+  extraTierNightMinutes,
   nightMinutes,
   firstTierRate,
   extraTierRate,
@@ -125,8 +129,16 @@ export function DaySummary({
 
   const startsAt = [times.entry, times.lunchStart, times.lunchEnd];
   const isPositiveBalance = balanceMinutes >= 0;
-  const firstTierPay = grossHourlyRate === null ? null : overtimePay(firstTierMinutes, grossHourlyRate, firstTierRate);
-  const extraTierPay = grossHourlyRate === null ? null : overtimePay(extraTierMinutes, grossHourlyRate, extraTierRate);
+  const firstTierPay =
+    grossHourlyRate === null
+      ? null
+      : overtimePay(firstTierMinutes, grossHourlyRate, firstTierRate) +
+        nightOvertimePremiumPay(firstTierNightMinutes, grossHourlyRate, firstTierRate);
+  const extraTierPay =
+    grossHourlyRate === null
+      ? null
+      : overtimePay(extraTierMinutes, grossHourlyRate, extraTierRate) +
+        nightOvertimePremiumPay(extraTierNightMinutes, grossHourlyRate, extraTierRate);
   const nightPay = grossHourlyRate === null ? null : nightPremiumPay(nightMinutes, grossHourlyRate);
   const variablePay = (firstTierPay ?? 0) + (extraTierPay ?? 0) + (nightPay ?? 0);
   const restDayPay = restDayPayOnOvertime(variablePay, splitMonthDays(new Date(times.entry)));
@@ -218,6 +230,11 @@ export function DaySummary({
               </span>
             )}
           </div>
+          {grossHourlyRate !== null && firstTierNightMinutes + extraTierNightMinutes > 0 ? (
+            <p className="text-caption text-ink-subtle text-pretty">
+              A hora extra feita à noite é calculada sobre a hora já com o adicional noturno.
+            </p>
+          ) : null}
           {restDayPay > 0 ? (
             <div className="flex items-center gap-3 text-body-sm">
               <IconCalendarMonth className="w-4 h-4 shrink-0 text-positive-ink" aria-hidden="true" />

@@ -228,12 +228,15 @@ describe("WorkCalculator", () => {
     expect(screen.getByRole("link", { name: /Calcule o valor da sua hora/ })).toBeInTheDocument();
   });
 
-  it("warns when less than eleven hours separate this journey from the previous one", () => {
-    storeJourney();
-    localStorage.setItem("entry", `2025-01-05T08:00`);
-    localStorage.setItem("lunchStart", `2025-01-05T12:00`);
-    localStorage.setItem("lunchEnd", `2025-01-05T13:00`);
-    localStorage.setItem("lastExit", `2025-01-06T02:00`);
+  it("warns when less than eleven hours have passed since an actual exit was entered", async () => {
+    const user = userEvent.setup();
+    vi.setSystemTime(new Date("2025-01-05T22:30:00"));
+    const previousDay = render(<WorkCalculator />);
+    const exitTimeField = screen.getByLabelText("Hora para Saída Sugerida");
+    await user.clear(exitTimeField);
+    await user.type(exitTimeField, "2200");
+    previousDay.unmount();
+
     vi.setSystemTime(new Date(`${DAY}T10:00:00`));
     render(<WorkCalculator />);
 

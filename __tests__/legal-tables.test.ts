@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { CURRENT_LEGAL_YEAR, LEGAL_YEARS, type LegalYear, type ProgressiveBracket } from "@/lib/legal-tables";
+import {
+  CURRENT_LEGAL_YEAR,
+  LEGAL_YEARS,
+  type LegalYear,
+  type NormSource,
+  type ProgressiveBracket,
+} from "@/lib/legal-tables";
 import { calculateSocialSecurity } from "@/lib/payroll";
 
 const years = Object.values(LEGAL_YEARS);
@@ -14,14 +20,6 @@ describe("LEGAL_YEARS", () => {
   it("indexes every table by the year it declares", () => {
     for (const [key, table] of Object.entries(LEGAL_YEARS)) {
       expect(table.year).toBe(Number(key));
-    }
-  });
-
-  it("names a source and an effective date for every table", () => {
-    for (const table of years) {
-      expect(table.source).not.toBe("");
-      expect(table.sourceUrl).toMatch(/^https:\/\//);
-      expect(table.effectiveFrom).toBe(`${table.year}-01-01`);
     }
   });
 
@@ -65,5 +63,51 @@ describe("LEGAL_YEARS", () => {
     expect(ceilings(table.rgpsBrackets)).toEqual([1621.0, 2902.84, 4354.27, 8475.55]);
     expect(table.exemptionCeiling).toBe(5000);
     expect(table.reduction).toEqual({ intercept: 978.62, slope: 0.133145, phaseOutCeiling: 7350 });
+  });
+
+  it("gives every legal data set at least one source", () => {
+    const table = CURRENT_LEGAL_YEAR;
+    const entries = Object.entries(table.sources);
+
+    expect(entries.length).toBe(9);
+    for (const [, sources] of entries) {
+      expect(sources.length).toBeGreaterThanOrEqual(1);
+    }
+  });
+
+  it("attributes the RPPS ladder to two norms, the rates and the faixas", () => {
+    const [rates, faixas] = CURRENT_LEGAL_YEAR.sources.rppsFederalBrackets;
+
+    expect(CURRENT_LEGAL_YEAR.sources.rppsFederalBrackets.length).toBe(2);
+    expect(rates.norm).toContain("Emenda Constitucional nº 103/2019");
+    expect(faixas.norm).toContain("Anexo III");
+  });
+
+  it("marks a derived value as derived instead of attributing it to a norm", () => {
+    const [ceilingDiscount] = CURRENT_LEGAL_YEAR.sources.rgpsCeilingDiscount;
+    const [, simplifiedDeductionOperand] = CURRENT_LEGAL_YEAR.sources.simplifiedDeduction;
+
+    expect("norm" in ceilingDiscount).toBe(false);
+    expect(ceilingDiscount.derivedFrom).not.toBe("");
+    expect("norm" in simplifiedDeductionOperand).toBe(false);
+    expect(simplifiedDeductionOperand.derivedFrom).not.toBe("");
+  });
+
+  it("dates each source by the norm that sets it, not by the record's year", () => {
+    const { sources } = CURRENT_LEGAL_YEAR;
+
+    expect(sources.incomeTaxBrackets[0].effectiveFrom).toBe("2025-05-01");
+    expect(sources.dependentDeduction[0].effectiveFrom).toBe("2015-04-01");
+    expect(sources.rppsFederalBrackets[0].effectiveFrom).toBe("2020-03-01");
+  });
+
+  it("names seven distinct norms across nine attributions", () => {
+    const norms = Object.values(CURRENT_LEGAL_YEAR.sources)
+      .flat()
+      .filter((entry): entry is NormSource => "norm" in entry)
+      .map((entry) => entry.norm);
+
+    expect(norms.length).toBe(9);
+    expect(new Set(norms).size).toBe(7);
   });
 });

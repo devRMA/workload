@@ -4,6 +4,23 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CalculatorViews } from "@/components/organisms/calculator-views";
 import { safeGAEvent } from "@/lib/analytics";
 
+const ALLOWED_HOSTS = new Set([
+  "planalto.gov.br",
+  "www.planalto.gov.br",
+  "in.gov.br",
+  "www.in.gov.br",
+  "gov.br",
+  "www.gov.br",
+  "camara.leg.br",
+  "www2.camara.leg.br",
+  "senado.leg.br",
+  "www12.senado.leg.br",
+  "legis.senado.leg.br",
+  "normas.leg.br",
+  "tst.jus.br",
+  "www.tst.jus.br",
+]);
+
 vi.mock("@/lib/analytics", () => ({
   safeGAEvent: vi.fn(),
 }));
@@ -79,7 +96,7 @@ describe("CalculatorViews", () => {
     expect(disclaimer).toHaveTextContent("não valem como registro oficial de ponto");
     expect(disclaimer).toHaveTextContent("orientação jurídica ou contábil");
 
-    expect(screen.getByText(/prorrogação da jornada noturna depois das 5h/)).toHaveTextContent("Súmula 60 do TST");
+    expect(screen.getByText(/prorrogação da jornada noturna depois das 5h/)).toHaveTextContent("Súmula 60, II, do TST");
   });
 
   it("names what the calculation leaves out", () => {
@@ -90,17 +107,78 @@ describe("CalculatorViews", () => {
     expect(omissions).toHaveTextContent("FGTS");
     expect(omissions).toHaveTextContent("convenção coletiva");
     expect(omissions).toHaveTextContent("13º salário");
-    expect(omissions).toHaveTextContent("Súmula 60 do TST");
+    expect(omissions).toHaveTextContent("Súmula 60, II, do TST");
     expect(omissions).toHaveTextContent("RPPS federal");
   });
 
-  it("dates the tax tables and links the norm that published them", () => {
+  it("names the norm behind each table and links it to an official host", () => {
     render(<CalculatorViews activeView="work" />);
 
-    expect(screen.getByText(/Tabelas de INSS e IRRF de 2026, em vigor desde 01\/01\/2026/)).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Portaria Interministerial MPS\/MF nº 13/ })).toHaveAttribute(
+    const footer = screen.getByText(/Tabelas usadas nos cálculos/).closest("footer");
+    expect(footer).not.toBeNull();
+    const links = footer ? Array.from(footer.querySelectorAll("a")) : [];
+
+    expect(links.length).toBe(5);
+    expect(links.map((link) => link.textContent)).toEqual([
+      "Portaria Interministerial MPS/MF nº 13, de 09/01/2026, Anexo II",
+      "Lei nº 11.482/2007, art. 1º, XII, na redação da Lei nº 15.191/2025",
+      "Emenda Constitucional nº 103/2019, art. 11",
+      "Anexo III da Portaria nº 13/2026",
+      "Tema 288 do TST (OJ 97)",
+    ]);
+    for (const link of links) {
+      const href = link.getAttribute("href") ?? "";
+      expect(ALLOWED_HOSTS.has(new URL(href).hostname)).toBe(true);
+    }
+  });
+
+  it("links the night overtime calculation to its official source on Jornada only", () => {
+    const { rerender } = render(<CalculatorViews activeView="work" />);
+    const name = "Tema 288 do TST (OJ 97)";
+    const link = screen.getByRole("link", { name });
+    expect(link).toHaveAttribute(
       "href",
-      "https://www.legisweb.com.br/legislacao/?id=489284",
+      "https://www.tst.jus.br/documents/d/guest/livro-precedentes-trabalhistas-v182025",
     );
+    expect(link.closest("p")).toHaveTextContent("Horas extras noturnas:");
+
+    rerender(<CalculatorViews activeView="salary" />);
+    expect(screen.queryByRole("link", { name })).not.toBeInTheDocument();
+  });
+
+  it("never credits one norm with both tables", () => {
+    render(<CalculatorViews activeView="work" />);
+
+    const inssLink = screen.getByRole("link", { name: /Portaria Interministerial/ });
+    const irrfLink = screen.getByRole("link", { name: /Lei nº 11\.482\/2007/ });
+
+    expect(inssLink).toHaveAttribute("href");
+    expect(irrfLink).toHaveAttribute("href");
+    expect(inssLink.getAttribute("href")).not.toBe(irrfLink.getAttribute("href"));
+  });
+
+  it("pairs every date with the norm that took force on it", () => {
+    render(<CalculatorViews activeView="work" />);
+
+    const paragraph = screen.getByText(/Tabelas usadas nos cálculos/);
+
+    expect(paragraph).toHaveTextContent("Anexo II, em vigor desde 01/01/2026");
+    expect(paragraph).toHaveTextContent("Lei nº 15.191/2025, em vigor desde 01/05/2025");
+    expect(paragraph).toHaveTextContent("Portaria nº 13/2026, em vigor desde 01/01/2026");
+    expect(paragraph.textContent).not.toContain(
+      "Lei nº 11.482/2007, art. 1º, XII, na redação da Lei nº 15.191/2025, em vigor desde 01/01/2026",
+    );
+  });
+
+  it("carries the whole citation line", () => {
+    render(<CalculatorViews activeView="work" />);
+
+    const paragraph = screen.getByText(/Tabelas usadas nos cálculos/);
+    const collapsed = paragraph.textContent?.replace(/\s+/g, " ").trim() ?? "";
+
+    expect(collapsed).toBe(
+      "Tabelas usadas nos cálculos: INSS pela Portaria Interministerial MPS/MF nº 13, de 09/01/2026, Anexo II, em vigor desde 01/01/2026. IRRF pela Lei nº 11.482/2007, art. 1º, XII, na redação da Lei nº 15.191/2025, em vigor desde 01/05/2025. RPPS federal: as alíquotas vêm da Emenda Constitucional nº 103/2019, art. 11, e as faixas de 2026, do Anexo III da Portaria nº 13/2026, em vigor desde 01/01/2026.",
+    );
+    expect(collapsed.length).toBe(398);
   });
 });

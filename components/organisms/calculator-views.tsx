@@ -9,13 +9,16 @@ import { SalaryCalculator } from "@/components/organisms/salary-calculator";
 import { WorkCalculator } from "@/components/organisms/work-calculator";
 import { safeGAEvent } from "@/lib/analytics";
 import { type CalculatorView, VIEW_PATHS } from "@/lib/calculator-view";
-import { CURRENT_LEGAL_YEAR } from "@/lib/legal-tables";
+import { CURRENT_LEGAL_YEAR, NIGHT_OVERTIME_SOURCE } from "@/lib/legal-tables";
 import { formatIsoDate } from "@/lib/utils";
 
 const VIEW_TABS: readonly { view: CalculatorView; label: string; icon: typeof IconClock }[] = [
   { view: "work", label: "Jornada", icon: IconClock },
   { view: "salary", label: "Custo da Hora", icon: IconCurrencyDollar },
 ];
+
+const SOURCE_LINK_CLASSES =
+  "underline underline-offset-2 transition-colors duration-(--duration-fast) ease-standard hover:text-accent-ink";
 
 const PANEL_TRANSITION = {
   initial: { opacity: 0, y: 12 },
@@ -27,6 +30,7 @@ const PANEL_TRANSITION = {
 export function CalculatorViews({ activeView }: { activeView: CalculatorView }) {
   const mainRef = useRef<HTMLDivElement>(null);
   const renderedView = useRef(activeView);
+  const sources = CURRENT_LEGAL_YEAR.sources;
 
   useEffect(() => {
     if (renderedView.current === activeView) return;
@@ -82,22 +86,49 @@ export function CalculatorViews({ activeView }: { activeView: CalculatorView }) 
           <p>
             Não entram na conta: FGTS, benefícios e adicionais da sua convenção coletiva, o 13º salário e o terço de
             férias, a incidência de INSS e IRRF sobre as horas extras, a prorrogação da jornada noturna depois das 5h
-            (Súmula 60 do TST), feriados, o valor do intervalo suprimido e o adicional de insalubridade ou
+            (Súmula 60, II, do TST), feriados, o valor do intervalo suprimido e o adicional de insalubridade ou
             periculosidade. O regime Estatutário usa a tabela do RPPS federal e não vale para servidor estadual ou
             municipal.
           </p>
           <p>
-            Tabelas de INSS e IRRF de {CURRENT_LEGAL_YEAR.year}, em vigor desde{" "}
-            {formatIsoDate(CURRENT_LEGAL_YEAR.effectiveFrom)} ·{" "}
+            Tabelas usadas nos cálculos: INSS pela{" "}
+            <a href={sources.rgpsBrackets[0].url} target="_blank" rel="noreferrer" className={SOURCE_LINK_CLASSES}>
+              {sources.rgpsBrackets[0].norm}
+            </a>
+            , em vigor desde {formatIsoDate(sources.rgpsBrackets[0].effectiveFrom)}. IRRF pela{" "}
+            <a href={sources.incomeTaxBrackets[0].url} target="_blank" rel="noreferrer" className={SOURCE_LINK_CLASSES}>
+              {sources.incomeTaxBrackets[0].norm}
+            </a>
+            , em vigor desde {formatIsoDate(sources.incomeTaxBrackets[0].effectiveFrom)}. RPPS federal: as alíquotas vêm
+            da{" "}
             <a
-              href={CURRENT_LEGAL_YEAR.sourceUrl}
+              href={sources.rppsFederalBrackets[0].url}
               target="_blank"
               rel="noreferrer"
-              className="underline underline-offset-2 hover:text-accent-ink"
+              className={SOURCE_LINK_CLASSES}
             >
-              {CURRENT_LEGAL_YEAR.source}
+              {sources.rppsFederalBrackets[0].norm}
             </a>
+            , e as faixas de {CURRENT_LEGAL_YEAR.year}, do{" "}
+            <a
+              href={sources.rppsFederalBrackets[1].url}
+              target="_blank"
+              rel="noreferrer"
+              className={SOURCE_LINK_CLASSES}
+            >
+              Anexo III da Portaria nº 13/2026
+            </a>
+            , em vigor desde {formatIsoDate(sources.rppsFederalBrackets[1].effectiveFrom)}.
           </p>
+          {activeView === "work" ? (
+            <p>
+              Horas extras noturnas:{" "}
+              <a href={NIGHT_OVERTIME_SOURCE.url} target="_blank" rel="noreferrer" className={SOURCE_LINK_CLASSES}>
+                {NIGHT_OVERTIME_SOURCE.norm}
+              </a>
+              .
+            </p>
+          ) : null}
         </footer>
       </div>
     </>

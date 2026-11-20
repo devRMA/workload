@@ -87,7 +87,8 @@ Route-level overrides, `app/custo-da-hora/page.tsx`.
 | `footer.privacy` | Tudo o que você digita fica salvo apenas neste navegador. Nada é enviado para nenhum servidor, e ninguém além de você vê seus horários ou seu salário. | 150 | `PRODUCT.md` §5, "offline and private" |
 | `footer.estimate` | Os valores são uma estimativa para você se organizar — não substituem seu holerite nem valem como registro oficial de ponto, e nada aqui é orientação jurídica ou contábil. | 171 | `legal.md` § Disclaimers, row 1 |
 | `footer.omissions` | Não entram na conta: FGTS, benefícios e adicionais da sua convenção coletiva, o 13º salário e o terço de férias, a incidência de INSS e IRRF sobre as horas extras, a prorrogação da jornada noturna depois das 5h (Súmula 60 do TST), feriados, o valor do intervalo suprimido e o adicional de insalubridade ou periculosidade. O regime Estatutário usa a tabela do RPPS federal e não vale para servidor estadual ou municipal. | 419 | `legal.md` § Out of scope — every row a user could mistake for a promise |
-| `footer.tables` | Tabelas de INSS e IRRF de 2026, em vigor desde 01/01/2026 · Portaria Interministerial MPS/MF nº 13, de 09/01/2026 | 113 | `legal.md` R4, R5, R6. Year, date and source all interpolated from `CURRENT_LEGAL_YEAR`; the source is the link text, href `sourceUrl` |
+| `footer.tables` | Tabelas usadas nos cálculos: INSS pela Portaria Interministerial MPS/MF nº 13, de 09/01/2026, Anexo II, em vigor desde 01/01/2026. IRRF pela Lei nº 11.482/2007, art. 1º, XII, na redação da Lei nº 15.191/2025, em vigor desde 01/05/2025. RPPS federal: as alíquotas vêm da Emenda Constitucional nº 103/2019, art. 11, e as faixas de 2026, do Anexo III da Portaria nº 13/2026, em vigor desde 01/01/2026. | 398 | `legal.md` R4, R5, R6. Use `CURRENT_LEGAL_YEAR.sources`, one link per cited norm. |
+| `footer.nightOvertime` | Horas extras noturnas: Tema 288 do TST (OJ 97). | 47 | `legal.md` R8. Jornada only. Link text and href from `NIGHT_OVERTIME_SOURCE` in `lib/legal-tables.ts`. |
 
 ### Jornada — the form
 
@@ -182,6 +183,7 @@ Route-level overrides, `app/custo-da-hora/page.tsx`.
 | `day.tier.first` | Extra 50% | 9 | built as `Extra ${firstTierRate}%`; `legal.md` R8 |
 | `day.tier.extra` | Extra 100% | 10 | built as `Extra ${extraTierRate}%`; `legal.md` R8 |
 | `day.night.premium` | Adicional noturno 20% | 21 | `legal.md` R1 — renders currency, not a duration |
+| `day.nightOvertime.note` | A hora extra feita à noite é calculada sobre a hora já com o adicional noturno. | 79 | `legal.md` R8. Show after the overtime and night premium values when a gross hourly rate and credited night overtime are both present. |
 | `day.rest.label` | DSR sobre os extras | 19 | `legal.md` R9 |
 | `day.rest.note` | O DSR (Súmula 172 do TST) supõe que estes extras se repitam em todos os dias úteis do mês e conta só os domingos — feriados não entram. | 135 | `legal.md` R9 and § Disclaimers — sits directly under the DSR line |
 | `day.rate.cta` | Quer ver quanto isso vale em reais? Calcule o valor da sua hora → | 65 | shown only when no gross hourly rate is stored; links to `/custo-da-hora` |
@@ -308,7 +310,7 @@ Route-level overrides, `app/custo-da-hora/page.tsx`.
 | Key | pt-BR | Chars | Trace |
 |---|---|---|---|
 | `consent.banner.title` | Respeitamos sua privacidade | 27 | — |
-| `consent.banner.body` | Usamos cookies para melhorar sua experiência e entender como você usa o WorkLoad. Você pode optar por desativar a telemetria a qualquer momento. | 144 | `PRODUCT.md` §5 |
+| `consent.banner.body` | Ao aceitar tudo, você permite cookies de telemetria (Google Analytics) e de anúncios (Google AdSense). Em Configurar, você pode salvar suas preferências sem anúncios. | 166 | `PRODUCT.md` §5 and §8 |
 | `consent.banner.settings` | Configurar | 10 | — |
 | `consent.banner.reject` | Recusar | 7 | — |
 | `consent.banner.accept` | Aceitar Tudo | 12 | — |

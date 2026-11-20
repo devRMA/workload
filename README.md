@@ -51,7 +51,7 @@ Existem dezenas de calculadoras de hora extra em português. Quase nenhuma diz q
 
 **Adicional noturno** — CLT art. 73: o acréscimo de 20% *e* a hora reduzida de 52min30s, entre 22h e 5h. Os dois institutos são cumulativos, e os dois entram na conta.
 
-**Horas extras** — sobre a hora **bruta**, como manda o art. 59, §1º. O piso é 50%; o degrau de 100% acima de 2h vem da convenção coletiva, não da lei, e o app diz isso.
+**Horas extras** — sobre a hora **bruta**, como manda o art. 59, §1º. O piso é 50%; o degrau de 100% acima de 2h vem da convenção coletiva, não da lei, e o app diz isso. Entre 22h e 5h, a base da hora extra inclui o adicional noturno (Tema 288 do TST, OJ 97).
 
 **DSR sobre horas extras** — Lei 605/49 art. 7º, §2º e Súmula 172 do TST, com a premissa de feriados declarada na tela.
 

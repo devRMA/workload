@@ -97,6 +97,7 @@ export function WorkCalculator() {
     setExitOverride,
     isManualExit,
     setIsManualExit,
+    recordExit,
     suggestedExit,
     displayExit,
     currentTime,
@@ -159,11 +160,6 @@ export function WorkCalculator() {
     });
   };
 
-  const handleExitChange = (value: string) => {
-    setExitOverride(value);
-    setIsManualExit(true);
-  };
-
   const handleReset = () => {
     resetDefaults();
     safeGAEvent("reset_defaults");
@@ -187,7 +183,7 @@ export function WorkCalculator() {
             lunchEnd={lunchEnd}
             onLunchEndChange={setLunchEnd}
             exitValue={isManualExit ? exitOverride : suggestedExit}
-            onExitChange={handleExitChange}
+            onExitChange={recordExit}
             isManualExit={isManualExit}
             onManualExitChange={handleManualToggle}
             onReset={handleReset}
@@ -200,6 +196,8 @@ export function WorkCalculator() {
               balanceMinutes={stats.balance}
               firstTierMinutes={stats.firstTierMinutes}
               extraTierMinutes={stats.extraTierMinutes}
+              firstTierNightMinutes={stats.firstTierNightMinutes}
+              extraTierNightMinutes={stats.extraTierNightMinutes}
               nightMinutes={stats.nightMinutes}
               firstTierRate={firstTierRate}
               extraTierRate={extraTierRate}

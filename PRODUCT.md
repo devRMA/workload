@@ -111,6 +111,7 @@ What the product can actually back up today, and therefore what it may claim:
 | The 2026 INSS/RGPS and federal RPPS tables are correct | Portaria Interministerial MPS/MF nº 13, de 09/01/2026 — verified bracket by bracket against `lib/legal-tables.ts` |
 | The 2026 IRRF table and the simplified deduction are correct | Lei 15.270/2025; the reduction applies to gross income, which most generic calculators get wrong |
 | The night-shift reduced hour is correct | CLT art. 73 §1º — 52min30s, window 22:00–05:00 |
+| The night premium enters the overtime base for work within 22:00–05:00 | TST IRR Tema 288 (OJ 97), the matched A/B controls in `.specs/0016-night-overtime-base/reports/legal.md` |
 | 100% unit coverage | `vitest.config.ts` fails the run below the threshold; it is enforced, not asserted |
 | Works at 390 / 1440 / 2560 / 3840 | Playwright asserts no horizontal overflow and no control off-viewport at each |
 | The app computes a **single day's** jornada: horas extras, adicional noturno and the saldo of that day | `components/organisms/day-summary.tsx` renders `stats.balance` for one day; nothing in `lib/` carries a balance across days |

@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useCurrentTime } from "@/hooks/use-current-time";
 import { buildDayBreakdown } from "@/lib/day-breakdown";
 import { findJourneyIssue } from "@/lib/journey";
+import { splitNightOvertimeByTier } from "@/lib/night-shift";
 import { DAILY_MINUTES_KEY, readStoredFlag, readStoredNumber } from "@/lib/storage";
 
 const MINUTES_PER_HOUR = 60;
@@ -21,7 +22,8 @@ const STORAGE_KEYS = {
   lunchStart: "lunchStart",
   lunchEnd: "lunchEnd",
   exitOverride: "exitOverride",
-  lastExit: "lastExit",
+  enteredExit: "enteredExit",
+  previousEnteredExit: "previousEnteredExit",
   isManualExit: "isManualExit",
   firstTierRate: "firstTierRate",
   extraTierRate: "extraTierRate",
@@ -32,6 +34,8 @@ export interface WorkStats {
   nightMinutes: number;
   firstTierMinutes: number;
   extraTierMinutes: number;
+  firstTierNightMinutes: number;
+  extraTierNightMinutes: number;
   totalWorked: number;
 }
 
@@ -61,13 +65,27 @@ export function calculateWorkStats(
   workMinutes: number,
 ): WorkStats {
   const breakdown = breakdownOf(entry, lunchStart, lunchEnd, displayExit, workMinutes);
-  const dayOfWeek = new Date(entry).getDay();
+  const entryDate = new Date(entry);
+  const dayOfWeek = entryDate.getDay();
+  const tiers = splitOvertime(breakdown.overtimeMinutes, dayOfWeek === 0 || dayOfWeek === 6);
+  const nightTiers =
+    breakdown.overtimeMinutes > 0
+      ? splitNightOvertimeByTier({
+          entryDate,
+          lunchStartDate: new Date(lunchStart),
+          lunchEndDate: new Date(lunchEnd),
+          exitDate: new Date(displayExit),
+          expectedMinutes: breakdown.expectedMinutes,
+          firstTierMinutes: tiers.firstTierMinutes,
+        })
+      : { firstTierNightMinutes: 0, extraTierNightMinutes: 0 };
 
   return {
     balance: breakdown.workedMinutes - breakdown.expectedMinutes,
     nightMinutes: breakdown.nightMinutes,
     totalWorked: breakdown.workedMinutes,
-    ...splitOvertime(breakdown.overtimeMinutes, dayOfWeek === 0 || dayOfWeek === 6),
+    ...tiers,
+    ...nightTiers,
   };
 }
 
@@ -137,6 +155,7 @@ export function useWorkCalculator() {
   const [lunchStart, setLunchStart] = useState(() => todayAt("12:00"));
   const [lunchEnd, setLunchEnd] = useState(() => todayAt("13:00"));
   const [exitOverride, setExitOverride] = useState("");
+  const [enteredExit, setEnteredExit] = useState<string | null>(null);
   const [isManualExit, setIsManualExit] = useState(false);
   const [previousExit, setPreviousExit] = useState<string | null>(null);
   const [isRestored, setIsRestored] = useState(false);
@@ -155,8 +174,15 @@ export function useWorkCalculator() {
     setExitOverride((current) => shiftedByDays(readStoredTimestamp(STORAGE_KEYS.exitOverride), dayShift, current));
     setIsManualExit(readStoredFlag(STORAGE_KEYS.isManualExit, false));
 
-    const storedLastExit = readStoredTimestamp(STORAGE_KEYS.lastExit);
-    setPreviousExit(dayShift > 0 ? storedLastExit : null);
+    const storedEnteredExit = readStoredTimestamp(STORAGE_KEYS.enteredExit);
+    if (dayShift > 0) {
+      setPreviousExit(storedEnteredExit);
+      if (storedEnteredExit === null) localStorage.removeItem(STORAGE_KEYS.previousEnteredExit);
+      else localStorage.setItem(STORAGE_KEYS.previousEnteredExit, storedEnteredExit);
+    } else {
+      setEnteredExit(storedEnteredExit);
+      setPreviousExit(readStoredTimestamp(STORAGE_KEYS.previousEnteredExit));
+    }
     setIsRestored(true);
   }, []);
 
@@ -182,13 +208,11 @@ export function useWorkCalculator() {
 
   const countedExit = isManualExit || currentTime === null ? displayExit : latestOf(displayExit, currentTime);
 
-  useEffect(() => {
-    if (!isRestored || displayExit === "") return;
-    localStorage.setItem(STORAGE_KEYS.lastExit, displayExit);
-  }, [isRestored, displayExit]);
-
   const minutesSincePreviousShift = useMemo(
-    () => (previousExit === null ? null : differenceInMinutes(new Date(entry), new Date(previousExit))),
+    () =>
+      previousExit === null || new Date(previousExit) > new Date(entry)
+        ? null
+        : differenceInMinutes(new Date(entry), new Date(previousExit)),
     [previousExit, entry],
   );
 
@@ -202,6 +226,27 @@ export function useWorkCalculator() {
     [entry, lunchStart, lunchEnd, displayExit],
   );
 
+  useEffect(() => {
+    if (!isRestored) return;
+
+    if (isManualExit && enteredExit === displayExit && issue === null) {
+      localStorage.setItem(STORAGE_KEYS.enteredExit, displayExit);
+    } else {
+      localStorage.removeItem(STORAGE_KEYS.enteredExit);
+    }
+  }, [isRestored, isManualExit, enteredExit, displayExit, issue]);
+
+  const recordExit = (value: string) => {
+    setExitOverride(value);
+    setEnteredExit(new Date(value) <= new Date() ? value : null);
+    setIsManualExit(true);
+  };
+
+  const changeExitMode = (manual: boolean) => {
+    if (!manual) setEnteredExit(null);
+    setIsManualExit(manual);
+  };
+
   const resetDefaults = () => {
     setWorkMinutes(DEFAULT_WORK_MINUTES);
     setFirstTierRate(DEFAULT_FIRST_TIER_RATE);
@@ -209,7 +254,7 @@ export function useWorkCalculator() {
     setEntry(todayAt("08:00"));
     setLunchStart(todayAt("12:00"));
     setLunchEnd(todayAt("13:00"));
-    setIsManualExit(false);
+    changeExitMode(false);
     setExitOverride("");
   };
 
@@ -229,7 +274,8 @@ export function useWorkCalculator() {
     exitOverride,
     setExitOverride,
     isManualExit,
-    setIsManualExit,
+    setIsManualExit: changeExitMode,
+    recordExit,
     suggestedExit,
     displayExit,
     currentTime,
