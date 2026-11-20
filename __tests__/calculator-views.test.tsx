@@ -47,12 +47,13 @@ describe("CalculatorViews", () => {
     expect(screen.getByRole("link", { name: "Jornada" })).not.toHaveAttribute("aria-current");
   });
 
-  it("renders the panel matching the active view", async () => {
+  it("replaces the active panel without waiting for the old one", () => {
     const { rerender } = render(<CalculatorViews activeView="work" />);
     expect(screen.getByText("Painel da jornada")).toBeInTheDocument();
 
     rerender(<CalculatorViews activeView="salary" />);
-    expect(await screen.findByText("Painel do custo da hora")).toBeInTheDocument();
+    expect(screen.getByText("Painel do custo da hora")).toBeInTheDocument();
+    expect(screen.queryByText("Painel da jornada")).not.toBeInTheDocument();
   });
 
   it("tracks the tab the visitor moves to", async () => {

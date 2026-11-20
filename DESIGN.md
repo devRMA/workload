@@ -334,7 +334,7 @@ These four are the exception to the one-accent rule, and each is licensed becaus
 - **Hairline** (`--color-line`, light `#e0e2e6` / dark `#2b2e35`): The default border of a card or a non-interactive container. Structural only.
 - **Hairline Faint** (`--color-line-faint`, light `#ebedf0` / dark `#23262c`): Internal dividers between sections of one card.
 - **Control Edge** (`--color-line-strong`, light `#888c95` / dark `#6a707a`): The border of anything the user can type into or click. Light: **3.36:1** on surface, **3.05:1** on sunken, **3.22:1** on canvas. Dark: **3.45:1** on surface, **3.08:1** on raised, **3.63:1** on sunken, **3.78:1** on canvas — it exists specifically to satisfy WCAG 1.4.11, which the predecessor's `border-neutral-200` (**1.24:1**) failed. Both values were corrected from a planned `#8c919a` (2.88:1 on sunken) and `#666b76` (2.89:1 on raised), each below the 3:1 floor on the sunken panels and raised modals that inputs and outline buttons actually sit on.
-- **Chrome** (`--color-chrome`, light `rgb(255 255 255 / 0.72)` / dark `rgb(24 27 33 / 0.72)`): The translucent base of the header and the floating tab bar, always paired with `--blur-chrome`.
+- **Glass chrome** (`glass-chrome`): The raised surface with 26% transparency where blur is supported and permitted. Reserved for the header and dock.
 - **Scrim** (`--color-scrim`, `rgb(15 17 22 / 0.6)` in both themes): The modal backdrop. Theme-invariant — a dimming layer is a dimming layer.
 - **Edge Highlight** (`--color-edge-highlight`, light `rgb(255 255 255 / 0)` / dark `rgb(255 255 255 / 0.06)`): A 1px inner top border on raised dark surfaces — the light catching the edge of a real material. Zero in light mode, where shadow does the same job.
 - **Focus** (`--color-focus`, light `#2a62d1` / dark `#91b6f9`): The focus ring. It is cobalt in light and the lighter Cobalt Ink in dark, so it clears 3:1 against every surface in both themes.
@@ -342,7 +342,7 @@ These four are the exception to the one-accent rule, and each is licensed becaus
 
 ### Named Rules
 
-**The One Mark Rule.** Cobalt appears on at most **three** elements in any viewport, and each of them is something the user can act on. If a fourth cobalt thing appears, one of them was decoration — delete it.
+**The One Mark Rule.** At most **three** foreground elements per viewport use cobalt as an interactive signal. The first-fold optical field is the sole canvas exception; it repeats the same hue and never signals an action.
 
 **The Colour-Means-a-Number Rule.** Green, red, amber and violet are reserved for values. A green button, an amber card background, a red heading with no red number under it — all forbidden. If you cannot name the quantity the colour encodes, use a neutral.
 
@@ -400,7 +400,7 @@ The spatial model is a single column that earns a second one only when there is 
 
 | Width | Columns | Root size | Gutter | Card padding | Notes |
 |---|---|---|---|---|---|
-| **390** (phone) | 1, hero first | 16px | 16px | 24px | Bottom tab bar floats above `env(safe-area-inset-bottom)`; content reserves `pb-16` (64px) below. Form fields are full width; date and time stack. |
+| **390** (phone) | 1, hero first | 16px | 16px | 24px | The dock clears the bottom safe area; content reserves 6rem plus that inset. Form fields are full width; date and time stack. |
 | **768** (tablet) | 1, hero first | 16px | 24px | 32px | Paired fields go two-up at `sm` (640px). Header shows the live clock. |
 | **1440** (laptop) | 12 → 7/5 | 16px | 32px | 32px | Container 1280px. Hero sticky. This is the width the system is drawn at. |
 | **2560** (QHD) | 12 → 7/5 | 18px | **36px** | **36px** | Container **1800px**. **The layout does not change — the whole system scales**, because every value is in `rem`. The gutter and the card padding are the same `px-8`/`p-8` they are at 1440; they measure 36px because the root is 18px, not because anything was redeclared. |
@@ -415,6 +415,7 @@ Root scaling is the mechanism: `html` is 16px, 17px from 1920px, 18px from 2560p
 ### Named Rules
 
 **The Answer-First Rule.** On any viewport under 1024px, the hero panel is the first thing in the DOM order and the first thing on screen. Inputs come after the answer they produce.
+On desktop the form is visually on the left. Browsers supporting CSS `reading-flow` follow that visual order; other browsers retain the result-first source order.
 
 **The Eight Steps Rule.** If a gap is not one of `0.5, 2, 3, 4, 6, 8, 12, 16` — 2, 8, 12, 16, 24, 32, 48, 64 px at a 16px root — it is wrong. There is no `p-5` and there is no `p-10`.
 
@@ -437,9 +438,10 @@ Shadows are a **response to state**, not a property of an object. A card at rest
 
 ### Materials
 
-- **`--blur-chrome`** `20px` and **`--saturate-chrome`** `180%`: The header and the floating tab bar are `--color-chrome` + `backdrop-filter: blur(var(--blur-chrome)) saturate(var(--saturate-chrome))`. Content scrolls under them; they never own an opaque strip.
+- **Glass chrome:** Only the floating header and dock use `glass-chrome`: 74% raised surface, `--blur-chrome` (32px), `--saturate-chrome` (155%), and a 1px directional specular rim masked to the border. On phones the dock can also displace the live backdrop through a bounded SVG filter followed by 20px blur. Engines that do not composite that displacement still blur. Text and controls are painted in front of the filter. Forms stay opaque. Without backdrop blur, with reduced transparency, or with increased contrast, the chrome uses the opaque raised surface.
+- **Optical field:** One cobalt light field is clipped to the opening section. Below `md` its shape follows the first 24rem of document scroll in either direction, without custom scroll handlers. It stays static under reduced motion and is hidden under increased contrast or reduced transparency. It never changes layout or intercepts input.
 - **`--blur-scrim`** `8px`: Applied to the modal backdrop together with `--color-scrim`.
-- Under `prefers-reduced-transparency: reduce`, `--color-chrome` becomes fully opaque and both blurs become `0px`. Under `prefers-contrast: more`, `--color-line` resolves to `--color-line-strong` and chrome becomes opaque.
+- Under `prefers-reduced-transparency: reduce`, the chrome is opaque and blur is disabled. Under `prefers-contrast: more`, the chrome is opaque and `--color-line` resolves to `--color-line-strong`.
 
 ### Named Rules
 
@@ -504,20 +506,20 @@ The journey settings panel is one `grid grid-cols-1 sm:grid-cols-2 gap-lg`: the 
 - **Corner:** `--radius-xl` (28px). **Background:** `--color-surface`. **Border:** 1px `--color-line`. **Shadow:** `--shadow-card` in light, none in dark. **Padding:** 24px below `sm`, 32px from `sm`.
 - Internal sections are separated by a 1px `--color-line-faint` rule with 24px (`space-y-6`) above and below. Recessed sub-panels (journey settings, tax details) are `--color-surface-sunken` at `--radius-lg`.
 
-### Hero panel — `components/molecules/hero-panel.tsx`
+### Hero panel — `components/organisms/hero-panel.tsx`
 
 The signature component: a saturated plane carrying the single number the user came for.
 
-- **Corner** `--radius-2xl` (32px). **Padding** 32px, 48px from `lg`. **Shadow** `--shadow-accent`. **Text** `--color-ink-onfill` throughout, with secondary text at 90% opacity — corrected from a planned 80%, which measured **4.18:1** over `--color-accent`, below 4.5:1; at 90% it is **4.85:1** on accent and **6.75:1** on `--color-positive-deep`. Applied to the exit description and the ring's status overline in `work-calculator.tsx`, and the supporting rate line in `salary-calculator.tsx`.
-- **Fill** is semantic, not decorative: `--color-positive-deep` when the journey is on track, `--color-negative-deep` when the user is in time debt, `--color-accent` on the salary view. Three fills, three meanings.
+- **Corner** `--radius-2xl` (32px). **Padding** 24px, 32px from `sm`, 48px from `lg`. **Shadow** `--shadow-accent`. **Text** `--color-ink-onfill` throughout, with supporting text at 90% opacity.
+- **Fill** is opaque and semantic: a local enamel gradient joins `--color-result-positive` to `--color-result-positive-base` for jornada, `--color-result-negative` to `--color-negative-deep` for time debt, and `--color-result-accent` to `--color-accent` for salary.
+- On stacked layouts, “Editar horários” and “Editar salário” take keyboard focus to the corresponding form heading, below the floating header.
 - The value is `--text-numeral`, container-query sized against the panel, tabular and slashed-zero.
 - A value with no digit renders instead at `--text-title`, wrapping to at most two lines, without the `numeric` utility — the statement mode for a legally bound sentence like "Sem carga horária" (`legal.md` S6).
 - The two decorative blurred circles the predecessor layered inside it are removed. A gauge does not have bokeh.
-- Tone changes cross-fade over `--duration-slow` (320ms), not 700ms.
 
 ### Progress ring — `components/atoms/progress-ring.tsx`
 
-Track `--color-ink-onfill` at 20%; the worked arc `--color-ink-onfill` solid; the overtime arc `--color-overtime-arc`, not `--color-overtime` — against the hero fills the ring sits on, `--color-overtime` drops to **2.43:1** / **2.54:1**, below the 3:1 graphical floor, so a dedicated theme-invariant token (`#ffc563`) carries the arc instead: **5.07:1** against `--color-positive-deep`, **5.31:1** against `--color-negative-deep`, **3.12:1** / **3.55:1** against the `--color-ink-onfill/20` track. The dash offset animates over `--duration-data` (600ms) with `--ease-out`, and under reduced motion it jumps to its value.
+The centered ring surrounds the countdown above the larger exit time. Its diameter follows the mobile viewport height within 6–8rem, then becomes 9rem at `sm` and 11rem at `lg`. The dial has a `bg-scrim/25` base. Track: `--color-ink-onfill/16`; worked arc: `--color-ink-onfill`; overtime arc: `--color-overtime-arc`. CSS transitions the dash offset over `--duration-data` (600ms) with `--ease-out`; under reduced motion it jumps to its value. The visual dial is hidden from assistive technology; a separate polite live region announces the same status as text.
 
 ### Segmented controls — `period-selector.tsx`, the AUTO/MANUAL switch in `journey-form.tsx`
 
@@ -543,8 +545,8 @@ Track `--color-ink-onfill` at 20%; the worked arc `--color-ink-onfill` solid; th
 
 ### Navigation — `app-header.tsx`, the tab bar in `calculator-views.tsx`
 
-- **Header:** `--header-height` tall — the token itself steps from 4rem (64px) to 5rem (80px) at `md` (48rem) in the base layer, so the header's own height, the content's top padding, and the sticky aside offset (`calc(var(--header-height) + var(--spacing) * 8)`) all derive from that one value instead of drifting independently — `--color-chrome` + `--blur-chrome`, bottom edge is a `--color-line` hairline that fades in only once the page has scrolled — a scroll edge effect, not a permanent rule. The logo mark is a 40px `--radius-md` `--color-accent` tile. The live clock is `--text-label` tabular in `--color-ink-muted`.
-- **Tab bar:** floats at the bottom, `--color-chrome` + `--blur-chrome`, `--radius-lg` track, `--shadow-raised`, sitting above `env(safe-area-inset-bottom)`. Active tab is the Primary button; inactive is Ghost. `aria-current="page"` on the active one.
+- **Header:** a floating frame with a hairline and `--radius-xl`, aligned to the page gutters. Its 4rem height (5rem from `md`) still drives the content and sticky-aside offsets. The logo is a 40px accent tile; the live clock uses tabular digits in primary ink for contrast on glass.
+- **Dock:** a floating pill above the safe area, with Primary and Ghost links for active and inactive states. Labels sit beneath the icons on phones and beside them from `sm`. The active link carries `aria-current="page"`. The route changes without waiting for an exit animation; the links provide press feedback.
 
 ### Modals — `components/atoms/modal-dialog.tsx`
 
@@ -575,13 +577,13 @@ Height and opacity animate together over `--duration-base` with `--ease-out`. Th
 
 Motion in WorkLoad exists to preserve continuity, never to decorate. The user opens this app for eight seconds; anything that delays the answer is a defect.
 
-**Durations.** `--duration-instant` 100ms (press feedback), `--duration-fast` 160ms (hover, colour, border), `--duration-base` 220ms (collapse, tab change, segment slide), `--duration-slow` 320ms (modal, sheet, hero tone change), `--duration-data` 600ms (the progress ring sweep — the one long animation, because it represents the passage of a working day).
+**Durations.** `--duration-instant` 100ms (press feedback), `--duration-fast` 160ms (hover, colour, border), `--duration-base` 220ms (collapse, segment slide), `--duration-slow` 320ms (modal and sheet), `--duration-data` 600ms (the progress ring sweep — the one long animation, because it represents the passage of a working day).
 
 **Easing.** `--ease-out` `cubic-bezier(0.23, 1, 0.32, 1)` for anything entering or responding to a press; `--ease-in-out` `cubic-bezier(0.77, 0, 0.175, 1)` for something moving across the screen; `--ease-standard` `cubic-bezier(0.4, 0, 0.2, 1)` for colour and opacity. **`ease-in` is never used** — it withholds movement at exactly the moment the user is watching.
 
-**Springs** (for `motion` components, which must be interruptible): the default UI spring is `{ type: "spring", bounce: 0, duration: 0.35 }` — critically damped, no overshoot. Bounce is permitted only where a gesture carried momentum: `{ bounce: 0.2, duration: 0.4 }`. The segmented control's selection pill, the view transition between calculators, and the tab bar all use the default spring with a shared `layoutId` so an interrupted change reverses from its current position rather than snapping.
+**Springs** (for `motion` components, which must be interruptible): the default UI spring is `{ type: "spring", bounce: 0, duration: 0.35 }` — critically damped, no overshoot. Bounce is permitted only where a gesture carried momentum: `{ bounce: 0.2, duration: 0.4 }`. The segmented control uses a shared `layoutId` for its selection pill. Calculator navigation does not animate the route.
 
-**What animates:** entering and exiting surfaces (modal, cookie banner, alert, collapsible panel), the selected pill in a segmented control, the disclosure chevron, press feedback on every control, the progress ring's dash offset, and the hero's fill when its meaning changes.
+**What animates:** entering and exiting surfaces (modal, cookie banner, alert, collapsible panel), the selected pill in a segmented control, the disclosure chevron, press feedback, and the progress ring's dash offset.
 
 **What must never animate:**
 
@@ -589,10 +591,10 @@ Motion in WorkLoad exists to preserve continuity, never to decorate. The user op
 - **Any figure in the day summary or a stat tile.** The user is comparing numbers; a number that is mid-tween is a number they cannot trust. Numbers cross-fade at most, and only when the whole panel does.
 - **The hero's numeral.** It changes as the user types. It must be instantaneous.
 - **Theme changes.** `next-themes` already runs with `disableTransitionOnChange`; the predecessor's 500ms background transition on `main` fights it.
-- **Page or card background gradients.** There are none.
+- **Result enamel.** The gradient is static. The decorative opening field is the only scroll-linked layer; its transform never applies to controls or data.
 - **Anything triggered by a keystroke.** Typing into a field must never queue an animation.
 
-**Reduced motion.** `prefers-reduced-motion: reduce` does not mean *no feedback* — it means no vestibular motion. The CSS reset does **not** apply a universal `transform: none`: a blanket transform reset cannot distinguish *motion* from *layout*, and this product uses `transform` for both — `-translate-x-1/2` on the floating tab bar, `-translate-y-1/2` on the input icon, `-rotate-90` on the progress ring, `rotate-180` on every chevron. A universal reset would snap the tab bar to the wrong half of the viewport for exactly the users who asked for less motion, so **it is forbidden**. Instead, vestibular motion is suppressed per state, with the neutralizer bound to the same state — `active:scale-[0.97]` becomes `motion-reduce:active:scale-100` on `button.tsx` and `copy-button.tsx` — plus a scoped reset that zeroes `animation-duration` and `animation-iteration-count`, clamps every `transition-property` to `opacity, color, background-color, border-color, outline-color`, and shortens `transition-duration` to `--duration-fast`. That scoped reset is CSS-only, so it never reaches an animation driven by `motion`: `MotionConfig reducedMotion="user"` disables spring layout animations for those components, and each Motion-driven animation that still needs a fallback — the progress ring jumping straight to its value instead of sweeping over `--duration-data` — is gated directly by the `useReducedMotion` hook rather than by the CSS reset, which the JS-driven transform never passes through. Opacity cross-fades are kept because they explain that something changed. The global `0.01ms` blanket reset the predecessor ships is replaced by this scoped version, which keeps comprehension aids alive.
+**Reduced motion.** `prefers-reduced-motion: reduce` does not mean *no feedback* — it means no vestibular motion. The CSS reset does **not** apply a universal `transform: none`: a blanket transform reset cannot distinguish *motion* from *layout*, and this product uses `transform` for both — `-translate-x-1/2` on the floating tab bar, `-translate-y-1/2` on the input icon, `-rotate-90` on the progress ring, `rotate-180` on every chevron. A universal reset would snap the tab bar to the wrong half of the viewport for exactly the users who asked for less motion, so **it is forbidden**. Instead, vestibular motion is suppressed per state, with the neutralizer bound to the same state — `active:scale-[0.97]` becomes `motion-reduce:active:scale-100` on `button.tsx` and `copy-button.tsx` — plus a scoped reset that zeroes `animation-duration` and `animation-iteration-count`, clamps every `transition-property` to `opacity, color, background-color, border-color, outline-color`, and shortens `transition-duration` to `--duration-fast`. That scoped reset is CSS-only, so it never reaches an animation driven by `motion`: `MotionConfig reducedMotion="user"` disables spring layout animations for those components,; the progress ring now transitions in CSS, so the same property clamp makes it update without a sweep. Opacity cross-fades are kept because they explain that something changed. The global `0.01ms` blanket reset the predecessor ships is replaced by this scoped version, which keeps comprehension aids alive.
 
 ### Named Rules
 
@@ -635,7 +637,7 @@ This is the floor, not the target. A number nobody can read is a number that doe
 
 ### Don't:
 
-- **Don't** introduce a second accent hue, a second red, or a gradient. `indigo`, `blue`, `rose`, `emerald`, `sky` and `orange` as raw utilities do not exist in this codebase any more.
+- **Don't** introduce a second accent hue or add gradients beyond the semantic result fills, glass highlights and opening optical field. `indigo`, `blue`, `rose`, `emerald`, `sky` and `orange` as raw utilities do not exist in this codebase any more.
 - **Don't** write a colour, radius, shadow, duration or type value inline. Every one of them is a token in `app/globals.css`, and a `dark:` twin on a colour utility is a sign the token is missing.
 - **Don't** use `font-black` or `font-extrabold`. 700 is the ceiling.
 - **Don't** use `font-mono`. Atkinson's tabular figures are the numeric face.

@@ -12,6 +12,7 @@ import {
 } from "@tabler/icons-react";
 import { useState } from "react";
 import type { JourneyIssue } from "@/lib/journey";
+import { cn } from "@/lib/utils";
 import { AlertBanner } from "../atoms/alert-banner";
 import { Button } from "../atoms/button";
 import { CollapsiblePanel } from "../atoms/collapsible-panel";
@@ -77,26 +78,39 @@ export function JourneyForm({
   return (
     <div className="bg-surface rounded-xl p-6 sm:p-8 shadow-card border border-line">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-        <div className="flex items-start gap-4">
-          <div>
-            <h2 className="text-title">Sua Jornada</h2>
-            <p className="text-body-sm text-ink-muted text-pretty">
-              Informe seus horários para ver quando pode sair e quanto já trabalhou.
-            </p>
+        <div className="flex-1 space-y-2">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h2
+              id="editar-horarios"
+              tabIndex={-1}
+              className="text-title scroll-mt-[calc(var(--header-height)+var(--spacing)*6)]"
+            >
+              Sua Jornada
+            </h2>
+            <button
+              type="button"
+              onClick={() => setShowSettings(!showSettings)}
+              aria-label="Configurações da Jornada"
+              aria-expanded={showSettings}
+              aria-controls={SETTINGS_PANEL_ID}
+              className={cn(
+                "flex min-h-11 items-center gap-2 rounded-md px-3 text-label transition-colors duration-(--duration-fast) ease-out ring-focus",
+                showSettings ? "bg-accent-soft text-accent-ink" : "text-ink-muted hover:bg-surface-sunken",
+              )}
+            >
+              <IconSettings
+                className={cn(
+                  "w-5 h-5 transition-[rotate] duration-(--duration-fast) ease-out motion-reduce:rotate-0",
+                  showSettings && "rotate-90",
+                )}
+                aria-hidden="true"
+              />
+              Configurações
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => setShowSettings(!showSettings)}
-            aria-label="Configurações da Jornada"
-            aria-expanded={showSettings}
-            aria-controls={SETTINGS_PANEL_ID}
-            className={`rounded-md p-3 transition-colors duration-(--duration-fast) ease-standard ring-focus ${showSettings ? "bg-accent-soft text-accent-ink" : "text-ink-muted hover:bg-surface-sunken"}`}
-          >
-            <IconSettings
-              className={`w-5 h-5 transition-transform duration-(--duration-base) ease-standard ${showSettings ? "rotate-90" : ""}`}
-              aria-hidden="true"
-            />
-          </button>
+          <p className="text-body-sm text-ink-muted text-pretty">
+            Informe seus horários para ver quando pode sair e quanto já trabalhou.
+          </p>
         </div>
         <div className="space-y-2 sm:text-right">
           <fieldset className="grid grid-cols-2 gap-1 bg-surface-sunken p-1.5 rounded-lg sm:ml-auto sm:inline-grid sm:w-fit">

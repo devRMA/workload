@@ -1,13 +1,9 @@
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { ProgressRing } from "@/components/atoms/progress-ring";
 
 function renderRing(progressPercent: number, overtimePercent = 0) {
-  const { container } = render(
-    <ProgressRing progressPercent={progressPercent} overtimePercent={overtimePercent}>
-      <span>faltam</span>
-    </ProgressRing>,
-  );
+  const { container } = render(<ProgressRing progressPercent={progressPercent} overtimePercent={overtimePercent} />);
 
   return container.querySelectorAll("circle");
 }
@@ -15,18 +11,8 @@ function renderRing(progressPercent: number, overtimePercent = 0) {
 const dashOffsetOf = (circle: Element) => Number(circle.getAttribute("stroke-dashoffset"));
 
 describe("ProgressRing", () => {
-  it("shows whatever is placed at the centre of the ring", () => {
-    renderRing(50);
-
-    expect(screen.getByText("faltam")).toBeInTheDocument();
-  });
-
   it("hides the drawing from assistive technology", () => {
-    const { container } = render(
-      <ProgressRing progressPercent={50} overtimePercent={0}>
-        <span>faltam</span>
-      </ProgressRing>,
-    );
+    const { container } = render(<ProgressRing progressPercent={50} overtimePercent={0} />);
 
     expect(container.querySelector("svg")).toHaveAttribute("aria-hidden", "true");
   });

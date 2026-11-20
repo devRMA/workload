@@ -1,10 +1,11 @@
+import { IconArrowDown } from "@tabler/icons-react";
 import type { CSSProperties, ElementType, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 const TONE_CLASSES = {
-  emerald: "bg-positive-deep",
-  rose: "bg-negative-deep",
-  blue: "bg-accent",
+  emerald: "bg-result-positive-base [--hero-tint:var(--color-result-positive)]",
+  rose: "bg-negative-deep [--hero-tint:var(--color-result-negative)]",
+  blue: "bg-accent [--hero-tint:var(--color-result-accent)]",
 } as const;
 
 const VALUE_INLINE_SIZE_CQI = 208;
@@ -14,37 +15,51 @@ interface HeroPanelProps {
   label: string;
   value: string;
   tone: keyof typeof TONE_CLASSES;
+  editLink?: { href: string; label: string };
   badge?: ReactNode;
   media?: ReactNode;
   footer?: ReactNode;
   children?: ReactNode;
 }
 
-export function HeroPanel({ icon: Icon, label, value, tone, badge, media, footer, children }: HeroPanelProps) {
+export function HeroPanel({
+  icon: Icon,
+  label,
+  value,
+  tone,
+  editLink,
+  badge,
+  media,
+  footer,
+  children,
+}: HeroPanelProps) {
   const isFigure = /\d/.test(value);
 
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-2xl p-8 lg:p-12 text-ink-onfill shadow-accent transition-[background-color] duration-(--duration-slow) ease-standard",
+        "hero-enamel rounded-2xl p-6 sm:p-8 lg:p-12 text-ink-onfill transition-colors duration-(--duration-fast) ease-out",
         TONE_CLASSES[tone],
       )}
     >
-      <div className="relative z-10 space-y-6 lg:space-y-8">
+      <div className="space-y-4 lg:space-y-6">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Icon size={24} stroke={1.75} aria-hidden="true" />
-            <span className="text-overline uppercase">{label}</span>
+            <span className="text-label font-semibold">{label}</span>
           </div>
           {badge}
         </div>
-        <div className="@container space-y-4 text-center">
+        <div className={cn("@container space-y-2", Boolean(media) && "text-center")}>
           {media}
           <p
             aria-live="polite"
             className={cn(
               isFigure
-                ? "text-numeral numeric whitespace-nowrap text-[length:var(--hero-value-size)]"
+                ? cn(
+                    "text-numeral numeric whitespace-nowrap text-[length:var(--hero-value-size)]",
+                    Boolean(media) && "font-bold",
+                  )
                 : "text-title text-balance",
             )}
             style={
@@ -59,7 +74,20 @@ export function HeroPanel({ icon: Icon, label, value, tone, badge, media, footer
           </p>
           {children}
         </div>
-        {footer ? <div className="pt-6 lg:pt-8 border-t border-ink-onfill/15">{footer}</div> : null}
+        {(footer || editLink) && (
+          <div className="flex flex-col gap-3 pt-4 border-t border-ink-onfill/20">
+            {footer}
+            {editLink && (
+              <a
+                href={editLink.href}
+                className="lg:hidden flex min-h-11 items-center justify-between gap-2 rounded-md border border-ink-onfill/70 px-4 text-label font-semibold ring-focus focus-visible:outline-ink-onfill transition-[background-color,scale] duration-(--duration-fast) ease-out hover:bg-scrim/25 active:scale-[0.97] motion-reduce:active:scale-100"
+              >
+                {editLink.label}
+                <IconArrowDown size={20} aria-hidden="true" />
+              </a>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

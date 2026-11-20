@@ -213,21 +213,25 @@ export function WorkCalculator() {
           label={isManualExit ? "Saída Real" : "Saída Prevista"}
           value={exitLabel}
           tone={isInDebt ? "rose" : "emerald"}
+          editLink={{ href: "#editar-horarios", label: "Editar horários" }}
           badge={
-            <span
-              aria-hidden="true"
-              className="bg-ink-onfill/20 px-3 py-1 rounded-full text-caption font-semibold numeric"
-            >
+            <span aria-hidden="true" className="bg-scrim/35 px-3 py-1 rounded-full text-caption font-semibold numeric">
               {currentTime === null ? PLACEHOLDER_CLOCK : formatClockTime(currentTime)}
             </span>
           }
           media={
             <>
-              <div aria-hidden="true">
-                <ProgressRing progressPercent={breakdown.progressPercent} overtimePercent={breakdown.overtimePercent}>
-                  <span className="text-overline uppercase text-ink-onfill/90">{timerData.statusLabel}</span>
-                  <span className="text-metric numeric">{timerData.statusTime}</span>
-                </ProgressRing>
+              <div
+                aria-hidden="true"
+                className="relative mx-auto mb-4 grid size-[clamp(6rem,22svh,8rem)] place-items-center rounded-full bg-scrim/25 sm:size-36 lg:size-44"
+              >
+                <ProgressRing progressPercent={breakdown.progressPercent} overtimePercent={breakdown.overtimePercent} />
+                <div className="relative max-w-[76%]">
+                  <span className="block text-caption font-semibold text-ink-onfill/90">{timerData.statusLabel}</span>
+                  <span className="block text-label sm:text-heading font-bold numeric whitespace-nowrap">
+                    {timerData.statusTime}
+                  </span>
+                </div>
               </div>
               <p className="sr-only" aria-live="polite" aria-atomic="true">
                 {timerData.statusAnnouncement}

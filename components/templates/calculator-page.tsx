@@ -17,7 +17,16 @@ export function CalculatorPage({ view, children }: { view: CalculatorView; child
       >
         Pular para o conteúdo principal
       </a>
-      <main className="min-h-dvh bg-canvas text-ink">
+      <svg aria-hidden="true" width="0" height="0" className="absolute">
+        <defs>
+          <filter id="dock-refraction" x="-10%" y="-30%" width="120%" height="160%" colorInterpolationFilters="sRGB">
+            <feTurbulence type="fractalNoise" baseFrequency="0.016 0.044" numOctaves="1" seed="7" result="lens" />
+            <feDisplacementMap in="SourceGraphic" in2="lens" scale="22" xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+        </defs>
+      </svg>
+      <main className="relative min-h-dvh bg-canvas text-ink">
+        <div aria-hidden="true" className="glass-field" />
         <AppHeader heading={VIEW_HEADINGS[view]} />
 
         {children}

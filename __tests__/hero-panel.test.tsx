@@ -24,6 +24,7 @@ describe("HeroPanel", () => {
         tone="blue"
         badge={<span>10:00:00</span>}
         footer={<p>Resumo Financeiro</p>}
+        editLink={{ href: "#editar-salario", label: "Editar salário" }}
       >
         <p>por minuto</p>
       </HeroPanel>,
@@ -32,6 +33,7 @@ describe("HeroPanel", () => {
     expect(screen.getByText("10:00:00")).toBeInTheDocument();
     expect(screen.getByText("por minuto")).toBeInTheDocument();
     expect(screen.getByText("Resumo Financeiro")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Editar salário" })).toHaveAttribute("href", "#editar-salario");
   });
 
   it("shrinks the font as the value gets longer so it never wraps", () => {

@@ -1,7 +1,6 @@
 "use client";
 
 import { IconClock, IconCurrencyDollar } from "@tabler/icons-react";
-import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { buttonClasses } from "@/components/atoms/button";
@@ -10,7 +9,7 @@ import { WorkCalculator } from "@/components/organisms/work-calculator";
 import { safeGAEvent } from "@/lib/analytics";
 import { type CalculatorView, VIEW_PATHS } from "@/lib/calculator-view";
 import { CURRENT_LEGAL_YEAR, NIGHT_OVERTIME_SOURCE } from "@/lib/legal-tables";
-import { formatIsoDate } from "@/lib/utils";
+import { cn, formatIsoDate } from "@/lib/utils";
 
 const VIEW_TABS: readonly { view: CalculatorView; label: string; icon: typeof IconClock }[] = [
   { view: "work", label: "Jornada", icon: IconClock },
@@ -19,13 +18,6 @@ const VIEW_TABS: readonly { view: CalculatorView; label: string; icon: typeof Ic
 
 const SOURCE_LINK_CLASSES =
   "underline underline-offset-2 transition-colors duration-(--duration-fast) ease-standard hover:text-accent-ink";
-
-const PANEL_TRANSITION = {
-  initial: { opacity: 0, y: 12 },
-  animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -12 },
-  transition: { type: "spring", bounce: 0, duration: 0.32 },
-} as const;
 
 export function CalculatorViews({ activeView }: { activeView: CalculatorView }) {
   const mainRef = useRef<HTMLDivElement>(null);
@@ -44,17 +36,23 @@ export function CalculatorViews({ activeView }: { activeView: CalculatorView }) 
         aria-label="Calculadoras"
         className="fixed bottom-[max(calc(var(--spacing)*4),env(safe-area-inset-bottom))] sm:bottom-8 left-1/2 -translate-x-1/2 z-50"
       >
-        <ul className="bg-chrome backdrop-blur-chrome backdrop-saturate-(--saturate-chrome) border border-line p-1.5 rounded-lg shadow-raised flex items-center gap-1">
+        <ul className="glass-chrome glass-dock relative border border-line p-1.5 rounded-full flex items-center gap-1">
           {VIEW_TABS.map(({ view, label, icon: Icon }) => (
             <li key={view}>
               <Link
                 href={VIEW_PATHS[view]}
-                scroll={false}
                 aria-current={activeView === view ? "page" : undefined}
                 onClick={() => safeGAEvent("switch_tab", { tab: view })}
-                className={buttonClasses(activeView === view ? "default" : "ghost", "default", "gap-2")}
+                className={buttonClasses(
+                  activeView === view ? "default" : "ghost",
+                  "default",
+                  cn(
+                    "min-w-24 flex-col gap-0.5 px-4 sm:flex-row sm:gap-2 sm:px-6 rounded-full ease-out font-semibold transition-[background-color,color,scale]",
+                    activeView !== view && "text-ink",
+                  ),
+                )}
               >
-                <Icon className="w-4 h-4" aria-hidden="true" />
+                <Icon className="size-5 sm:size-4" aria-hidden="true" />
                 <span>{label}</span>
               </Link>
             </li>
@@ -66,13 +64,9 @@ export function CalculatorViews({ activeView }: { activeView: CalculatorView }) 
         ref={mainRef}
         id="main-content"
         tabIndex={-1}
-        className="pt-[calc(var(--header-height)+var(--spacing)*8)] pb-16 px-4 sm:px-6 lg:px-8 outline-none"
+        className="relative pt-[calc(var(--header-height)+var(--spacing)*8)] pb-[calc(6rem+env(safe-area-inset-bottom))] px-4 sm:px-6 lg:px-8 outline-none"
       >
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div key={activeView} {...PANEL_TRANSITION}>
-            {activeView === "work" ? <WorkCalculator /> : <SalaryCalculator />}
-          </motion.div>
-        </AnimatePresence>
+        {activeView === "work" ? <WorkCalculator /> : <SalaryCalculator />}
 
         <footer className="mx-auto mt-12 max-w-3xl space-y-2 text-center text-caption text-ink-subtle text-pretty">
           <p>

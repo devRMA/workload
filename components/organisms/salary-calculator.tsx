@@ -80,7 +80,13 @@ export function SalaryCalculator() {
                 <IconCalculator className="text-accent-ink" size={24} stroke={1.75} aria-hidden="true" />
               </div>
               <div>
-                <h2 className="text-title">Custo da Hora</h2>
+                <h2
+                  id="editar-salario"
+                  tabIndex={-1}
+                  className="text-title scroll-mt-[calc(var(--header-height)+var(--spacing)*6)]"
+                >
+                  Custo da Hora
+                </h2>
                 <p className="text-body-sm text-ink-muted text-pretty">
                   Descubra quanto vale cada hora do seu trabalho, já com os descontos. A hora extra da aba Jornada é
                   calculada sobre a hora bruta, como manda o art. 59, §1º, da CLT.
@@ -224,6 +230,7 @@ export function SalaryCalculator() {
           label={`Valor por ${SALARY_PERIOD_LABELS[period]}`}
           value={hasMonthlyHours ? formatCurrency(stats.periodValue) : MISSING_VALUE}
           tone="blue"
+          editLink={{ href: "#editar-salario", label: "Editar salário" }}
           footer={
             <>
               <p className="text-body-sm mb-2">Resumo Financeiro</p>
