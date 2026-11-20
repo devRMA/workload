@@ -1,6 +1,6 @@
 # Stack #38 — revisão local para G8
 
-**Estado:** validada localmente e autorizada para publicação. CI e prévia dos novos heads são verificados após o push; o merge não faz parte da revisão. A árvore de trabalho principal não foi alterada.
+**Estado:** correções publicadas e validadas no GitHub e no Vercel. O merge não faz parte da revisão. A árvore de trabalho principal não foi alterada.
 
 ## Revisão por PR
 
@@ -26,4 +26,18 @@ O número #38 é da stack, não de uma camada. Faixas de sábado, revisão fisca
 
 ## Publicação
 
-Os commits assinados distribuem CI no #32, consentimento no #34 e cálculo, citações e hidratação no #39. O cálculo e as citações ficam no #39 porque a alteração integrada usa a base de cálculo do #34, a renderização do rodapé e a documentação incorporadas nas camadas seguintes. Os PRs intermediários herdam as correções sem reescrever os commits existentes. O conteúdo do topo, antes desta atualização documental, coincide com a árvore validada localmente (`a95d16a`). Conferir CI nos novos heads e a prévia do Vercel antes de recomendar merge.
+Os commits assinados distribuem CI no #32, consentimento no #34 e cálculo, citações e hidratação no #39. O cálculo e as citações ficam no #39 porque a alteração integrada usa a base de cálculo do #34, a renderização do rodapé e a documentação incorporadas nas camadas seguintes. O push atômico preservou os commits existentes e a ordem confirmada por `gh stack view --json`. O código no topo coincide com a árvore validada localmente (`a95d16a`).
+
+Em 20/11/2026, GitHub exibiu `MERGEABLE` e `CLEAN` para os heads abaixo, com lint, TypeScript, testes unitários, E2E/Lighthouse, Vercel e comentários do Vercel aprovados.
+
+| PR | Head verificado | CI |
+|---|---|---|
+| #32 | `c5f19c9` | [44702196581](https://github.com/devRMA/workload/actions/runs/44702196581) |
+| #33 | `8f74609` | [44702195957](https://github.com/devRMA/workload/actions/runs/44702195957) |
+| #34 | `b2d4663` | [44702371613](https://github.com/devRMA/workload/actions/runs/44702371613) |
+| #35 | `164254d` | [44702194985](https://github.com/devRMA/workload/actions/runs/44702194985) |
+| #36 | `aec5302` | [44702194819](https://github.com/devRMA/workload/actions/runs/44702194819) |
+| #37 | `113d124` | [44702342138](https://github.com/devRMA/workload/actions/runs/44702342138) |
+| #39 | `dcc6e91` | [44702196101](https://github.com/devRMA/workload/actions/runs/44702196101) |
+
+A [prévia auditada no Vercel](https://workload-fibo4n1o5-devrmas-projects.vercel.app/) confirmou o cálculo e as divulgações. A falha de desempenho em preview foi reproduzida no deploy anterior e em produção, e permanece na spec 0004. Detalhes: `.specs/0016-night-overtime-base/reports/audit-preview.md`. As evidências acima identificam os heads antes do commit que registra estes resultados, que altera apenas documentação.
