@@ -31,8 +31,9 @@ test.describe("Disclosure legibility — DS1, the legal footer", () => {
           await assertLr2b(footer);
           await assertLr3(page, route, footer, "Tudo o que você digita fica salvo apenas neste navegador");
 
-          const paragraphs = await footer.locator("p").all();
-          for (const paragraph of paragraphs) {
+          const paragraphs = footer.locator("p");
+          await expect(paragraphs).toHaveCount(route === "/" ? 5 : 4);
+          for (const paragraph of await paragraphs.all()) {
             await assertLr2b(paragraph);
           }
         });

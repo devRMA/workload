@@ -1,6 +1,7 @@
 import { expect, type Page, test } from "@playwright/test";
 
 const ROUTES = ["/", "/custo-da-hora"] as const;
+const HEADER_LAYOUT_SHIFT_MARK = "workload-test:header-layout-shift";
 
 interface ThemeToggleState {
   iconCount: number;
@@ -30,22 +31,44 @@ async function captureThemeToggleState(page: Page): Promise<ThemeToggleState> {
   });
 }
 
+async function observeHeaderLayoutShifts(page: Page) {
+  await page.addInitScript((mark) => {
+    interface LayoutShiftEntry extends PerformanceEntry {
+      sources: readonly { node: Node | null; previousRect: DOMRectReadOnly; currentRect: DOMRectReadOnly }[];
+    }
+
+    const observer = new PerformanceObserver((list) => {
+      const header = document.querySelector("header");
+      if (!header) return;
+
+      for (const entry of list.getEntries() as LayoutShiftEntry[]) {
+        const sources = entry.sources
+          .filter(
+            ({ node, previousRect, currentRect }) =>
+              header.contains(node) && (previousRect.x !== currentRect.x || previousRect.y !== currentRect.y),
+          )
+          .map(({ node, previousRect, currentRect }) => ({
+            node: node?.nodeName,
+            text: node?.textContent,
+            previous: previousRect.toJSON(),
+            current: currentRect.toJSON(),
+          }));
+        if (sources.length > 0) performance.mark(mark, { detail: sources });
+      }
+    });
+    observer.observe({ type: "layout-shift", buffered: true });
+  }, HEADER_LAYOUT_SHIFT_MARK);
+}
+
 async function headerLayoutShiftCount(page: Page): Promise<number> {
-  return page.evaluate(() => {
-    const header = document.querySelector("header");
-    if (!header) return 0;
-    const entries = performance.getEntriesByType("layout-shift") as unknown as Array<{
-      sources?: Array<{ node?: Node }>;
-    }>;
-    return entries.filter((entry) => entry.sources?.some((source) => source.node && header.contains(source.node)))
-      .length;
-  });
+  return page.evaluate((mark) => performance.getEntriesByName(mark, "mark").length, HEADER_LAYOUT_SHIFT_MARK);
 }
 
 async function assertThemeIconIsCorrectAndStable(page: Page, route: string, expectedVisibleGlyph: "sun" | "moon") {
   const pageErrors: string[] = [];
   page.on("pageerror", (error) => pageErrors.push(error.message));
 
+  await observeHeaderLayoutShifts(page);
   await page.goto(route, { waitUntil: "domcontentloaded" });
   const domContentLoadedState = await captureThemeToggleState(page);
 
@@ -69,7 +92,12 @@ async function assertThemeIconIsCorrectAndStable(page: Page, route: string, expe
   expect(networkIdleState.moonDisplay).toBe(domContentLoadedState.moonDisplay);
 
   expect(networkIdleState.toggleRect).toEqual(domContentLoadedState.toggleRect);
-  expect(await headerLayoutShiftCount(page)).toBe(0);
+  expect(await page.evaluate(() => PerformanceObserver.supportedEntryTypes.includes("layout-shift"))).toBe(true);
+  const shifts = await page.evaluate(
+    (mark) => performance.getEntriesByName(mark, "mark").map((entry) => (entry as PerformanceMark).detail),
+    HEADER_LAYOUT_SHIFT_MARK,
+  );
+  expect(shifts).toEqual([]);
 
   expect(domContentLoadedState.toggleAccessibleName).toBe("Alternar tema");
   expect(networkIdleState.toggleAccessibleName).toBe("Alternar tema");
@@ -79,6 +107,20 @@ async function assertThemeIconIsCorrectAndStable(page: Page, route: string, expe
 }
 
 test.describe("Dark hydration — production build, dark system theme", () => {
+  test("detects a real displacement of the painted header", async ({ page }) => {
+    await observeHeaderLayoutShifts(page);
+    await page.goto("/");
+    await expect(page.locator("header")).toBeVisible();
+    await page.evaluate(async () => {
+      await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+    });
+
+    const before = await headerLayoutShiftCount(page);
+    await page.addStyleTag({ content: "header { top: 80px !important; }" });
+
+    await expect.poll(() => headerLayoutShiftCount(page)).toBeGreaterThan(before);
+  });
+
   for (const route of ROUTES) {
     test(`zero pageerror and theme-correct first paint on ${route}`, async ({ page }) => {
       await assertThemeIconIsCorrectAndStable(page, route, "sun");

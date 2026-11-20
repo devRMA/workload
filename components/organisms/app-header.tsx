@@ -48,7 +48,12 @@ export function AppHeader({ heading }: { heading: string }) {
             className="hidden md:flex items-center gap-2 bg-surface-sunken rounded-sm px-4 py-2 text-label numeric text-ink-muted"
           >
             <IconClock className="w-4 h-4 text-accent-ink" aria-hidden="true" />
-            <span>{currentTime === null ? PLACEHOLDER_CLOCK : formatClockTime(currentTime)}</span>
+            <span className="grid text-right">
+              <span className="invisible col-start-1 row-start-1">00:00:00</span>
+              <span className="col-start-1 row-start-1">
+                {currentTime === null ? PLACEHOLDER_CLOCK : formatClockTime(currentTime)}
+              </span>
+            </span>
           </div>
           <Button
             variant="ghost"

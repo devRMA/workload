@@ -40,9 +40,13 @@ export async function assertLr2b(locator: Locator) {
 }
 
 export async function assertLr1(locator: Locator) {
-  const width = (await locator.boundingBox())?.width ?? 0;
-  const available = await availableContentWidth(locator);
-  expect(width).toBeGreaterThanOrEqual(Math.min(320, available));
+  await expect
+    .poll(async () => {
+      const width = await locator.evaluate((element) => element.getBoundingClientRect().width);
+      const available = await availableContentWidth(locator);
+      return width - Math.min(320, available);
+    })
+    .toBeGreaterThanOrEqual(0);
 }
 
 export async function assertLr3Rendering(locator: Locator) {
