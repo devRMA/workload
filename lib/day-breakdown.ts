@@ -1,6 +1,6 @@
 import { differenceInMinutes } from "date-fns";
 import { findJourneyIssue } from "./journey";
-import { countNightMinutes, nightBonusMinutes } from "./night-shift";
+import { countNightMinutes, nightBonusMinutes, nightEquivalentMinutes } from "./night-shift";
 
 export type DaySegmentKind = "morning" | "lunch" | "afternoon" | "overtime";
 
@@ -13,6 +13,7 @@ export interface DayBreakdown {
   morningMinutes: number;
   lunchMinutes: number;
   afternoonMinutes: number;
+  nightMinutes: number;
   nightBonusMinutes: number;
   workedMinutes: number;
   expectedMinutes: number;
@@ -38,6 +39,7 @@ const EMPTY_BREAKDOWN: DayBreakdown = {
   morningMinutes: 0,
   lunchMinutes: 0,
   afternoonMinutes: 0,
+  nightMinutes: 0,
   nightBonusMinutes: 0,
   workedMinutes: 0,
   expectedMinutes: 0,
@@ -102,6 +104,7 @@ export function buildDayBreakdown(input: DayBreakdownInput): DayBreakdown {
     morningMinutes,
     lunchMinutes,
     afternoonMinutes,
+    nightMinutes: nightEquivalentMinutes(nightWorked),
     nightBonusMinutes: nightBonus,
     workedMinutes,
     expectedMinutes,

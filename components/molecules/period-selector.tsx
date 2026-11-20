@@ -7,12 +7,12 @@ interface PeriodSelectorProps {
 
 export function PeriodSelector({ value, onChange }: PeriodSelectorProps) {
   return (
-    <fieldset className="grid grid-cols-5 gap-1 rounded-2xl bg-white/15 p-1.5">
+    <fieldset className="grid grid-cols-5 gap-1 rounded-lg bg-scrim/25 p-1.5">
       <legend className="sr-only">Visualizar o valor por período</legend>
       {SALARY_PERIODS.map((period) => (
         <label
           key={period}
-          className="flex min-h-11 cursor-pointer items-center justify-center rounded-xl px-1 text-xs sm:text-sm font-bold transition-colors has-checked:bg-white has-checked:text-neutral-900 hover:bg-white/10 has-checked:hover:bg-white focus-within:ring-2 focus-within:ring-white focus-within:ring-offset-2 focus-within:ring-offset-blue-600"
+          className="flex min-h-11 cursor-pointer items-center justify-center rounded-sm px-1 text-label text-ink-onfill transition-colors duration-(--duration-fast) ease-standard hover:bg-ink-onfill/10 has-checked:bg-surface has-checked:text-accent-ink has-checked:shadow-press has-checked:hover:bg-surface has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-ink-onfill"
         >
           <input
             type="radio"

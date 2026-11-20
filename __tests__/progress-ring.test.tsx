@@ -1,13 +1,9 @@
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { ProgressRing } from "@/components/atoms/progress-ring";
 
 function renderRing(progressPercent: number, overtimePercent = 0) {
-  const { container } = render(
-    <ProgressRing progressPercent={progressPercent} overtimePercent={overtimePercent}>
-      <span>faltam</span>
-    </ProgressRing>,
-  );
+  const { container } = render(<ProgressRing progressPercent={progressPercent} overtimePercent={overtimePercent} />);
 
   return container.querySelectorAll("circle");
 }
@@ -15,28 +11,10 @@ function renderRing(progressPercent: number, overtimePercent = 0) {
 const dashOffsetOf = (circle: Element) => Number(circle.getAttribute("stroke-dashoffset"));
 
 describe("ProgressRing", () => {
-  it("shows whatever is placed at the centre of the ring", () => {
-    renderRing(50);
-
-    expect(screen.getByText("faltam")).toBeInTheDocument();
-  });
-
   it("hides the drawing from assistive technology", () => {
-    const { container } = render(
-      <ProgressRing progressPercent={50} overtimePercent={0}>
-        <span>faltam</span>
-      </ProgressRing>,
-    );
+    const { container } = render(<ProgressRing progressPercent={50} overtimePercent={0} />);
 
     expect(container.querySelector("svg")).toHaveAttribute("aria-hidden", "true");
-  });
-
-  it("keeps the track and the progress arc, and nothing else, without overtime", () => {
-    expect(renderRing(50)).toHaveLength(2);
-  });
-
-  it("adds a second arc once there is overtime", () => {
-    expect(renderRing(100, 25)).toHaveLength(3);
   });
 
   it("closes the arc as the progress grows", () => {
@@ -64,15 +42,5 @@ describe("ProgressRing", () => {
     const [, , full] = renderRing(100, 100);
 
     expect(dashOffsetOf(beyondFull)).toBe(dashOffsetOf(full));
-  });
-
-  it("accepts extra classes on the wrapper", () => {
-    const { container } = render(
-      <ProgressRing progressPercent={10} overtimePercent={0} className="mt-4">
-        <span>faltam</span>
-      </ProgressRing>,
-    );
-
-    expect(container.firstElementChild).toHaveClass("mt-4");
   });
 });

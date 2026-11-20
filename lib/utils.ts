@@ -1,9 +1,43 @@
 import { type ClassValue, clsx } from "clsx";
 import { format } from "date-fns";
-import { twMerge } from "tailwind-merge";
+import { extendTailwindMerge } from "tailwind-merge";
+
+const TYPE_STEPS = [
+  "numeral",
+  "display",
+  "title",
+  "metric",
+  "heading",
+  "input",
+  "body",
+  "body-sm",
+  "label",
+  "caption",
+  "overline",
+] as const;
+
+const twMerge = extendTailwindMerge({
+  extend: {
+    classGroups: {
+      "font-size": [{ text: [...TYPE_STEPS] }],
+    },
+  },
+});
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+export const PLACEHOLDER_CLOCK = "--:--:--";
+
+const NON_DIGITS = /\D/g;
+
+export function digitsOnly(text: string): string {
+  return text.replace(NON_DIGITS, "");
+}
+
+export function countDigits(text: string): number {
+  return digitsOnly(text).length;
 }
 
 const CURRENCY_FORMATTER = new Intl.NumberFormat("pt-BR", {
@@ -35,8 +69,11 @@ export function formatTimeLabel(timestamp: string): string {
   return Number.isNaN(parsed.getTime()) ? "--:--" : format(parsed, "HH:mm");
 }
 
+export function formatIsoDate(isoDate: string): string {
+  return isoDate.split("-").reverse().join("/");
+}
+
 export function parseCurrency(value: string): number {
-  const digitsOnly = value.replace(/\D/g, "");
-  const parsed = Number(digitsOnly) / 100;
+  const parsed = Number(digitsOnly(value)) / 100;
   return Number.isFinite(parsed) ? parsed : 0;
 }

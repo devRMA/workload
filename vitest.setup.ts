@@ -1,4 +1,4 @@
-import "@testing-library/jest-dom";
+import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/react";
 import { afterEach, vi } from "vitest";
 
@@ -7,7 +7,7 @@ afterEach(() => {
 });
 
 vi.mock("next/font/google", () => ({
-  Inter: () => ({ className: "font-inter" }),
+  Atkinson_Hyperlegible_Next: () => ({ className: "font-hyperlegible", variable: "font-hyperlegible" }),
 }));
 
 HTMLDialogElement.prototype.showModal = function showModal(this: HTMLDialogElement) {

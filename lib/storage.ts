@@ -1,4 +1,6 @@
-export const HOURLY_RATE_KEY = "hourlyRate";
+export const LEGACY_HOURLY_RATE_KEY = "hourlyRate";
+export const GROSS_SALARY_KEY = "grossSalary";
+export const MONTHLY_HOURS_KEY = "monthlyHours";
 export const DAILY_MINUTES_KEY = "workMinutes";
 
 export function readStoredNumber(key: string, fallback: number): number {

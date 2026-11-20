@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { findJourneyIssue, type JourneyTimestamps } from "@/lib/journey";
+import { findJourneyIssue } from "@/lib/journey";
+
+type JourneyTimestamps = Parameters<typeof findJourneyIssue>[0];
 
 const DAY = "2025-01-06";
 

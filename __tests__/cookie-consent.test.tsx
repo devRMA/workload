@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { CookieConsent } from "@/components/molecules/cookie-consent";
+import { CookieConsent } from "@/components/organisms/cookie-consent";
 
 const CONSENT_KEY = "workload_cookie_consent";
 const CONSENT_CHANGED_EVENT = "workload:consent-changed";
@@ -94,6 +94,7 @@ describe("CookieConsent", () => {
     fireEvent.click(screen.getByText("Aceitar Tudo"));
 
     expect(JSON.parse(localStorage.getItem(CONSENT_KEY) ?? "{}").telemetry).toBe(true);
+    expect(JSON.parse(localStorage.getItem(CONSENT_KEY) ?? "{}").ads).toBe(true);
     expect(consentEventDetails).toEqual([{ telemetry: true }]);
     expect(mockReload).not.toHaveBeenCalled();
   });
@@ -105,8 +106,19 @@ describe("CookieConsent", () => {
     fireEvent.click(screen.getByText("Recusar"));
 
     expect(JSON.parse(localStorage.getItem(CONSENT_KEY) ?? "{}").telemetry).toBe(false);
+    expect(JSON.parse(localStorage.getItem(CONSENT_KEY) ?? "{}").ads).toBe(false);
     expect(consentEventDetails).toEqual([{ telemetry: false }]);
     expect(mockReload).not.toHaveBeenCalled();
+  });
+
+  it("removes ads consent and reloads to stop the previously loaded script", () => {
+    localStorage.setItem(CONSENT_KEY, JSON.stringify({ telemetry: true, ads: true }));
+    render(<CookieConsent />);
+    openSettingsFromShieldButton();
+    fireEvent.click(screen.getByRole("button", { name: "Salvar Preferências" }));
+
+    expect(JSON.parse(localStorage.getItem(CONSENT_KEY) ?? "{}")).toMatchObject({ telemetry: true, ads: false });
+    expect(mockReload).toHaveBeenCalledTimes(1);
   });
 
   it("opens the settings dialog from the banner's Configurar link", () => {
@@ -217,7 +229,7 @@ describe("CookieConsent", () => {
     showBanner();
 
     const shortcut = screen.getByRole("button", { name: "Configurações de Privacidade" });
-    expect(shortcut.className).not.toContain("opacity-30");
-    expect(shortcut.className).toContain("focus-visible:ring-2");
+    shortcut.focus();
+    expect(shortcut).toHaveFocus();
   });
 });

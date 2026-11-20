@@ -2,15 +2,16 @@
 
 import { format, isValid, parse } from "date-fns";
 import * as React from "react";
+import { isRealDuration } from "@/lib/duration";
 import { cn } from "@/lib/utils";
-import { MaskedInput } from "../atoms/masked-input";
+import { Label } from "../atoms/label";
+import { MaskedInput } from "../molecules/masked-input";
 
 const BR_DATE_GROUPS = [2, 2, 4] as const;
 const TIME_GROUPS = [2, 2] as const;
 const BR_DATE_FORMAT = "dd/MM/yyyy";
 const ISO_DATE_FORMAT = "yyyy-MM-dd";
-const FIELD_CLASSES =
-  "h-14 focus-visible:ring-indigo-500 placeholder:text-neutral-500 dark:placeholder:text-neutral-400";
+const FIELD_CLASSES = "h-14";
 
 const toBRDate = (isoDate: string) => {
   if (!isoDate) return "";
@@ -28,13 +29,6 @@ const isRealBRDate = (brDate: string) => {
   const parsed = parse(brDate, BR_DATE_FORMAT, new Date());
   return isValid(parsed) && format(parsed, BR_DATE_FORMAT) === brDate;
 };
-
-const isRealTime = (time: string) => {
-  const [hours, minutes] = time.split(":").map(Number);
-  return hours >= 0 && hours < 24 && minutes >= 0 && minutes < 60;
-};
-
-const INVALID_FIELD_CLASSES = "border-rose-500 dark:border-rose-500 focus-visible:ring-rose-500";
 
 interface DateTimeInputProps {
   value: string;
@@ -60,7 +54,6 @@ export function DateTimeInput({
   const generatedId = React.useId();
   const inputId = id || generatedId;
   const [datePart, timePart] = value.split("T");
-  const fieldClasses = cn(FIELD_CLASSES, hasError && INVALID_FIELD_CLASSES);
   const errorProps = hasError ? { "aria-invalid": true, "aria-describedby": errorId } : {};
 
   const handleDateCommit = (brDate: string) => {
@@ -72,15 +65,12 @@ export function DateTimeInput({
   };
 
   return (
-    <div className={cn("space-y-3", className)}>
-      <label
-        htmlFor={inputId}
-        className="flex items-center gap-2 text-sm font-medium text-neutral-500 dark:text-neutral-400"
-      >
+    <div className={cn("space-y-2", className)}>
+      <Label htmlFor={inputId}>
         <Icon className="w-4 h-4" aria-hidden="true" />
         {label}
-      </label>
-      <div className="flex flex-col sm:flex-row gap-3 sm:gap-2">
+      </Label>
+      <div className="flex flex-col sm:flex-row gap-3">
         <div className="flex-1 min-w-0">
           <MaskedInput
             id={inputId}
@@ -90,7 +80,7 @@ export function DateTimeInput({
             groupSizes={BR_DATE_GROUPS}
             isValid={isRealBRDate}
             onCommit={handleDateCommit}
-            className={fieldClasses}
+            className={FIELD_CLASSES}
             {...errorProps}
           />
         </div>
@@ -101,9 +91,9 @@ export function DateTimeInput({
             value={timePart || ""}
             separator=":"
             groupSizes={TIME_GROUPS}
-            isValid={isRealTime}
+            isValid={isRealDuration}
             onCommit={handleTimeCommit}
-            className={fieldClasses}
+            className={FIELD_CLASSES}
             {...errorProps}
           />
         </div>

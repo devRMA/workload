@@ -28,6 +28,34 @@ describe("useCurrentTime", () => {
     expect(Number(result.current)).toBeGreaterThan(Number(firstTick));
   });
 
+  it("drives every consumer from a single timer", () => {
+    const first = renderHook(() => useCurrentTime());
+    const second = renderHook(() => useCurrentTime());
+
+    expect(vi.getTimerCount()).toBe(1);
+
+    act(() => {
+      vi.advanceTimersByTime(1000);
+    });
+
+    expect(Number(second.result.current)).toBe(Number(first.result.current));
+  });
+
+  it("keeps ticking for the consumers that are still mounted", () => {
+    const first = renderHook(() => useCurrentTime());
+    const second = renderHook(() => useCurrentTime());
+
+    first.unmount();
+    const lastTick = second.result.current;
+    act(() => {
+      vi.advanceTimersByTime(1000);
+    });
+
+    expect(Number(second.result.current)).toBeGreaterThan(Number(lastTick));
+    second.unmount();
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
   it("stops ticking after unmount", () => {
     const { result, unmount } = renderHook(() => useCurrentTime());
     const lastTick = result.current;

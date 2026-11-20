@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { cn, formatClockTime, formatCurrency, formatCurrencySimple, formatTimeLabel, parseCurrency } from "@/lib/utils";
+import {
+  cn,
+  formatClockTime,
+  formatCurrency,
+  formatCurrencySimple,
+  formatIsoDate,
+  formatTimeLabel,
+  parseCurrency,
+} from "@/lib/utils";
 
 describe("cn", () => {
   it("merges class names", () => {
@@ -88,5 +96,11 @@ describe("formatTimeLabel", () => {
   it("falls back to a placeholder when the timestamp is not a real moment", () => {
     expect(formatTimeLabel("")).toBe("--:--");
     expect(formatTimeLabel("nao-e-uma-data")).toBe("--:--");
+  });
+});
+
+describe("formatIsoDate", () => {
+  it("reads an ISO date the Brazilian way", () => {
+    expect(formatIsoDate("2026-01-01")).toBe("01/01/2026");
   });
 });

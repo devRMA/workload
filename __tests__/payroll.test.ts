@@ -1,5 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { calculateIncomeTax, calculateSocialSecurity, overtimePay, sanitizeAmount } from "@/lib/payroll";
+import { CURRENT_LEGAL_YEAR } from "@/lib/legal-tables";
+import {
+  calculateIncomeTax,
+  calculateSocialSecurity,
+  grossHourlyRate,
+  isRealAmount,
+  overtimePay,
+  sanitizeAmount,
+  WORK_REGIME_INFO,
+} from "@/lib/payroll";
+import { formatCurrency } from "@/lib/utils";
 
 describe("sanitizeAmount", () => {
   it("keeps positive finite amounts untouched", () => {
@@ -14,9 +24,78 @@ describe("sanitizeAmount", () => {
   });
 });
 
+describe("isRealAmount", () => {
+  it("accepts a positive finite amount and rejects everything else", () => {
+    expect(isRealAmount(1234.56)).toBe(true);
+    expect(isRealAmount(0)).toBe(false);
+    expect(isRealAmount(-1)).toBe(false);
+    expect(isRealAmount(Number.NaN)).toBe(false);
+  });
+});
+
+describe("grossHourlyRate", () => {
+  it("divides the gross salary by the declared monthly divisor", () => {
+    expect(grossHourlyRate(3000, 220)).toBeCloseTo(13.6364, 4);
+    expect(grossHourlyRate(3000, 200)).toBe(15);
+  });
+
+  it("has no rate without a divisor or without a salary", () => {
+    expect(grossHourlyRate(3000, 0)).toBe(0);
+    expect(grossHourlyRate(-3000, 220)).toBe(0);
+  });
+});
+
+describe("WORK_REGIME_INFO", () => {
+  it("quotes the ceiling and the maximum discount from the table instead of hardcoding them", () => {
+    const clt = WORK_REGIME_INFO.find(({ value }) => value === "clt");
+
+    expect(clt?.impact).toContain("8.475,55");
+    expect(clt?.impact).toContain("988,09");
+    expect(clt?.impact).toContain("2026");
+  });
+
+  it("names R$ 8.475,55 as the salário de contribuição, not the contribution", () => {
+    const clt = WORK_REGIME_INFO.find(({ value }) => value === "clt");
+
+    expect(clt?.impact).toContain("teto do salário de contribuição");
+    expect(clt?.impact).not.toContain("teto de contribuição em");
+  });
+
+  it("keeps the ceiling, the capped discount and the table year in one sentence", () => {
+    const clt = WORK_REGIME_INFO.find(({ value }) => value === "clt");
+    const ceiling = formatCurrency(CURRENT_LEGAL_YEAR.rgpsBrackets.at(-1)?.ceiling ?? 0);
+    const discount = formatCurrency(CURRENT_LEGAL_YEAR.rgpsCeilingDiscount);
+    const ceilingIndex = clt?.impact.indexOf(ceiling) ?? -1;
+    const discountIndex = clt?.impact.indexOf(discount) ?? -1;
+    const betweenFigures = clt?.impact.slice(ceilingIndex + ceiling.length, discountIndex);
+
+    expect(ceilingIndex).toBeGreaterThanOrEqual(0);
+    expect(discountIndex).toBeGreaterThan(ceilingIndex);
+    expect(betweenFigures).not.toContain(".");
+    expect(clt?.impact).toContain(`(tabela de ${CURRENT_LEGAL_YEAR.year})`);
+  });
+
+  it("says the estatutário table is the federal one", () => {
+    const civilService = WORK_REGIME_INFO.find(({ value }) => value === "estatutario");
+
+    expect(civilService?.impact).toContain("RPPS federal");
+    expect(civilService?.impact).toContain("estadual ou municipal");
+  });
+
+  it("never calls the RPPS federal ceiling the teto do INSS", () => {
+    for (const { impact } of WORK_REGIME_INFO) {
+      expect(impact).not.toContain("teto do INSS");
+    }
+  });
+});
+
 describe("overtimePay", () => {
   it("pays an hour with the legal fifty percent on top", () => {
     expect(overtimePay(60, 20, 50)).toBe(30);
+  });
+
+  it("prices two extra hours on the gross rate, not on the net one", () => {
+    expect(overtimePay(120, grossHourlyRate(3000, 220), 50)).toBeCloseTo(40.91, 2);
   });
 
   it("doubles the hour on the higher tier", () => {

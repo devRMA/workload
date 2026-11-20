@@ -1,12 +1,12 @@
 "use client";
 
-import { Trash2 } from "lucide-react";
+import { IconTrash } from "@tabler/icons-react";
 import { parseCurrency } from "@/lib/utils";
 import { Button } from "../atoms/button";
-import { CurrencyInput } from "../atoms/currency-input";
 import { Input } from "../atoms/input";
+import { CurrencyInput } from "../molecules/currency-input";
 
-const COMPACT_FIELD_CLASSES = "h-12 rounded-xl text-sm";
+const COMPACT_FIELD_CLASSES = "h-12 rounded-sm text-body-sm";
 
 interface ExtraEntryRowProps {
   name: string;
@@ -40,7 +40,7 @@ export function ExtraEntryRow({
           placeholder={namePlaceholder}
           value={name}
           onChange={(event) => onNameChange(event.target.value)}
-          className={`${COMPACT_FIELD_CLASSES} font-sans`}
+          className={COMPACT_FIELD_CLASSES}
         />
       </div>
       <div className="w-24 sm:w-32 shrink-0">
@@ -60,7 +60,7 @@ export function ExtraEntryRow({
         onClick={onRemove}
         className="shrink-0"
       >
-        <Trash2 className="w-4 h-4" aria-hidden="true" />
+        <IconTrash className="w-4 h-4" aria-hidden="true" />
       </Button>
     </div>
   );

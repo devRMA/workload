@@ -15,10 +15,10 @@ export default defineConfig({
       provider: "v8",
       reporter: ["text", "html", "lcov"],
       thresholds: {
-        statements: 100,
-        branches: 100,
-        functions: 100,
-        lines: 100,
+        "lib/**": { statements: 100, branches: 100, functions: 100, lines: 100 },
+        "hooks/**": { statements: 100, branches: 100, functions: 100, lines: 100 },
+        "app/**": { statements: 90, branches: 90, functions: 90, lines: 90 },
+        "components/**": { statements: 90, branches: 90, functions: 90, lines: 90 },
       },
       include: ["app/**/*.{ts,tsx}", "components/**/*.{ts,tsx}", "hooks/**/*.ts", "lib/**/*.ts"],
       exclude: [

@@ -1,9 +1,10 @@
 import { addDays, addMinutes, differenceInCalendarDays, differenceInMinutes, format, isValid } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
 import { useCurrentTime } from "@/hooks/use-current-time";
+import { buildDayBreakdown } from "@/lib/day-breakdown";
 import { findJourneyIssue } from "@/lib/journey";
-import { countNightMinutes, nightBonusMinutes, nightEquivalentMinutes } from "@/lib/night-shift";
-import { readStoredFlag, readStoredNumber } from "@/lib/storage";
+import { splitNightOvertimeByTier } from "@/lib/night-shift";
+import { DAILY_MINUTES_KEY, readStoredFlag, readStoredNumber } from "@/lib/storage";
 
 const MINUTES_PER_HOUR = 60;
 const FIRST_TIER_LIMIT_MINUTES = 120;
@@ -16,11 +17,13 @@ const DEFAULT_EXTRA_TIER_RATE = 100;
 const TIMESTAMP_FORMAT = "yyyy-MM-dd'T'HH:mm";
 
 const STORAGE_KEYS = {
-  workMinutes: "workMinutes",
+  workMinutes: DAILY_MINUTES_KEY,
   entry: "entry",
   lunchStart: "lunchStart",
   lunchEnd: "lunchEnd",
   exitOverride: "exitOverride",
+  enteredExit: "enteredExit",
+  previousEnteredExit: "previousEnteredExit",
   isManualExit: "isManualExit",
   firstTierRate: "firstTierRate",
   extraTierRate: "extraTierRate",
@@ -31,19 +34,9 @@ export interface WorkStats {
   nightMinutes: number;
   firstTierMinutes: number;
   extraTierMinutes: number;
+  firstTierNightMinutes: number;
+  extraTierNightMinutes: number;
   totalWorked: number;
-}
-
-const EMPTY_STATS: WorkStats = {
-  balance: 0,
-  nightMinutes: 0,
-  firstTierMinutes: 0,
-  extraTierMinutes: 0,
-  totalWorked: 0,
-};
-
-function isChronological(...dates: readonly Date[]): boolean {
-  return dates.every((date, index) => isValid(date) && (index === 0 || dates[index - 1] <= date));
 }
 
 function splitOvertime(
@@ -60,6 +53,10 @@ function splitOvertime(
   };
 }
 
+function breakdownOf(entry: string, lunchStart: string, lunchEnd: string, exit: string, expectedMinutes: number) {
+  return buildDayBreakdown({ entry, lunchStart, lunchEnd, exit, expectedMinutes, isManualExit: true, now: null });
+}
+
 export function calculateWorkStats(
   entry: string,
   lunchStart: string,
@@ -67,35 +64,29 @@ export function calculateWorkStats(
   displayExit: string,
   workMinutes: number,
 ): WorkStats {
-  if (findJourneyIssue({ entry, lunchStart, lunchEnd, exit: displayExit })) return EMPTY_STATS;
-
+  const breakdown = breakdownOf(entry, lunchStart, lunchEnd, displayExit, workMinutes);
   const entryDate = new Date(entry);
-  const lunchStartDate = new Date(lunchStart);
-  const lunchEndDate = new Date(lunchEnd);
-  const exitDate = new Date(displayExit);
-
-  const workedBeforeLunch = differenceInMinutes(lunchStartDate, entryDate);
-  const workedAfterLunch = differenceInMinutes(exitDate, lunchEndDate);
-  const workedMinutes = workedBeforeLunch + workedAfterLunch;
-
-  const nightMinutesWorked = countNightMinutes(entryDate, exitDate, lunchStartDate, lunchEndDate);
-  const totalWorked = workedMinutes + nightBonusMinutes(nightMinutesWorked);
-  const balance = totalWorked - workMinutes;
   const dayOfWeek = entryDate.getDay();
+  const tiers = splitOvertime(breakdown.overtimeMinutes, dayOfWeek === 0 || dayOfWeek === 6);
+  const nightTiers =
+    breakdown.overtimeMinutes > 0
+      ? splitNightOvertimeByTier({
+          entryDate,
+          lunchStartDate: new Date(lunchStart),
+          lunchEndDate: new Date(lunchEnd),
+          exitDate: new Date(displayExit),
+          expectedMinutes: breakdown.expectedMinutes,
+          firstTierMinutes: tiers.firstTierMinutes,
+        })
+      : { firstTierNightMinutes: 0, extraTierNightMinutes: 0 };
 
   return {
-    balance,
-    nightMinutes: nightEquivalentMinutes(nightMinutesWorked),
-    totalWorked,
-    ...splitOvertime(Math.max(0, balance), dayOfWeek === 0 || dayOfWeek === 6),
+    balance: breakdown.workedMinutes - breakdown.expectedMinutes,
+    nightMinutes: breakdown.nightMinutes,
+    totalWorked: breakdown.workedMinutes,
+    ...tiers,
+    ...nightTiers,
   };
-}
-
-function creditedMinutes(entryDate: Date, lunchStartDate: Date, lunchEndDate: Date, exitDate: Date): number {
-  const worked = differenceInMinutes(lunchStartDate, entryDate) + differenceInMinutes(exitDate, lunchEndDate);
-  const nightWorked = countNightMinutes(entryDate, exitDate, lunchStartDate, lunchEndDate);
-
-  return worked + nightBonusMinutes(nightWorked);
 }
 
 export function calculateSuggestedExit(
@@ -108,17 +99,20 @@ export function calculateSuggestedExit(
   const lunchStartDate = new Date(lunchStart);
   const lunchEndDate = new Date(lunchEnd);
 
-  if (!isChronological(entryDate, lunchStartDate, lunchEndDate)) return "";
+  if (findJourneyIssue({ entry, lunchStart, lunchEnd, exit: lunchEnd })) return "";
+
+  const creditedUntil = (exit: Date) =>
+    breakdownOf(entry, lunchStart, lunchEnd, format(exit, TIMESTAMP_FORMAT), workMinutes).workedMinutes;
 
   const workedBeforeLunch = differenceInMinutes(lunchStartDate, entryDate);
   let exitDate = addMinutes(lunchEndDate, Math.max(0, workMinutes - workedBeforeLunch));
-  let surplus = creditedMinutes(entryDate, lunchStartDate, lunchEndDate, exitDate) - workMinutes;
+  let surplus = creditedUntil(exitDate) - workMinutes;
 
   for (let pass = 0; pass < EXIT_REFINEMENT_PASSES && surplus !== 0; pass += 1) {
     const candidate = addMinutes(exitDate, -surplus);
     if (candidate < lunchEndDate) break;
 
-    const candidateSurplus = creditedMinutes(entryDate, lunchStartDate, lunchEndDate, candidate) - workMinutes;
+    const candidateSurplus = creditedUntil(candidate) - workMinutes;
     if (Math.abs(candidateSurplus) >= Math.abs(surplus)) break;
 
     exitDate = candidate;
@@ -161,7 +155,9 @@ export function useWorkCalculator() {
   const [lunchStart, setLunchStart] = useState(() => todayAt("12:00"));
   const [lunchEnd, setLunchEnd] = useState(() => todayAt("13:00"));
   const [exitOverride, setExitOverride] = useState("");
+  const [enteredExit, setEnteredExit] = useState<string | null>(null);
   const [isManualExit, setIsManualExit] = useState(false);
+  const [previousExit, setPreviousExit] = useState<string | null>(null);
   const [isRestored, setIsRestored] = useState(false);
 
   useEffect(() => {
@@ -177,6 +173,16 @@ export function useWorkCalculator() {
     setLunchEnd((current) => shiftedByDays(readStoredTimestamp(STORAGE_KEYS.lunchEnd), dayShift, current));
     setExitOverride((current) => shiftedByDays(readStoredTimestamp(STORAGE_KEYS.exitOverride), dayShift, current));
     setIsManualExit(readStoredFlag(STORAGE_KEYS.isManualExit, false));
+
+    const storedEnteredExit = readStoredTimestamp(STORAGE_KEYS.enteredExit);
+    if (dayShift > 0) {
+      setPreviousExit(storedEnteredExit);
+      if (storedEnteredExit === null) localStorage.removeItem(STORAGE_KEYS.previousEnteredExit);
+      else localStorage.setItem(STORAGE_KEYS.previousEnteredExit, storedEnteredExit);
+    } else {
+      setEnteredExit(storedEnteredExit);
+      setPreviousExit(readStoredTimestamp(STORAGE_KEYS.previousEnteredExit));
+    }
     setIsRestored(true);
   }, []);
 
@@ -202,6 +208,14 @@ export function useWorkCalculator() {
 
   const countedExit = isManualExit || currentTime === null ? displayExit : latestOf(displayExit, currentTime);
 
+  const minutesSincePreviousShift = useMemo(
+    () =>
+      previousExit === null || new Date(previousExit) > new Date(entry)
+        ? null
+        : differenceInMinutes(new Date(entry), new Date(previousExit)),
+    [previousExit, entry],
+  );
+
   const stats = useMemo(
     () => calculateWorkStats(entry, lunchStart, lunchEnd, countedExit, workMinutes),
     [entry, lunchStart, lunchEnd, countedExit, workMinutes],
@@ -212,6 +226,27 @@ export function useWorkCalculator() {
     [entry, lunchStart, lunchEnd, displayExit],
   );
 
+  useEffect(() => {
+    if (!isRestored) return;
+
+    if (isManualExit && enteredExit === displayExit && issue === null) {
+      localStorage.setItem(STORAGE_KEYS.enteredExit, displayExit);
+    } else {
+      localStorage.removeItem(STORAGE_KEYS.enteredExit);
+    }
+  }, [isRestored, isManualExit, enteredExit, displayExit, issue]);
+
+  const recordExit = (value: string) => {
+    setExitOverride(value);
+    setEnteredExit(new Date(value) <= new Date() ? value : null);
+    setIsManualExit(true);
+  };
+
+  const changeExitMode = (manual: boolean) => {
+    if (!manual) setEnteredExit(null);
+    setIsManualExit(manual);
+  };
+
   const resetDefaults = () => {
     setWorkMinutes(DEFAULT_WORK_MINUTES);
     setFirstTierRate(DEFAULT_FIRST_TIER_RATE);
@@ -219,7 +254,7 @@ export function useWorkCalculator() {
     setEntry(todayAt("08:00"));
     setLunchStart(todayAt("12:00"));
     setLunchEnd(todayAt("13:00"));
-    setIsManualExit(false);
+    changeExitMode(false);
     setExitOverride("");
   };
 
@@ -239,11 +274,13 @@ export function useWorkCalculator() {
     exitOverride,
     setExitOverride,
     isManualExit,
-    setIsManualExit,
+    setIsManualExit: changeExitMode,
+    recordExit,
     suggestedExit,
     displayExit,
     currentTime,
     stats,
+    minutesSincePreviousShift,
     issue,
     resetDefaults,
   };

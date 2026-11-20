@@ -1,5 +1,11 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const WIDE_VIEWPORT_SPEC = "**/wide-viewport.spec.ts";
+const DARK_HYDRATION_SPEC = "**/dark-hydration.spec.ts";
+
+const PORT = process.env.PORT ?? "3000";
+const BASE_URL = `http://localhost:${PORT}`;
+
 export default defineConfig({
   testDir: "./tests/e2e",
   fullyParallel: true,
@@ -9,18 +15,18 @@ export default defineConfig({
   reporter: [["html", { open: "never" }], ["list"], ["junit", { outputFile: "playwright-report/results.xml" }]],
   timeout: 60000,
   use: {
-    baseURL: "http://localhost:3000",
+    baseURL: BASE_URL,
     trace: "on-first-retry",
     actionTimeout: 15000,
     storageState: {
       cookies: [],
       origins: [
         {
-          origin: "http://localhost:3000",
+          origin: BASE_URL,
           localStorage: [
             {
               name: "workload_cookie_consent",
-              value: JSON.stringify({ telemetry: true, timestamp: 0 }),
+              value: JSON.stringify({ telemetry: true, ads: true, timestamp: 0 }),
             },
           ],
         },
@@ -31,35 +37,34 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
+      testIgnore: DARK_HYDRATION_SPEC,
       use: { ...devices["Desktop Chrome"] },
     },
     {
-      name: "desktop-qhd",
-      use: {
-        ...devices["Desktop Chrome"],
-        viewport: { width: 2560, height: 1440 },
-      },
-    },
-    {
-      name: "desktop-4k",
-      use: {
-        ...devices["Desktop Chrome"],
-        viewport: { width: 3840, height: 2160 },
-      },
-    },
-    {
       name: "Mobile Chrome",
+      testIgnore: [WIDE_VIEWPORT_SPEC, DARK_HYDRATION_SPEC],
       use: { ...devices["Pixel 5"] },
     },
     {
       name: "Mobile Safari",
+      testIgnore: [WIDE_VIEWPORT_SPEC, DARK_HYDRATION_SPEC],
       use: { ...devices["iPhone 12"] },
+    },
+    {
+      name: "Dark production",
+      testMatch: DARK_HYDRATION_SPEC,
+      use: { ...devices["Desktop Chrome"], colorScheme: "dark" },
     },
   ],
   webServer: {
-    command: process.env.CI ? "npm run start" : "npm run dev",
-    url: "http://localhost:3000",
-    reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
+    command: process.env.CI ? "pnpm start" : "pnpm build && pnpm start",
+    url: BASE_URL,
+    reuseExistingServer: false,
+    timeout: 300_000,
+    env: {
+      NEXT_PUBLIC_GA_ID: "G-TEST12345",
+      NEXT_PUBLIC_ENABLE_ADS: "true",
+      NEXT_PUBLIC_ADSENSE_ID: "ca-pub-0000000000000000",
+    },
   },
 });

@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { amountForPeriod, SALARY_PERIOD_LABELS, SALARY_PERIODS, type SalaryPeriod } from "@/lib/salary-period";
+import {
+  amountForPeriod,
+  findDivisorMismatch,
+  SALARY_PERIOD_LABELS,
+  SALARY_PERIODS,
+  type SalaryPeriod,
+} from "@/lib/salary-period";
 
 const MONTHLY_NET = 4498.49;
 const MONTHLY_HOURS = 220;
@@ -53,5 +59,24 @@ describe("amountForPeriod", () => {
   it("still reports the monthly and yearly amounts when the monthly hours are cleared", () => {
     expect(amountForPeriod(MONTHLY_NET, "month", 0, DAILY_HOURS)).toBe(MONTHLY_NET);
     expect(amountForPeriod(MONTHLY_NET, "year", 0, DAILY_HOURS)).toBeCloseTo(MONTHLY_NET * 13, 6);
+  });
+});
+
+describe("findDivisorMismatch", () => {
+  it("accepts the 220 divisor for the 8h48 journey", () => {
+    expect(findDivisorMismatch(220, 8.8)).toBeNull();
+  });
+
+  it("reports the 200 divisor Súmula 431 requires for a 40h week", () => {
+    expect(findDivisorMismatch(220, 8)).toBe(200);
+  });
+
+  it("accepts the divisor that matches a shorter journey", () => {
+    expect(findDivisorMismatch(150, 6)).toBeNull();
+  });
+
+  it("stays quiet while a journey or a divisor is missing", () => {
+    expect(findDivisorMismatch(220, 0)).toBeNull();
+    expect(findDivisorMismatch(0, 8)).toBeNull();
   });
 });

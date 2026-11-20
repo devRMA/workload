@@ -50,3 +50,9 @@ Thumbs.db
 # Vercel & Turbo
 .vercel
 .turbo
+
+# Specs evidence (large, regenerable, not review material)
+.specs/*/evidence/
+
+# Impeccable live-session scratch
+.impeccable/live/

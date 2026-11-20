@@ -8,14 +8,14 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, type, icon, ...props }, ref) => {
   return (
     <div className="relative">
-      {icon && <div className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500">{icon}</div>}
+      {icon && <div className="absolute left-4 top-1/2 -translate-y-1/2 text-ink-muted">{icon}</div>}
       <input
         type={type}
         autoComplete="off"
         spellCheck={false}
         enterKeyHint="done"
         className={cn(
-          "flex h-14 w-full rounded-2xl border border-neutral-500 dark:border-neutral-600 bg-white/50 dark:bg-neutral-900/50 px-4 py-2 text-lg ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-neutral-500 dark:placeholder:text-neutral-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50 transition-colors font-mono",
+          "flex h-14 w-full rounded-md border border-line-strong bg-surface px-4 text-input numeric text-ink placeholder:text-ink-subtle transition-[border-color] duration-(--duration-fast) ease-standard hover:border-ink-subtle focus-visible:border-accent ring-focus disabled:cursor-not-allowed disabled:bg-surface-sunken disabled:border-line disabled:opacity-60 aria-invalid:border-negative aria-invalid:bg-negative-soft",
           icon ? "pl-12" : "",
           className,
         )}

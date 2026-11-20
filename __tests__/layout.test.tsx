@@ -11,6 +11,27 @@ describe("RootLayout", () => {
     );
     expect(screen.getByText("layout child")).toBeInTheDocument();
   });
+
+  it("loads the hyperlegible family on the body", () => {
+    render(
+      <RootLayout>
+        <div>layout child</div>
+      </RootLayout>,
+    );
+    expect(document.body.className).toContain("font-hyperlegible");
+  });
+
+  it("does not preconnect to any third-party origin ahead of consent", () => {
+    render(
+      <RootLayout>
+        <div>layout child</div>
+      </RootLayout>,
+    );
+    expect(document.querySelector("link[rel='preconnect'][href*='googletagmanager.com']")).not.toBeInTheDocument();
+    expect(
+      document.querySelector("link[rel='preconnect'][href*='pagead2.googlesyndication.com']"),
+    ).not.toBeInTheDocument();
+  });
 });
 
 describe("metadata", () => {
@@ -38,8 +59,8 @@ describe("viewport", () => {
     expect(viewport.width).toBe("device-width");
     expect(viewport.initialScale).toBe(1);
     expect(viewport.themeColor).toEqual([
-      { media: "(prefers-color-scheme: light)", color: "#fafafa" },
-      { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+      { media: "(prefers-color-scheme: light)", color: "#f9fafc" },
+      { media: "(prefers-color-scheme: dark)", color: "#0f1116" },
     ]);
   });
 });

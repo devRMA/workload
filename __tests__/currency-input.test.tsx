@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
-import { CurrencyInput } from "@/components/atoms/currency-input";
+import { CurrencyInput } from "@/components/molecules/currency-input";
 import { parseCurrency } from "@/lib/utils";
 
 function CurrencyHarness({ initialValue = 0 }: { initialValue?: number }) {

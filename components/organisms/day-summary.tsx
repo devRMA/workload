@@ -1,18 +1,28 @@
-import { AlertTriangle, Coffee, MoonStar, Sunrise, Sunset, Zap } from "lucide-react";
+import {
+  IconAlertTriangle,
+  IconBolt,
+  IconCalendarMonth,
+  IconCoffee,
+  IconMoonStars,
+  IconSunrise,
+  IconSunset,
+} from "@tabler/icons-react";
 import Link from "next/link";
 import { VIEW_PATHS } from "@/lib/calculator-view";
 import type { ComplianceWarning } from "@/lib/compliance";
 import type { DayBreakdown, DaySegmentKind } from "@/lib/day-breakdown";
 import { formatHoursAndMinutes, formatSignedHoursAndMinutes } from "@/lib/duration";
+import { nightOvertimePremiumPay, nightPremiumPay } from "@/lib/night-shift";
 import { overtimePay } from "@/lib/payroll";
 import { cn, formatCurrency, formatTimeLabel } from "@/lib/utils";
-import { AlertBanner } from "../molecules/alert-banner";
+import { restDayPayOnOvertime, splitMonthDays } from "@/lib/weekly-rest";
+import { AlertBanner } from "../atoms/alert-banner";
 
 const SEGMENT_BAR_CLASSES: Record<DaySegmentKind, string> = {
-  morning: "bg-emerald-400",
-  lunch: "bg-neutral-300 dark:bg-neutral-600",
-  afternoon: "bg-emerald-600",
-  overtime: "bg-amber-500",
+  morning: "bg-positive/70",
+  lunch: "bg-line-strong",
+  afternoon: "bg-positive",
+  overtime: "bg-overtime",
 };
 
 interface JourneyTimes {
@@ -28,10 +38,12 @@ interface DaySummaryProps {
   balanceMinutes: number;
   firstTierMinutes: number;
   extraTierMinutes: number;
+  firstTierNightMinutes: number;
+  extraTierNightMinutes: number;
   nightMinutes: number;
   firstTierRate: number;
   extraTierRate: number;
-  hourlyRate: number | null;
+  grossHourlyRate: number | null;
   warnings: readonly ComplianceWarning[];
 }
 
@@ -41,15 +53,12 @@ function DayTimeline({ breakdown, times }: Pick<DaySummaryProps, "breakdown" | "
 
   return (
     <div className="space-y-2">
-      <div
-        className="flex h-3 w-full overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800"
-        aria-hidden="true"
-      >
+      <div className="flex h-3 w-full overflow-hidden rounded-full bg-surface-sunken" aria-hidden="true">
         {breakdown.segments.map(({ kind, minutes }) => (
           <div key={kind} className={SEGMENT_BAR_CLASSES[kind]} style={{ width: `${(minutes / total) * 100}%` }} />
         ))}
       </div>
-      <div className="flex justify-between text-xs font-medium text-neutral-500 dark:text-neutral-400 tabular-nums">
+      <div className="flex justify-between text-caption numeric text-ink-subtle">
         <span>{formatTimeLabel(times.entry)}</span>
         <span>{breakdown.isInProgress ? "agora" : formatTimeLabel(times.exit)}</span>
       </div>
@@ -57,11 +66,25 @@ function DayTimeline({ breakdown, times }: Pick<DaySummaryProps, "breakdown" | "
   );
 }
 
-function TotalRow({ label, value, emphasis }: { label: string; value: string; emphasis?: boolean }) {
+function TotalRow({
+  label,
+  value,
+  emphasis,
+  live,
+}: {
+  label: string;
+  value: string;
+  emphasis?: boolean;
+  live?: boolean;
+}) {
   return (
-    <div className="flex items-baseline justify-between gap-4">
-      <span className={cn("text-sm", emphasis ? "font-bold" : "text-neutral-600 dark:text-neutral-400")}>{label}</span>
-      <span className={cn("tabular-nums", emphasis ? "text-lg font-black" : "font-bold")}>{value}</span>
+    <div
+      className="flex items-baseline justify-between gap-4"
+      aria-live={live ? "polite" : undefined}
+      aria-atomic={live ? true : undefined}
+    >
+      <span className={cn("text-body-sm", emphasis ? "font-semibold text-ink" : "text-ink-muted")}>{label}</span>
+      <span className={cn("numeric font-semibold", emphasis ? "text-heading" : "")}>{value}</span>
     </div>
   );
 }
@@ -72,24 +95,32 @@ export function DaySummary({
   balanceMinutes,
   firstTierMinutes,
   extraTierMinutes,
+  firstTierNightMinutes,
+  extraTierNightMinutes,
   nightMinutes,
   firstTierRate,
   extraTierRate,
-  hourlyRate,
+  grossHourlyRate,
   warnings,
 }: DaySummaryProps) {
   const stretches = [
     {
       kind: "morning" as const,
-      icon: Sunrise,
+      icon: IconSunrise,
       label: "Manhã",
       endsAt: times.lunchStart,
       minutes: breakdown.morningMinutes,
     },
-    { kind: "lunch" as const, icon: Coffee, label: "Almoço", endsAt: times.lunchEnd, minutes: breakdown.lunchMinutes },
+    {
+      kind: "lunch" as const,
+      icon: IconCoffee,
+      label: "Almoço",
+      endsAt: times.lunchEnd,
+      minutes: breakdown.lunchMinutes,
+    },
     {
       kind: "afternoon" as const,
-      icon: Sunset,
+      icon: IconSunset,
       label: "Tarde",
       endsAt: times.exit,
       minutes: breakdown.afternoonMinutes,
@@ -98,47 +129,59 @@ export function DaySummary({
 
   const startsAt = [times.entry, times.lunchStart, times.lunchEnd];
   const isPositiveBalance = balanceMinutes >= 0;
-  const firstTierPay = hourlyRate === null ? null : overtimePay(firstTierMinutes, hourlyRate, firstTierRate);
-  const extraTierPay = hourlyRate === null ? null : overtimePay(extraTierMinutes, hourlyRate, extraTierRate);
+  const firstTierPay =
+    grossHourlyRate === null
+      ? null
+      : overtimePay(firstTierMinutes, grossHourlyRate, firstTierRate) +
+        nightOvertimePremiumPay(firstTierNightMinutes, grossHourlyRate, firstTierRate);
+  const extraTierPay =
+    grossHourlyRate === null
+      ? null
+      : overtimePay(extraTierMinutes, grossHourlyRate, extraTierRate) +
+        nightOvertimePremiumPay(extraTierNightMinutes, grossHourlyRate, extraTierRate);
+  const nightPay = grossHourlyRate === null ? null : nightPremiumPay(nightMinutes, grossHourlyRate);
+  const variablePay = (firstTierPay ?? 0) + (extraTierPay ?? 0) + (nightPay ?? 0);
+  const restDayPay = restDayPayOnOvertime(variablePay, splitMonthDays(new Date(times.entry)));
 
   return (
-    <div className="bg-white dark:bg-neutral-900 rounded-3xl p-6 sm:p-8 shadow-sm border border-neutral-200 dark:border-neutral-800 space-y-6">
-      <h3 className="text-lg font-bold">Seu Dia</h3>
+    <div className="bg-surface rounded-xl p-6 sm:p-8 shadow-card border border-line space-y-6">
+      <h3 className="text-heading">Seu Dia</h3>
 
       <DayTimeline breakdown={breakdown} times={times} />
 
       <div className="space-y-3">
         {stretches.map(({ kind, icon: Icon, label, endsAt, minutes }, index) => (
-          <div key={kind} className="flex items-center gap-3 text-sm">
+          <div key={kind} className="flex items-center gap-3 text-body-sm">
             <span className={cn("h-2.5 w-2.5 shrink-0 rounded-full", SEGMENT_BAR_CLASSES[kind])} aria-hidden="true" />
-            <Icon className="w-4 h-4 shrink-0 text-neutral-500 dark:text-neutral-400" aria-hidden="true" />
+            <Icon className="w-4 h-4 shrink-0 text-ink-muted" aria-hidden="true" />
             <span className="font-medium">{label}</span>
-            <span className="text-neutral-500 dark:text-neutral-400 tabular-nums">
+            <span className="text-ink-muted numeric">
               {formatTimeLabel(startsAt[index])} →{" "}
               {index === stretches.length - 1 && breakdown.isInProgress ? "agora" : formatTimeLabel(endsAt)}
             </span>
-            <span className="ml-auto font-bold tabular-nums">{formatHoursAndMinutes(minutes)}</span>
+            <span className="ml-auto numeric font-semibold">{formatHoursAndMinutes(minutes)}</span>
           </div>
         ))}
 
         {breakdown.nightBonusMinutes > 0 ? (
-          <div className="flex items-center gap-3 text-sm">
-            <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-indigo-500" aria-hidden="true" />
-            <MoonStar className="w-4 h-4 shrink-0 text-indigo-500" aria-hidden="true" />
+          <div className="flex items-center gap-3 text-body-sm">
+            <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-night" aria-hidden="true" />
+            <IconMoonStars className="w-4 h-4 shrink-0 text-night-ink" aria-hidden="true" />
             <span className="font-medium">Hora noturna reduzida</span>
-            <span className="text-neutral-500 dark:text-neutral-400">art. 73 da CLT</span>
-            <span className="ml-auto font-bold tabular-nums text-indigo-600 dark:text-indigo-400">
+            <span className="text-ink-muted">art. 73 da CLT</span>
+            <span className="ml-auto numeric font-semibold text-night-ink">
               +{formatHoursAndMinutes(breakdown.nightBonusMinutes)}
             </span>
           </div>
         ) : null}
       </div>
 
-      <div className="space-y-2 border-t border-neutral-100 dark:border-neutral-800 pt-6">
+      <div className="space-y-2 border-t border-line-faint pt-6">
         <TotalRow
           label={breakdown.isInProgress ? "Trabalhado até agora" : "Trabalhado no dia"}
           value={formatHoursAndMinutes(breakdown.workedMinutes)}
           emphasis
+          live={breakdown.isInProgress}
         />
         <TotalRow label="Previsto no dia" value={formatHoursAndMinutes(breakdown.expectedMinutes)} />
         {breakdown.remainingMinutes > 0 ? (
@@ -146,55 +189,75 @@ export function DaySummary({
         ) : null}
       </div>
 
-      <div className="space-y-3 border-t border-neutral-100 dark:border-neutral-800 pt-6">
+      <div className="space-y-3 border-t border-line-faint pt-6">
         <div className="flex items-baseline justify-between gap-4">
-          <span className="text-sm font-bold">
+          <span className="text-body-sm font-semibold text-ink">
             {breakdown.remainingMinutes > 0 ? "Saldo se você sair no horário" : "Saldo do dia"}
           </span>
-          <span
-            className={cn(
-              "text-2xl font-black tabular-nums",
-              isPositiveBalance ? "text-emerald-700 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400",
-            )}
-          >
+          <span className={cn("text-metric numeric", isPositiveBalance ? "text-positive-ink" : "text-negative-ink")}>
             {formatSignedHoursAndMinutes(balanceMinutes)}
           </span>
         </div>
 
         <div className="space-y-2">
-          <div className="flex items-center gap-3 text-sm">
-            <Zap className="w-4 h-4 shrink-0 text-amber-500" aria-hidden="true" />
+          <div className="flex items-center gap-3 text-body-sm">
+            <IconBolt className="w-4 h-4 shrink-0 text-overtime-ink" aria-hidden="true" />
             <span>Extra {firstTierRate}%</span>
-            <span className="ml-auto font-bold tabular-nums">{formatHoursAndMinutes(firstTierMinutes)}</span>
+            <span className="ml-auto numeric font-semibold">{formatHoursAndMinutes(firstTierMinutes)}</span>
             {firstTierPay === null ? null : (
-              <span className="w-24 text-right font-bold tabular-nums text-emerald-700 dark:text-emerald-400">
+              <span className="w-24 text-right numeric font-semibold text-positive-ink">
                 {formatCurrency(firstTierPay)}
               </span>
             )}
           </div>
-          <div className="flex items-center gap-3 text-sm">
-            <Zap className="w-4 h-4 shrink-0 text-orange-600" aria-hidden="true" />
+          <div className="flex items-center gap-3 text-body-sm">
+            <IconBolt className="w-4 h-4 shrink-0 text-overtime-ink" aria-hidden="true" />
             <span>Extra {extraTierRate}%</span>
-            <span className="ml-auto font-bold tabular-nums">{formatHoursAndMinutes(extraTierMinutes)}</span>
+            <span className="ml-auto numeric font-semibold">{formatHoursAndMinutes(extraTierMinutes)}</span>
             {extraTierPay === null ? null : (
-              <span className="w-24 text-right font-bold tabular-nums text-emerald-700 dark:text-emerald-400">
+              <span className="w-24 text-right numeric font-semibold text-positive-ink">
                 {formatCurrency(extraTierPay)}
               </span>
             )}
           </div>
-          <div className="flex items-center gap-3 text-sm">
-            <MoonStar className="w-4 h-4 shrink-0 text-indigo-500" aria-hidden="true" />
-            <span>Adicional noturno</span>
-            <span className="ml-auto font-bold tabular-nums">{formatHoursAndMinutes(nightMinutes)}</span>
-            {hourlyRate === null ? null : <span className="w-24" />}
+          <div className="flex items-center gap-3 text-body-sm">
+            <IconMoonStars className="w-4 h-4 shrink-0 text-night-ink" aria-hidden="true" />
+            <span>Adicional noturno 20%</span>
+            <span className="ml-auto numeric font-semibold">{formatHoursAndMinutes(nightMinutes)}</span>
+            {nightPay === null ? null : (
+              <span className="w-24 text-right numeric font-semibold text-positive-ink">
+                {formatCurrency(nightPay)}
+              </span>
+            )}
           </div>
+          {grossHourlyRate !== null && firstTierNightMinutes + extraTierNightMinutes > 0 ? (
+            <p className="text-caption text-ink-subtle text-pretty">
+              A hora extra feita à noite é calculada sobre a hora já com o adicional noturno.
+            </p>
+          ) : null}
+          {restDayPay > 0 ? (
+            <div className="flex items-center gap-3 text-body-sm">
+              <IconCalendarMonth className="w-4 h-4 shrink-0 text-positive-ink" aria-hidden="true" />
+              <span>DSR sobre os extras</span>
+              <span className="ml-auto w-24 text-right numeric font-semibold text-positive-ink">
+                {formatCurrency(restDayPay)}
+              </span>
+            </div>
+          ) : null}
         </div>
 
-        {hourlyRate === null ? (
+        {restDayPay > 0 ? (
+          <p className="text-caption text-ink-subtle text-pretty">
+            O DSR (Súmula 172 do TST) supõe que estes extras se repitam em todos os dias úteis do mês e conta só os
+            domingos. Feriados não entram.
+          </p>
+        ) : null}
+
+        {grossHourlyRate === null ? (
           <Link
             href={VIEW_PATHS.salary}
             scroll={false}
-            className="block w-full rounded-2xl border border-dashed border-neutral-300 dark:border-neutral-700 p-3 text-center text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:border-emerald-500 hover:text-emerald-600 transition-colors"
+            className="flex min-h-11 w-full items-center justify-center rounded-md border border-dashed border-line-strong p-3 text-center text-body-sm text-ink-muted transition-colors duration-(--duration-fast) ease-standard hover:border-accent hover:text-accent-ink ring-focus"
           >
             Quer ver quanto isso vale em reais? Calcule o valor da sua hora →
           </Link>
@@ -202,7 +265,7 @@ export function DaySummary({
       </div>
 
       {warnings.map(({ id, title, detail }) => (
-        <AlertBanner key={id} icon={AlertTriangle} tone="warning" title={title}>
+        <AlertBanner key={id} icon={IconAlertTriangle} tone="warning" title={title}>
           <p>{detail}</p>
         </AlertBanner>
       ))}

@@ -1,7 +1,10 @@
-import { act, renderHook } from "@testing-library/react";
+import { act, render, renderHook, screen } from "@testing-library/react";
 import { differenceInCalendarDays } from "date-fns";
+import { createElement } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { DaySummary } from "@/components/organisms/day-summary";
 import { calculateSuggestedExit, calculateWorkStats, useWorkCalculator } from "@/hooks/use-work-calculator";
+import { buildDayBreakdown } from "@/lib/day-breakdown";
 
 const FULL_DAY_MINUTES = 8 * 60 + 48;
 const MONDAY = "2025-01-06";
@@ -131,6 +134,54 @@ describe("calculateWorkStats", () => {
     expect(statsFor(`${MONDAY}T17:48`).nightMinutes).toBe(0);
   });
 
+  it("distinguishes when overtime occurs for shifts with identical credited totals", () => {
+    const beforeOvertime = calculateWorkStats(
+      `${MONDAY}T22:00`,
+      `${MONDAY}T23:45`,
+      "2025-01-07T05:00",
+      "2025-01-07T13:00",
+      480,
+    );
+    const duringOvertime = calculateWorkStats(
+      `${MONDAY}T13:00`,
+      `${MONDAY}T21:00`,
+      `${MONDAY}T22:00`,
+      `${MONDAY}T23:45`,
+      480,
+    );
+    expect(beforeOvertime.totalWorked).toBe(600);
+    expect(beforeOvertime.nightMinutes).toBe(120);
+    expect(beforeOvertime.firstTierMinutes + beforeOvertime.extraTierMinutes).toBe(120);
+    expect(duringOvertime.totalWorked).toBe(beforeOvertime.totalWorked);
+    expect(duringOvertime.nightMinutes).toBe(beforeOvertime.nightMinutes);
+    expect(duringOvertime.firstTierMinutes + duringOvertime.extraTierMinutes).toBe(
+      beforeOvertime.firstTierMinutes + beforeOvertime.extraTierMinutes,
+    );
+    expect(beforeOvertime.firstTierNightMinutes).toBe(0);
+    expect(duringOvertime.firstTierNightMinutes).toBe(120);
+    expect(beforeOvertime.extraTierNightMinutes).toBe(0);
+    expect(duringOvertime.extraTierNightMinutes).toBe(0);
+  });
+
+  it("allocates night overtime to the tier selected for the entry day", () => {
+    const stats = calculateWorkStats(
+      `${SATURDAY}T13:00`,
+      `${SATURDAY}T21:00`,
+      `${SATURDAY}T22:00`,
+      `${SATURDAY}T23:45`,
+      480,
+    );
+    expect(stats).toEqual({
+      balance: 120,
+      nightMinutes: 120,
+      firstTierMinutes: 0,
+      extraTierMinutes: 120,
+      firstTierNightMinutes: 0,
+      extraTierNightMinutes: 120,
+      totalWorked: 600,
+    });
+  });
+
   it("returns zeroed stats when the times are out of order", () => {
     const stats = calculateWorkStats(
       `${MONDAY}T08:00`,
@@ -145,6 +196,8 @@ describe("calculateWorkStats", () => {
       nightMinutes: 0,
       firstTierMinutes: 0,
       extraTierMinutes: 0,
+      firstTierNightMinutes: 0,
+      extraTierNightMinutes: 0,
       totalWorked: 0,
     });
   });
@@ -240,6 +293,50 @@ describe("useWorkCalculator", () => {
     expect(reloaded.result.current.exitOverride).toBe(`${MONDAY}T19:30`);
   });
 
+  it("ignores the old projected exit and a manual draft that was never entered", () => {
+    vi.setSystemTime(new Date(`${MONDAY}T22:30:00`));
+    localStorage.setItem("lastExit", `${MONDAY}T22:00`);
+    const previousDay = renderHook(() => useWorkCalculator());
+    act(() => {
+      previousDay.result.current.setExitOverride(`${MONDAY}T22:00`);
+      previousDay.result.current.setIsManualExit(true);
+    });
+    previousDay.unmount();
+
+    vi.setSystemTime(new Date("2025-01-07T08:00:00"));
+    const nextDay = renderHook(() => useWorkCalculator());
+
+    expect(nextDay.result.current.minutesSincePreviousShift).toBeNull();
+  });
+
+  it("keeps the gap from an explicitly entered exit across a reload on the next day", () => {
+    vi.setSystemTime(new Date(`${MONDAY}T22:30:00`));
+    const previousDay = renderHook(() => useWorkCalculator());
+    act(() => previousDay.result.current.recordExit(`${MONDAY}T22:00`));
+    previousDay.unmount();
+
+    vi.setSystemTime(new Date("2025-01-07T08:00:00"));
+    const nextDay = renderHook(() => useWorkCalculator());
+    expect(nextDay.result.current.minutesSincePreviousShift).toBe(600);
+    act(() => nextDay.result.current.setEntry(`${MONDAY}T21:59`));
+    expect(nextDay.result.current.minutesSincePreviousShift).toBeNull();
+    act(() => nextDay.result.current.setEntry("2025-01-07T09:00"));
+    nextDay.unmount();
+
+    const reloaded = renderHook(() => useWorkCalculator());
+    expect(reloaded.result.current.minutesSincePreviousShift).toBe(660);
+  });
+
+  it("does not promote a future or invalid exit into a previous shift", () => {
+    const previousDay = renderHook(() => useWorkCalculator());
+    act(() => previousDay.result.current.recordExit(`${MONDAY}T22:00`));
+    expect(localStorage.getItem("enteredExit")).toBeNull();
+
+    vi.setSystemTime(new Date(`${MONDAY}T23:00:00`));
+    act(() => previousDay.result.current.recordExit(`${MONDAY}T11:00`));
+    expect(localStorage.getItem("enteredExit")).toBeNull();
+  });
+
   it("reports no issue for the default journey", () => {
     const { result } = renderHook(() => useWorkCalculator());
 
@@ -314,6 +411,60 @@ describe("useWorkCalculator", () => {
     expect(result.current.displayExit).toBe(`${MONDAY}T17:48`);
     expect(result.current.stats.balance).toBe(72);
     expect(result.current.stats.firstTierMinutes).toBe(72);
+  });
+
+  it("delivers identical overtime stats and pay for manual and automatic exits at the same minute", () => {
+    const exit = `${MONDAY}T23:45`;
+    const now = new Date(exit);
+    vi.setSystemTime(now);
+    localStorage.setItem("workMinutes", "480");
+    localStorage.setItem("entry", `${MONDAY}T13:00`);
+    localStorage.setItem("lunchStart", `${MONDAY}T21:00`);
+    localStorage.setItem("lunchEnd", `${MONDAY}T22:00`);
+    const { result } = renderHook(() => useWorkCalculator());
+
+    const summary = () => {
+      const { stats, entry, lunchStart, lunchEnd, displayExit, workMinutes, isManualExit, currentTime } =
+        result.current;
+      const times = { entry, lunchStart, lunchEnd, exit: displayExit };
+      return createElement(DaySummary, {
+        ...stats,
+        times,
+        breakdown: buildDayBreakdown({ ...times, expectedMinutes: workMinutes, isManualExit, now: currentTime }),
+        balanceMinutes: stats.balance,
+        firstTierRate: result.current.firstTierRate,
+        extraTierRate: result.current.extraTierRate,
+        grossHourlyRate: 20,
+        warnings: [],
+      });
+    };
+
+    expect(result.current.isManualExit).toBe(false);
+    expect(result.current.currentTime).toEqual(now);
+    expect(result.current.displayExit).toBe(`${MONDAY}T22:00`);
+    const automatic = result.current.stats;
+    expect(automatic).toEqual({
+      balance: 120,
+      nightMinutes: 120,
+      firstTierMinutes: 120,
+      extraTierMinutes: 0,
+      firstTierNightMinutes: 120,
+      extraTierNightMinutes: 0,
+      totalWorked: 600,
+    });
+    const { rerender } = render(summary());
+    expect(screen.getByText("Extra 50%").parentElement).toHaveTextContent(/R\$\s64,00$/);
+    expect(screen.getByText("Adicional noturno 20%").parentElement).toHaveTextContent(/R\$\s8,00$/);
+    expect(screen.getByText("DSR sobre os extras").parentElement).toHaveTextContent(/R\$\s10,67$/);
+
+    act(() => result.current.recordExit(exit));
+    expect(result.current.isManualExit).toBe(true);
+    expect(result.current.displayExit).toBe(exit);
+    expect(result.current.stats).toEqual(automatic);
+    rerender(summary());
+    expect(screen.getByText("Extra 50%").parentElement).toHaveTextContent(/R\$\s64,00$/);
+    expect(screen.getByText("Adicional noturno 20%").parentElement).toHaveTextContent(/R\$\s8,00$/);
+    expect(screen.getByText("DSR sobre os extras").parentElement).toHaveTextContent(/R\$\s10,67$/);
   });
 
   it("stops counting at the registered exit in manual mode, whatever the clock says", () => {

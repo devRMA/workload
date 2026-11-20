@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Atkinson_Hyperlegible_Next } from "next/font/google";
 import "./globals.css";
-import { CookieConsent } from "@/components/molecules/cookie-consent";
 import { AdManager } from "@/components/organisms/ad-manager";
 import { AnalyticsWrapper } from "@/components/organisms/analytics-wrapper";
-import { ThemeProvider } from "@/components/theme-provider";
+import { CookieConsent } from "@/components/organisms/cookie-consent";
+import { ThemeProvider } from "@/components/templates/theme-provider";
 
-const inter = Inter({ subsets: ["latin"] });
+const hyperlegible = Atkinson_Hyperlegible_Next({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-hyperlegible",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://workload.devrma.com"),
@@ -44,8 +48,8 @@ export const metadata: Metadata = {
 
 export const viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#fafafa" },
-    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+    { media: "(prefers-color-scheme: light)", color: "#f9fafc" },
+    { media: "(prefers-color-scheme: dark)", color: "#0f1116" },
   ],
   width: "device-width",
   initialScale: 1,
@@ -54,11 +58,7 @@ export const viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://www.googletagmanager.com" />
-        <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossOrigin="anonymous" />
-      </head>
-      <body className={inter.className} suppressHydrationWarning>
+      <body className={hyperlegible.variable} suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           {children}
           <AdManager />

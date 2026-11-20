@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { readTelemetryConsent, writeTelemetryConsent } from "@/lib/consent";
+import { readAdsConsent, readTelemetryConsent, writeConsent } from "@/lib/consent";
 
 const CONSENT_KEY = "workload_cookie_consent";
 
@@ -43,15 +43,16 @@ describe("readTelemetryConsent", () => {
   });
 });
 
-describe("writeTelemetryConsent", () => {
+describe("writeConsent", () => {
   beforeEach(() => {
     localStorage.clear();
   });
 
-  it("writes both telemetry and a numeric timestamp", () => {
-    writeTelemetryConsent(true);
+  it("stores each purpose separately with a numeric timestamp", () => {
+    writeConsent(true, false);
     const stored = JSON.parse(localStorage.getItem(CONSENT_KEY) as string);
-    expect(stored.telemetry).toBe(true);
+    expect(readTelemetryConsent()).toBe(true);
+    expect(readAdsConsent()).toBe(false);
     expect(typeof stored.timestamp).toBe("number");
   });
 });

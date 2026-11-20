@@ -153,13 +153,46 @@ describe("SalaryCalculator", () => {
   });
 
   it("asks for the workload instead of showing a made up hourly value", () => {
+    localStorage.setItem("grossSalary", "5000");
     localStorage.setItem("monthlyHours", "0");
 
     render(<SalaryCalculator />);
 
     expect(screen.getByRole("alert")).toHaveTextContent("Informe a carga horária mensal");
-    expect(screen.getByText("—")).toBeInTheDocument();
+    expect(screen.getByText("Sem carga horária")).toBeInTheDocument();
     expect(screen.getByText("Informe a carga horária mensal para calcular")).toBeInTheDocument();
+  });
+
+  it("refuses to pass a missing salary off as a confident zero", () => {
+    render(<SalaryCalculator />);
+
+    expect(screen.getAllByRole("alert")[0]).toHaveTextContent("Informe o seu salário bruto");
+    expect(screen.getByText(/Esse zero não é o seu salário/)).toBeInTheDocument();
+  });
+
+  it("keeps the zero and the disclaimer that it is not the salary in the same banner", () => {
+    render(<SalaryCalculator />);
+
+    const banner = screen.getAllByRole("alert")[0];
+    expect(banner).toHaveTextContent("R$ 0,00");
+    expect(banner).toHaveTextContent("Esse zero não é o seu salário");
+  });
+
+  it("warns when the monthly divisor does not match the declared journey", () => {
+    localStorage.setItem("grossSalary", "3000");
+    localStorage.setItem("monthlyHours", "220");
+    localStorage.setItem("workMinutes", "480");
+
+    render(<SalaryCalculator />);
+
+    expect(screen.getByRole("status")).toHaveTextContent("Súmula 431 do TST");
+    expect(screen.getByRole("status")).toHaveTextContent("200 horas");
+  });
+
+  it("says the overtime of the journey tab is priced on the gross hour", () => {
+    render(<SalaryCalculator />);
+
+    expect(screen.getByText(/calculada sobre a hora bruta/)).toBeInTheDocument();
   });
 
   it("keeps the hourly value visible once the workload is known", () => {

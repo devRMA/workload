@@ -31,7 +31,7 @@ test.describe("Salary Calculator (Custo da Hora)", () => {
     const valueInput = page.getByPlaceholder("Valor").first();
     await valueInput.fill("50");
 
-    const removeBtn = page.locator("button:has(.lucide-trash2)").first();
+    const removeBtn = page.getByRole("button", { name: "Remover desconto" }).first();
     await removeBtn.click();
 
     await expect(page.getByPlaceholder("Nome (ex: Plano de Saúde)")).toHaveCount(0);

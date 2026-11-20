@@ -1,7 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
 import { useSalaryCalculator } from "@/hooks/use-salary-calculator";
-import { DAILY_MINUTES_KEY, HOURLY_RATE_KEY } from "@/lib/storage";
+import { DAILY_MINUTES_KEY, GROSS_SALARY_KEY, MONTHLY_HOURS_KEY } from "@/lib/storage";
 
 describe("useSalaryCalculator", () => {
   beforeEach(() => {
@@ -232,16 +232,17 @@ describe("useSalaryCalculator", () => {
     expect(localStorage.getItem(DAILY_MINUTES_KEY)).toBe("480");
   });
 
-  it("publishes the hourly value for the journey tab to price overtime with", () => {
+  it("publishes the gross salary and the divisor for the journey tab to price overtime with", () => {
     const { result } = renderHook(() => useSalaryCalculator(5000));
 
-    expect(Number(localStorage.getItem(HOURLY_RATE_KEY))).toBeCloseTo(20.4477, 4);
+    expect(Number(localStorage.getItem(GROSS_SALARY_KEY))).toBe(5000);
+    expect(Number(localStorage.getItem(MONTHLY_HOURS_KEY))).toBe(220);
 
     act(() => {
       result.current.setGrossSalary(10000);
     });
 
-    expect(Number(localStorage.getItem(HOURLY_RATE_KEY))).toBeCloseTo(result.current.stats.hourlyRate, 6);
+    expect(Number(localStorage.getItem(GROSS_SALARY_KEY))).toBe(10000);
   });
 
   it("has no hourly value while the monthly hours are cleared", () => {
