@@ -22,6 +22,8 @@ test.describe("Google Tracking & Ads", () => {
   });
 
   test("should never place an ad above the calculator", async ({ page }) => {
+    await expect(page.locator('script[src*="pagead2.googlesyndication.com"]')).toHaveCount(0);
+    await expect(page.locator("ins.adsbygoogle")).toHaveCount(0);
     await page.click('button:has-text("Aceitar Tudo")');
 
     await expect(page.locator("ins.adsbygoogle").first()).toBeAttached();
