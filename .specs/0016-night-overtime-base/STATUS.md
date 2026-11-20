@@ -1,7 +1,7 @@
 # 0016 — Status
 
 **State:** in-progress
-**Next agent:** release-manager (G8, aguarda aprovação para operação remota)
+**Next agent:** release-manager (G8, validação dos novos heads)
 **Bounces:** G6 · 1
 
 ## Gates
@@ -34,7 +34,7 @@
 
 ## Blockers
 
-- G8 aguarda autorização explícita para operações remotas. G9 depende da prévia do Vercel produzida em G8.
+- G9 depende de uma prévia do Vercel que corresponda ao novo head.
 
 ## Verificação integrada antes de G8
 
@@ -57,6 +57,7 @@ Em 20/11/2026, sobre o worktree local `review/stack-38-recovered`, base `5c0c6fa
 | 2026-11-20 | tech-lead | **G6 rejeitou na execução 1.** QA e Ponytail encaminharam a divergência da contagem canônica em uma transição histórica de fuso e o custo da varredura por minuto. QA também encaminhou lacunas nos controles A/B e 119/120/121. Auditoria e jurídico apontaram a falta de acesso à fonte oficial pela Jornada. A correção usou as janelas compartilhadas, reforçou os testes e levou o link ao rodapé. |
 | 2026-11-20 | qa-engineer, web-standards-auditor, labor-law-analyst, refactor-scout | **G6 passou na execução 2.** Os quatro relatórios registram a aprovação dos achados da rodada anterior no código revisado. |
 | 2026-11-20 | release-manager | **G7 passou na execução 1.** A documentação registra o bounce e descreve as janelas compartilhadas, a fonte no rodapé e os testes entregues. Próximo gate G8, com release e preview pendentes. |
+| 2026-11-20 | release-manager | Publicação autorizada pelo usuário. Os commits preservam a ordem e o histórico das branches; CI e preview dos novos heads ainda precisam ser confirmados no GitHub. Nenhum merge autorizado. |
 
 ## Evidência G7
 

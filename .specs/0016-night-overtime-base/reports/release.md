@@ -1,6 +1,6 @@
 # Stack #38 — revisão local para G8
 
-**Estado:** validada localmente; aguarda autorização explícita para publicação. Nenhum commit, push ou merge criado pela revisão até este registro. Correções preservadas no worktree `review/stack-38-recovered`, criado sobre `5c0c6fa`. A árvore de trabalho principal não foi alterada.
+**Estado:** validada localmente e autorizada para publicação. CI e prévia dos novos heads são verificados após o push; o merge não faz parte da revisão. A árvore de trabalho principal não foi alterada.
 
 ## Revisão por PR
 
@@ -24,6 +24,6 @@ O número #38 é da stack, não de uma camada. Faixas de sábado, revisão fisca
 - `lhci collect` seguido de `lhci assert`: 6 execuções locais, 3 em cada rota, todas as asserções satisfeitas na build sem anúncios/Analytics. Nenhum upload. Essa medição não substitui a comparação de LCP em produção.
 - Gates de QA, jurídico, auditoria e simplicidade passaram na segunda rodada. `docs-check` em 0001 e 0016 sem falhas ou avisos.
 
-## Publicação pendente
+## Publicação
 
-Registrar autorização antes de criar os commits e atualizar os PRs. Distribuir os ajustes nas camadas compatíveis e preservar a ordem da stack; não modificar a árvore de trabalho do usuário. Conferir os heads no GitHub, CI de cada head atualizado e o preview do Vercel antes de recomendar merge. Não fazer merge.
+Os commits assinados distribuem CI no #32, consentimento no #34 e cálculo, citações e hidratação no #39. O cálculo e as citações ficam no #39 porque a alteração integrada usa a base de cálculo do #34, a renderização do rodapé e a documentação incorporadas nas camadas seguintes. Os PRs intermediários herdam as correções sem reescrever os commits existentes. O conteúdo do topo, antes desta atualização documental, coincide com a árvore validada localmente (`a95d16a`). Conferir CI nos novos heads e a prévia do Vercel antes de recomendar merge.
