@@ -3,11 +3,12 @@ import { SALARY_PERIOD_LABELS, SALARY_PERIODS, type SalaryPeriod } from "@/lib/s
 interface PeriodSelectorProps {
   value: SalaryPeriod;
   onChange: (period: SalaryPeriod) => void;
+  describedById?: string;
 }
 
-export function PeriodSelector({ value, onChange }: PeriodSelectorProps) {
+export function PeriodSelector({ value, onChange, describedById }: PeriodSelectorProps) {
   return (
-    <fieldset className="grid grid-cols-5 gap-1 rounded-lg bg-scrim/25 p-1.5">
+    <fieldset className="grid grid-cols-5 gap-1 rounded-lg bg-scrim/25 p-1.5" aria-describedby={describedById}>
       <legend className="sr-only">Visualizar o valor por período</legend>
       {SALARY_PERIODS.map((period) => (
         <label

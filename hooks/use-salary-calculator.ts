@@ -7,7 +7,7 @@ import {
   WORK_REGIMES,
   type WorkRegime,
 } from "@/lib/payroll";
-import { amountForPeriod, SALARY_PERIODS, type SalaryPeriod } from "@/lib/salary-period";
+import { amountForPeriod, DEFAULT_MONTHLY_HOURS, SALARY_PERIODS, type SalaryPeriod } from "@/lib/salary-period";
 import {
   DAILY_MINUTES_KEY,
   GROSS_SALARY_KEY,
@@ -15,6 +15,7 @@ import {
   readStoredList,
   readStoredNumber,
   readStoredOptionalNumber,
+  WORK_DAYS_PER_WEEK_KEY,
   writeStoredOptionalNumber,
 } from "@/lib/storage";
 
@@ -27,8 +28,8 @@ export interface ExtraItem {
 export type ExtraKind = "gain" | "deduction";
 
 const DEFAULT_GROSS_SALARY = 0;
-const DEFAULT_MONTHLY_HOURS = 220;
 const DEFAULT_DAILY_MINUTES = 8 * 60 + 48;
+const DEFAULT_WORK_DAYS_PER_WEEK = 5;
 const DEFAULT_REGIME: WorkRegime = "clt";
 const DEFAULT_PERIOD: SalaryPeriod = "hour";
 
@@ -36,6 +37,7 @@ const STORAGE_KEYS = {
   grossSalary: GROSS_SALARY_KEY,
   monthlyHours: MONTHLY_HOURS_KEY,
   dailyMinutes: DAILY_MINUTES_KEY,
+  workDaysPerWeek: WORK_DAYS_PER_WEEK_KEY,
   dependents: "dependents",
   manualInss: "manualInss",
   manualIrrf: "manualIrrf",
@@ -69,6 +71,7 @@ export function useSalaryCalculator(initialSalary = DEFAULT_GROSS_SALARY, initia
   const [grossSalary, setGrossSalary] = useState(initialSalary);
   const [monthlyHours, setMonthlyHours] = useState(initialHours);
   const [dailyMinutes, setDailyMinutes] = useState(DEFAULT_DAILY_MINUTES);
+  const [workDaysPerWeek, setWorkDaysPerWeek] = useState(DEFAULT_WORK_DAYS_PER_WEEK);
   const [dependents, setDependents] = useState(0);
   const [regime, setRegime] = useState<WorkRegime>(DEFAULT_REGIME);
   const [period, setPeriod] = useState<SalaryPeriod>(DEFAULT_PERIOD);
@@ -82,6 +85,7 @@ export function useSalaryCalculator(initialSalary = DEFAULT_GROSS_SALARY, initia
     setGrossSalary(readStoredNumber(STORAGE_KEYS.grossSalary, initialSalary));
     setMonthlyHours(readStoredNumber(STORAGE_KEYS.monthlyHours, initialHours));
     setDailyMinutes(readStoredNumber(STORAGE_KEYS.dailyMinutes, DEFAULT_DAILY_MINUTES));
+    setWorkDaysPerWeek(readStoredNumber(STORAGE_KEYS.workDaysPerWeek, DEFAULT_WORK_DAYS_PER_WEEK));
     setDependents(readStoredNumber(STORAGE_KEYS.dependents, 0));
     setManualInss(readStoredOptionalNumber(STORAGE_KEYS.manualInss));
     setManualIrrf(readStoredOptionalNumber(STORAGE_KEYS.manualIrrf));
@@ -118,12 +122,13 @@ export function useSalaryCalculator(initialSalary = DEFAULT_GROSS_SALARY, initia
       totalValue,
       hourlyRate,
       minuteRate: hourlyRate / 60,
-      periodValue: amountForPeriod(totalValue, period, monthlyHours, minutesToHours(dailyMinutes)),
+      periodValue: amountForPeriod(totalValue, period, monthlyHours, minutesToHours(dailyMinutes), workDaysPerWeek),
     };
   }, [
     grossSalary,
     monthlyHours,
     dailyMinutes,
+    workDaysPerWeek,
     period,
     manualInss,
     autoInss,
@@ -139,6 +144,7 @@ export function useSalaryCalculator(initialSalary = DEFAULT_GROSS_SALARY, initia
     localStorage.setItem(STORAGE_KEYS.grossSalary, grossSalary.toString());
     localStorage.setItem(STORAGE_KEYS.monthlyHours, monthlyHours.toString());
     localStorage.setItem(STORAGE_KEYS.dailyMinutes, dailyMinutes.toString());
+    localStorage.setItem(STORAGE_KEYS.workDaysPerWeek, workDaysPerWeek.toString());
     localStorage.setItem(STORAGE_KEYS.dependents, dependents.toString());
     localStorage.setItem(STORAGE_KEYS.regime, regime);
     localStorage.setItem(STORAGE_KEYS.period, period);
@@ -151,6 +157,7 @@ export function useSalaryCalculator(initialSalary = DEFAULT_GROSS_SALARY, initia
     grossSalary,
     monthlyHours,
     dailyMinutes,
+    workDaysPerWeek,
     dependents,
     regime,
     period,
@@ -196,6 +203,8 @@ export function useSalaryCalculator(initialSalary = DEFAULT_GROSS_SALARY, initia
     setMonthlyHours,
     dailyMinutes,
     setDailyMinutes,
+    workDaysPerWeek,
+    setWorkDaysPerWeek,
     dependents,
     setDependents,
     regime,

@@ -18,6 +18,12 @@ vi.mock("@/components/organisms/salary-calculator", () => ({
   SalaryCalculator: () => <p>Painel do custo da hora</p>,
 }));
 
+vi.mock("@/lib/og-image", () => ({
+  OG_IMAGE_SIZE: { width: 1200, height: 630 },
+  OG_IMAGE_CONTENT_TYPE: "image/png",
+  renderOgImage: (view: string) => ({ view }),
+}));
+
 describe("Home", () => {
   it("serves the journey panel on the very first frame", () => {
     const markup = renderToString(<Home />);
@@ -38,5 +44,28 @@ describe("metadata", () => {
       title: "Calculadora de Jornada, Horas Extras e Saldo do Dia",
       url: "/",
     });
+  });
+
+  it("points the social card at the declared origin, not at the deployment host", async () => {
+    const openGraphImage = await import("@/app/opengraph-image");
+    const twitterImage = await import("@/app/twitter-image");
+
+    expect(metadata.openGraph?.images).toEqual([
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: openGraphImage.alt,
+        type: "image/png",
+      },
+    ]);
+    expect(metadata.twitter?.images).toEqual([
+      {
+        url: "/twitter-image",
+        width: 1200,
+        height: 630,
+        alt: twitterImage.alt,
+      },
+    ]);
   });
 });

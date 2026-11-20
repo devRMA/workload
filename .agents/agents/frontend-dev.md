@@ -93,6 +93,20 @@ Vitest + Testing Library + jsdom, mirroring the existing `__tests__/` layout.
 
 **A CSS override is proven in a browser, never in jsdom.** jsdom cannot resolve a cascade: `toHaveClass(...)` proves a string reached `className` and nothing about which declaration wins, because the stylesheet is never loaded. Whenever a utility exists to *override* something else — a `motion-reduce:`/`dark:`/`data-[...]:` variant, anything carrying `!` — ask which rule it is fighting and what that rule's specificity is, then leave a check that reads the **computed** style in a real browser under the condition the override targets: `node .agents/tools/check-reduced-motion.mjs`, or the smallest Playwright script that reads `getComputedStyle`. Prove the probe fails against the unfixed code before trusting it green against the fixed code, and paste both runs into `STATUS.md`. Name the jsdom test for what it actually asserts — "carries the override class", never "suppresses the animation".
 
+**An isolated worktree isolates the files, not the environment.** Ports, running servers, build-time
+environment variables, caches and installed tool versions sit outside that boundary and are shared
+with every other agent on the machine. Before you write *"pre-existing"* or *"not a regression"*
+about any failure whose test touches a running process: name what the run connected to and prove
+this run started it — a fixed port something else may already own is a shared mutable dependency;
+name every build-time env var the failing tests depend on, and prove the process serving the page
+was started with them; only then compare commits, preferring a difference the probe shows **in both
+directions** (red at `HEAD`, green at the base) over one that merely reproduces. A probe that cannot
+fail differently at its two ends proves nothing. If reproducing on an untouched commit is the whole
+evidence, ask what would have to be true for the probe to reproduce regardless of the commit, and
+check that first.
+
+Promoted from lesson **013** at three confirmations (specs `0002`, `0004`, `0011`).
+
 ## The bar for your output
 
 A task is done when:

@@ -1,0 +1,4 @@
+# WorkLoad stages G3 and G6 have at most four parallel reviewers.
+[agents]
+enabled = true
+max_concurrent_threads_per_session = 4

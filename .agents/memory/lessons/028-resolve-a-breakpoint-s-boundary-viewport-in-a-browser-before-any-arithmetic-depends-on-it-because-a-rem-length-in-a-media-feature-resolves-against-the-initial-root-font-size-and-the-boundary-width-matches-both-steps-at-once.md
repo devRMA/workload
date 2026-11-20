@@ -5,7 +5,7 @@ applies-to: product-designer
 domain: design
 spec: 0006
 created: 2026-09-15
-confirmed: 0
+confirmed: 1
 ---
 
 ## What happened

@@ -1,4 +1,5 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { CookieConsent } from "@/components/organisms/cookie-consent";
 
@@ -188,22 +189,74 @@ describe("CookieConsent", () => {
     expect(screen.getByText("Sempre ativo")).toBeDefined();
   });
 
-  it("toggles telemetry off, saves the toggled value and closes the dialog", () => {
+  it("opens the telemetry switch refusing when no consent is stored", () => {
     render(<CookieConsent />);
     showBanner();
     fireEvent.click(screen.getByText("Configurar"));
 
     const toggle = getTelemetryToggle();
-    expect(toggle.getAttribute("aria-checked")).toBe("true");
-    expect(toggle.getAttribute("aria-labelledby")).toBe("telemetry-consent-label");
-    fireEvent.click(toggle);
     expect(toggle.getAttribute("aria-checked")).toBe("false");
+    expect(toggle.getAttribute("aria-labelledby")).toBe("telemetry-consent-label");
+  });
+
+  it("toggles telemetry on, saves the toggled value and closes the dialog", () => {
+    render(<CookieConsent />);
+    showBanner();
+    fireEvent.click(screen.getByText("Configurar"));
+
+    const toggle = getTelemetryToggle();
+    expect(toggle.getAttribute("aria-checked")).toBe("false");
+    fireEvent.click(toggle);
+    expect(toggle.getAttribute("aria-checked")).toBe("true");
+
+    fireEvent.click(screen.getByText("Salvar Preferências"));
+
+    expect(JSON.parse(localStorage.getItem(CONSENT_KEY) ?? "{}").telemetry).toBe(true);
+    expect(consentEventDetails).toEqual([{ telemetry: true }]);
+    expect(screen.queryByText("Privacidade")).toBeNull();
+  });
+
+  it("saves a refusal when Salvar Preferências is pressed without touching the switch", () => {
+    render(<CookieConsent />);
+    showBanner();
+    fireEvent.click(screen.getByText("Configurar"));
 
     fireEvent.click(screen.getByText("Salvar Preferências"));
 
     expect(JSON.parse(localStorage.getItem(CONSENT_KEY) ?? "{}").telemetry).toBe(false);
     expect(consentEventDetails).toEqual([{ telemetry: false }]);
-    expect(screen.queryByText("Privacidade")).toBeNull();
+  });
+
+  it("renders the switch on again for a stored affirmative consent", () => {
+    localStorage.setItem(CONSENT_KEY, JSON.stringify({ telemetry: true }));
+    render(<CookieConsent />);
+    showBanner();
+
+    openSettingsFromShieldButton();
+
+    expect(getTelemetryToggle().getAttribute("aria-checked")).toBe("true");
+  });
+
+  it("reaches the telemetry switch by Tab and toggles it with Enter and Space", async () => {
+    render(<CookieConsent />);
+    showBanner();
+    fireEvent.click(screen.getByText("Configurar"));
+
+    vi.useRealTimers();
+    const user = userEvent.setup();
+
+    const closeButton = screen.getByRole("button", { name: "Fechar configurações de privacidade" });
+    closeButton.focus();
+    await user.tab();
+
+    const toggle = getTelemetryToggle();
+    expect(toggle).toHaveFocus();
+
+    await user.keyboard("{Enter}");
+    expect(toggle.getAttribute("aria-checked")).toBe("true");
+
+    await user.keyboard(" ");
+    expect(toggle.getAttribute("aria-checked")).toBe("false");
   });
 
   it("toggles telemetry back on from a stored disabled consent and saves the toggled value", () => {
@@ -224,12 +277,19 @@ describe("CookieConsent", () => {
   });
 
   it("keeps the privacy shortcut readable and focusable", () => {
-    localStorage.setItem(CONSENT_KEY, JSON.stringify({ telemetry: true }));
     render(<CookieConsent />);
     showBanner();
 
     const shortcut = screen.getByRole("button", { name: "Configurações de Privacidade" });
     shortcut.focus();
     expect(shortcut).toHaveFocus();
+  });
+
+  it("keeps the privacy shortcut reachable while the banner is showing", () => {
+    render(<CookieConsent />);
+    showBanner();
+
+    expect(screen.getByRole("heading", { level: 2, name: "Respeitamos sua privacidade" })).toBeDefined();
+    expect(screen.getByRole("button", { name: "Configurações de Privacidade" })).toBeDefined();
   });
 });

@@ -14,7 +14,7 @@ export function splitMonthDays(reference: Date): MonthRestSplit {
   return { workingDays: days.length - restDays, restDays };
 }
 
-// Lei 605/49 art. 7º, §2º e Súmula 172 do TST: DSR = extras do mês / dias úteis x repousos do mês.
+// Lei 605/1949, art. 7º, "a", Súmula 172 e Súmula 60, I, do TST: DSR = remuneração variável do mês / dias úteis x repousos do mês; o §2º já remunera o repouso do mensalista, por isso só o reflexo é calculado.
 export function restDayPayOnOvertime(overtimeAmount: number, { workingDays, restDays }: MonthRestSplit): number {
   if (workingDays <= 0) return 0;
   return (overtimeAmount / workingDays) * restDays;

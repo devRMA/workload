@@ -1,5 +1,5 @@
 import { CURRENT_LEGAL_YEAR, type IncomeTaxRate, type LegalYear, type ProgressiveBracket } from "./legal-tables";
-import { formatCurrency } from "./utils";
+import { formatCurrency, formatPercent } from "./utils";
 
 export type WorkRegime = "clt" | "estatutario";
 
@@ -14,6 +14,7 @@ interface WorkRegimeInfo {
 const TABLE: LegalYear = CURRENT_LEGAL_YEAR;
 
 const RGPS_CEILING = TABLE.rgpsBrackets[TABLE.rgpsBrackets.length - 1].ceiling;
+const RPPS_TOP_RATE = TABLE.rppsFederalBrackets[TABLE.rppsFederalBrackets.length - 1].rate;
 
 export const WORK_REGIME_INFO: readonly WorkRegimeInfo[] = [
   {
@@ -21,15 +22,14 @@ export const WORK_REGIME_INFO: readonly WorkRegimeInfo[] = [
     label: "CLT",
     summary: "Carteira assinada, inclusive em estatais",
     who: "Quem tem contrato regido pela CLT, seja em empresa privada ou em empresa pública e sociedade de economia mista (Correios, Caixa, Petrobras): carteira assinada, FGTS, aviso prévio e férias com 1/3.",
-    impact: `INSS pelo RGPS, com alíquotas progressivas de 7,5% a 14%. O teto do salário de contribuição é ${formatCurrency(RGPS_CEILING)}: acima disso o desconto trava em ${formatCurrency(TABLE.rgpsCeilingDiscount)} (tabela de ${TABLE.year}).`,
+    impact: `INSS pelo RGPS, com alíquotas progressivas de ${formatPercent(TABLE.rgpsBrackets[0].rate)} a ${formatPercent(TABLE.rgpsBrackets[TABLE.rgpsBrackets.length - 1].rate)}. O teto do salário de contribuição é ${formatCurrency(RGPS_CEILING)}: acima disso o desconto trava em ${formatCurrency(TABLE.rgpsCeilingDiscount)} (tabela de ${TABLE.year}).`,
   },
   {
     value: "estatutario",
     label: "Estatutário",
     summary: "Servidor público efetivo, com regime próprio",
     who: "Servidor efetivo regido por estatuto (RJU) e vinculado a um regime próprio de previdência (RPPS), não ao INSS.",
-    impact:
-      "Aplicamos a tabela do RPPS federal: a contribuição não para no teto do salário de contribuição que vale para a CLT e as faixas seguem subindo até 22% sobre a parcela mais alta. Servidor estadual ou municipal tem alíquota própria (muitas vezes 14% linear), então este número não vale para ele.",
+    impact: `Aplicamos a tabela do RPPS federal: a contribuição não para no teto do salário de contribuição que vale para a CLT e as faixas seguem subindo até ${formatPercent(RPPS_TOP_RATE)} sobre a parcela mais alta (faixas de ${TABLE.year}). Servidor estadual ou municipal não entra nesta tabela: a alíquota é a do regime próprio do seu ente, que pela EC nº 103/2019, art. 9º, §4º, não pode ser menor que a da União, salvo se esse regime não tiver déficit atuarial, caso em que não pode ser menor que a do INSS.`,
   },
 ];
 

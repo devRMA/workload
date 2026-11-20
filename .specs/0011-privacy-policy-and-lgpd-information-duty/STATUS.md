@@ -1,0 +1,100 @@
+# 0011 — privacy policy and lgpd information duty
+
+<!-- State: draft | in-progress | blocked | done | rejected -->
+
+**State:** in-progress
+**Next agent:** `content-writer`, to finish G3. **G3 `design` passed on run 1** — `design.md` is
+binding and carries the page's geometry, its ten-unit map, its eight disclosure placements and the
+consent surface's four states, every number measured in a production build at 390/1440/1920/2560/3840
+in both themes. `content-writer` writes **only** from `legal.md` §6.3–§6.8 and §20.2, into the copy
+slots `design.md` §11 sizes, and **cannot finish** without **H1**, **H2**, **H7** and **H8** — the
+four values no agent may invent. After G3 closes, `tech-lead` takes G4 with the eight routed items
+in `design.md` §12, two of which (**R1**, **R2**) correct `0010`'s budget and must be recorded in
+both `STATUS.md` files.
+**Bounces:** none
+
+**Opened by human ruling, 2026-09-16**, ahead of the rest of the queue, on
+`.specs/0010-disclosure-reachability-on-mobile/legal.md` §12 **F3** and §16 **Q1**. The app asks for
+cookie consent and has no privacy policy and no cookie policy anywhere; five of the seven LGPD art.
+9º information units are presented nowhere, and art. 9º § 1º makes consent obtained that way null.
+It is live on production and it is the only finding in the queue with direct legal exposure to the
+site's owner.
+
+**Blocked on the human before G3 can produce words — updated at G2:** **H1** (the controller's
+display name — the human has ruled the controller **is a natural person, the repository owner**; the
+name to print is still owed), **H2** (a monitored contact e-mail — what is being accepted with it is
+a **15-day answer** under art. 19 II, not an address), **H5**, **H7** (the GA4 property's configured
+retention and the host plan's log retention) and **H8** (the art. 33 route, and whether the Google
+Ads Data Processing Terms are accepted on the property). **H3 is closed** by `legal.md` §19 with no
+human input. **H4's first half is answered — ads are off in production**; its second half
+(personalised ads) survives. **H6** follows at G7. **G2 and G3 `design` both ran in full without any
+of them and both passed** — the design is sized in measured capacity figures and blank slots, so
+nothing downstream inherits an invented name, address, period or transfer route. What the missing
+values still block is **words**. `design.md` §13 states the shipping condition if H1 or H2 never
+arrive: the page does not ship, T3 and T4 do not run, and the footer's D2 replacement ships anyway,
+because the retired sentence stays false with analytics off — the host still receives every request
+(**F6**, **D7**).
+
+## Gates
+
+| Gate | Agent | State | Run | Artifact |
+|---|---|---|---|---|
+| spec | product-manager | **closed** | 1 | `spec.md` |
+| law | labor-law-analyst | **closed — pass** | 2 | `legal.md` |
+| design | product-designer | **closed — pass** | 1 | `design.md` |
+| copy | content-writer | pending | 0 | `copy.md` |
+| plan | tech-lead | pending | 0 | `plan.md` |
+| build | frontend-dev | pending | 0 | tasks below |
+| qa | qa-engineer | pending | 0 | `reports/qa.md` |
+| audit | web-standards-auditor | pending | 0 | `reports/audit.md` |
+| release | release-manager | pending | 0 | `reports/release.md` |
+| preview | web-standards-auditor | pending | 0 | `reports/audit-preview.md` |
+
+## Tasks
+
+| Id | Title | State |
+|---|---|---|
+
+## Blockers
+
+| # | Blocker | Owner | Blocks |
+|---|---|---|---|
+| **H1** | The controller's identity, in the form the responsible party is willing to publish. `app/layout.tsx:27-29` carries an authorship credit, not a controller identification, and this spec does not promote one into the other. | human | G3 copy |
+| **H2** | A monitored contact channel for data-subject requests. None exists anywhere in the repository. | human | G3 copy |
+| ~~**H3**~~ | ~~Whether an encarregado is named~~ — **CLOSED by `legal.md` §19, no human input needed.** Resolução CD/ANPD nº 2/2022 Anexo I art. 2º I names *pessoas naturais* as agentes de pequeno porte, and art. 11 dispenses the encarregado for them. What art. 11 § 1º makes **mandatory** instead is a published *canal de comunicação* — which is **H2**. Flips back only if personalised AdSense is switched on **and** the audience reaches art. 4º § 1º's *larga escala*. | — | nothing |
+| **H4** | **First half ANSWERED by human ruling: ads are OFF in production.** `legal.md` §21 reclassifies **F1** as *high, latent* — the obligation in §8.4 is unchanged, because the gate that protects the user must be the consent and not an environment variable one deploy can flip. **Second half still open:** whether the AdSense account serves **personalised** ads. §8.5 gives the compliant T4 text for both answers and the T4 cells may not be written before it arrives. | human | **G3 copy**, T4 cells only |
+| **H5** | Acceptance of the maintenance obligation the page creates — `PRODUCT.md` §7's *convenção coletiva* test applied here, raised at `0010` §16 Q1. If the answer is no, the pipeline stops and the remedy is to stop the processing, not to publish. | human | the spec, ultimately |
+| **H6** | The `PRODUCT.md` §9 amendment retiring *"nada é enviado para nenhum servidor"* as an explicit non-claim, with the replacement's evidence row. `AGENTS.md` §4 makes it a human approval point. | human | G7 docs |
+| ~~**L1–L16**~~ | **ALL SETTLED** — `legal.md` §§6–20, each by name. | — | nothing |
+| **H7** *(new, raised at G2)* | **The GA4 property's configured data-retention value** (2 **or** 14 months — the option set is Google's, the choice is the controller's) **and the host plan's log-retention period**. art. 9º II requires a *duração* per operation; `legal.md` §14 derives every other period from an operand, and these two are account settings invisible to the repository. **The page states the configured value, never the range** — printing *"2 ou 14 meses"* tells the reader the controller does not know his own setting. | human | **G3 copy**, T3 and T5 duration cells only |
+| **H8** *(new, raised at G2)* | **Which LGPD art. 33 route each international transfer stands on**, and specifically **whether the Google Ads Data Processing Terms are accepted on this GA property** (they are *not* automatic outside the EEA/UK/Switzerland). `legal.md` §15.2 closes art. 33 **I** — the ANPD's only adequacy decision is the **European Union**, Resolução CD/ANPD nº 32/2026, and the United States is not on the list — and closes art. 33 **IX** for the host, because IX reaches art. 7º II, V and VI and the host's basis is art. 7º **IX**. Resolução CD/ANPD nº 19/2024's 12-month deadline to incorporate the cláusulas-padrão **elapsed 2025-08-23**. If the answer is *not accepted*, §24 **Q3** binds: the page may not call Google an *operador* for Analytics. | human | **G3 copy**, the D8 route sentence and §16's Analytics paragraph |
+
+## Decisions log
+
+| When | Agent | Decision |
+|---|---|---|
+| 2026-09-16 | product-manager | **Scope derived from four domain tests run in this session, not from the brief.** D1 consent (7 files), D2 egress and persistence (13 files), D3 privacy claims (11 grep rows, **7 admitted** by the test, 1 of them false in the consented state), D4 asserted operands (7 sites). The tests are the definition; the lists are their output. |
+| 2026-09-16 | product-manager | **The brief's file list is corrected by the run.** `components/atoms/analytics-wrapper.tsx:12` does not exist; the file is `components/organisms/analytics-wrapper.tsx:12`. A first pass of D2 without `safeGAEvent` returned 9 files and missed four call sites that transmit; the corrected command returns 13. Recorded because the under-counted list is the one a reader reconstructs from the import names. |
+| 2026-09-16 | product-manager | **`0010` F2a is taken here; F2b stays in `0010`.** F2a (`cookie-consent.tsx:15`, `useState(true)`) is a consent-**validity** defect and `0010` `legal.md` §12 routed it to *"a consent spec"*. F2b (`:47`, `p-6`, LR2a by 18 px) is a legibility-geometry defect and `0010`'s remedy touches that box. Stated in both directions in `spec.md` § Boundaries; `tech-lead` records the exchange in both `STATUS.md` files at G4. |
+| 2026-09-16 | product-manager | **P6 is a new finding and it is in scope.** `components/organisms/ad-manager.tsx:10-19` injects the AdSense script gated only on `NEXT_PUBLIC_ADSENSE_ID` and `NEXT_PUBLIC_ENABLE_ADS`; it never reads `lib/consent.ts`. `PRODUCT.md` §8 says ads sit behind consent. Taken because the alternative is a policy that truthfully describes a practice the document outranking this spec forbids. `__tests__/ad-manager.test.tsx`'s third case codifies the current behaviour as expected and is AC8's known-bad output. |
+| 2026-09-16 | product-manager | **Production is context, not a control** (lesson **032**). The deployed HTML carries two `rel="preconnect"` tags to Google that open a connection before consent; they were removed by `4b9572d`, which is in `HEAD` and not in `origin/main`, and production serves `origin/main`, 45 commits behind. Not a finding for this spec; every criterion is written against `HEAD`. |
+| 2026-09-16 | product-manager | **`PRODUCT.md` §7 does not contradict this spec, and its maintainability test is not resolved here.** Recorded as Q1 and H5 rather than decided, with the asymmetry named: a stale policy is a false statement about processing that is happening, and the alternative to publishing is to stop processing, not to publish less. |
+| 2026-09-16 | product-manager | **The spec states no legal rule and sets no new default.** The one user-settable default it reopens — the telemetry switch at `cookie-consent.tsx:15` — is **L15**, and it is G2's, not a product preference. Applying lesson **045**, D4's asserted operands each get a row in § Legal dependencies rather than being treated as `lib/` details. |
+| 2026-09-16 | product-manager | **AC14 names no verification command.** Every instrument that could measure the accessibility and viewport bar builds the shared `.next`, `AGENTS.md` §4 rule 6 forbids running it during a parallel gate, and this gate did not run one — so the criterion cites `AGENTS.md` §9 and the gate that owns the instrument, rather than a command `product-manager` has not executed. |
+| 2026-09-19 | labor-law-analyst | **G2 passed, run 2.** Run 1 died mid-gate with `legal.md` at 544 lines and U1–U10 settled; run 2 continued from §6.9 rather than restarting, and wrote §§6.10–25. Nothing ruled by run 1 was rewritten. |
+| 2026-09-19 | labor-law-analyst | **Every ruling about a rendered surface was measured, not inferred** (`AGENTS.md` §4 rule 6; the agent's own *render every disclosure before you report anything about it*). Method in `legal.md` §6.12: `git archive HEAD` into a scratchpad copy **outside** the repository — no `git worktree`, no ref written, no file in the tree touched — `node_modules` copied whole, **`next build` + `next start` on port 3141** confirmed free before binding, every Google endpoint intercepted by Playwright and fulfilled locally so **no hit reached Google and the property's data was not polluted by this gate**. |
+| 2026-09-19 | labor-law-analyst | **A negative result is recorded rather than dropped, under lesson 013.** Under `next dev` in this environment the page **never hydrates** — the HMR websocket fails with `ERR_INVALID_HTTP_RESPONSE`, no `useEffect` runs, the banner never appears and the theme toggle does nothing. The first probe therefore reported *"the banner does not render"*, which is **false about the product**: the production build on the same machine, the same minute, renders it. The gate did **not** conclude a surface was absent because its probe could not produce it. |
+| 2026-09-19 | labor-law-analyst | **`0010`'s ruling on art. 8º § 5º is corrected, not extended.** `0010` `legal.md` §2 read revocation as satisfied; it read the **control**, not the **consequence**. Measured here: after a recorded revocation the Google tag stays loaded, `window.gtag` stays callable, and one instrumented interaction still produces **1** request to `google-analytics.com/g/collect` carrying `en=toggle_theme` — **identical to the consented control**, against **0** before any consent. **F3, critical.** |
+| 2026-09-19 | labor-law-analyst | **This gate rules that something is owed to users beyond a fix** — the first in this body of work to do so. `legal.md` §7: **every consent record written before the page is published is null** under art. 9º § 1º, on **both** of its independent triggers, and art. 8º § 5º's ratification clause does not save the past because a null consent afforded no *amparo* to ratify. `spec.md` **Q4** is closed **yes**: the returning user is asked once more, keyed on a **version** field in the record rather than on a date. |
+| 2026-09-19 | labor-law-analyst | **L12 is not the *does not apply* the spec allowed for.** Marco Civil art. 15's six-month retention duty does **not** bind — its caput requires a *pessoa jurídica* and the human ruled the controller is a natural person — but **art. 7º XI** (a statutory user right to a published, clear usage policy) and **art. 7º VIII c** (a purpose may only be pursued if specified in the application's own published terms) are **independent footings for this entire spec**, standing without a single LGPD article. |
+| 2026-09-19 | labor-law-analyst | **The source set was re-verified rather than recalled, and it had moved.** The LGPD re-fetched this session is a **different file** from run 1's (`b53f958…` / 310 252 bytes vs `129bfed…` / 310 272): the delta is **Lei nº 15.452/2026**, which run 1 did not name. Every amendment marker was resolved to its host article programmatically — all of MP 1.317/2025, Lei 15.352/2026 and Lei 15.452/2026 land on arts. 5º, 54, 55-A and 55-C, and **none touches arts. 7º, 8º, 9º, 16, 18, 33 or 41**. Separately, **Resolução CD/ANPD nº 2/2022 was amended by nº 15/2024** (art. 14 II only), which run 1's S2 recorded as unamended. |
+| 2026-09-19 | labor-law-analyst | **Four counts in `spec.md` corrected, and the fourth was found by re-deriving rather than re-reading.** AC7's admitted-string count (§3.1), the persistence line range `:139-146` → `:139-148` (§3.2), P5's *"six further events"* → **eight in total** (§6.1), and the key inventory: **`workDaysPerWeek` is missing from §3.2's list**, so it is **19 keys and 20 with the consent record**, not 18 and 19 (§6.10). The last one matters for the same reason §3.2 gave for `manualInss` and then committed anyway: it is `0007`'s divisor operand, it is a statement about the user's contract, and a page that enumerates what is stored and omits it understates the storage. |
+| 2026-09-19 | labor-law-analyst | **This file's own header was corrected inline.** Run 1 projected *eight findings, six disclosures, two corrected counts* before §§7–24 existed; the measurements returned **eleven, eight and four**. A measurement that contradicts a classification wins and is re-routed with its new severity **before** any scope is written on the old one. |
+| 2026-09-19 | product-designer | **G3 `design` passed, run 1, and every geometric number was measured rather than projected** (lesson **050**). Method in `design.md` §0: `git archive HEAD` into a scratchpad **outside** the repository — no `git worktree`, no ref written, no file in the tree touched — `node_modules` hard-linked, `rm -rf .next` before the first build, **`next build` + `next start` on port 3177** confirmed free with `ss -ltn` before binding and released after. **`next dev` was not used**, on the G2 finding that the page never hydrates under it here. A **prototype of the page was built and rendered** in that copy; the numbers are read off it at 390/1440/1920/2560/3840 in **both** themes. `git status --porcelain` over the repository is unchanged. |
+| 2026-09-19 | product-designer | **Three of the design's load-bearing decisions were produced by a measurement that overruled the draft, not by judgment.** (1) The dialog's policy link sits **above** the category rows: below them `linkVisibleWithoutScroll` is **false** at 390×667, inside `modal-dialog.tsx:53`'s `overflow-y-auto`, which `legal.md` §22's *Rendered* excludes. (2) The **consent banner does not render on the policy route**: measured, it covers **69.9 %** of the viewport and occludes **453.17 px** of that page's own content at 390×667 — the page its own link sent the reader to. A presence rule only; the box is `0010`'s and is untouched. (3) The prose column is `max-w-prose` (**60.0 cpl**), not `max-w-3xl`, which renders `--text-body` at **75.0 cpl**, over `DESIGN.md`'s 68ch cap. |
+| 2026-09-19 | product-designer | **This gate measured its own first draft and found two defects in it.** The index rows were drafted with a **0 px** gap against `DESIGN.md`'s 8 px inter-target floor, and the index was drafted at **ten rows / 546.00 px** at 390 — 546 px of navigation before the first substantive sentence on a 667 px phone. Regrouped to **six rows by the question a reader asks**, measured **338.00 px**; the page still carries all ten units. Recorded because a design gate that reports only its successes is not measuring. |
+| 2026-09-19 | product-designer | **`0010`'s banner-link budget is corrected by measurement and routed, not amended here.** `0010` `legal.md` §4.4 prices the link at **+28 px**; measured as a 44 px row link plus its 8 px stack gap it is **+52.00 px** at both 390 and 1440 — low by 24 px — and the D6 re-ask line is a further **+67.00 px** at 390, in the re-ask state only. The settings dialog grows **+257.57 px** at 390. All three go to `0010` through `tech-lead` (`design.md` §12 **R1**, **R2**), because one spec does not rewrite another's budget. |
+| 2026-09-19 | product-designer | **The §20.2 adjacency condition is discharged by its clause (a), not its clause (b), wherever the qualifier belongs to one cell.** Measured: `space-y-2` and `mt-2` render **8.00 px** at 390 and 1440 — inside clause (b) as written — but **8.50 px** at 1920 and **9.00 px** at 2560/3840, because the spacing scale is `rem` and the rule's instrument is CSS px. Clause (a) — the qualifier inside the same border box as the claim — is scale-invariant. So **D8 is written inside each of the three sharing cells' own `<dd>`**, three times, and only a section-wide disclosure (**D4**) uses the 8 px gap. Lesson **048**'s shape, applied to the axis the rule's own quantity does not cover. |
+| 2026-09-19 | product-designer | **No `DESIGN.md` system change is proposed, and three candidates were refused.** The page title takes `--text-title` rather than extending `--text-display`'s "modal titles only" licence; the column uses the stock `max-w-prose` container key rather than a new token; and the One Mark Rule's three-cobalt count is read by its stated purpose for the index's six links, with the reading recorded in `design.md` §4.2 so a reviewer can reject it rather than discover it. No human approval point is raised by this gate. |
+| 2026-09-19 | product-designer | **`collapsible-panel.tsx` is forbidden on this route**, because `legal.md` §22's *Rendered* excludes anything behind `aria-expanded="false"`. A side effect worth naming: the page therefore does not inherit `DESIGN.md`'s known residual — the `height: 0 → auto` sweep that neither `MotionConfig reducedMotion="user"` nor the CSS scoped reset reaches. The residual's trigger does **not** fire here and it stays open with its recorded owner. `MotionConfig reducedMotion="user"` was **verified present** at `components/templates/theme-provider.tsx:10` by grep, not assumed. |
+| 2026-09-19 | labor-law-analyst | **No placeholder was invented for H1 or H2**, and `legal.md` §22 **D5** states the remedy where they never arrive: the page does **not** ship softer — the consent-based operations **T3 and T4 do not run at all**, because art. 9º III/IV and art. 41 § 2º I cannot be discharged without them. It is the one remedy in the file that removes a feature instead of adding a sentence. |

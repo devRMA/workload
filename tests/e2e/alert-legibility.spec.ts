@@ -45,7 +45,7 @@ const CONSUMERS: readonly Consumer[] = [
     id: "C3",
     route: "/custo-da-hora",
     role: "status",
-    title: "A carga mensal não combina com a jornada diária",
+    title: "A carga mensal não combina com a sua semana",
     drive: async (page) => {
       await page.getByLabel("Carga Horária Mensal").fill("200");
     },
