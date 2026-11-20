@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/atoms/button";
 import { ModalDialog } from "@/components/atoms/modal-dialog";
-import { CONSENT_CHANGED_EVENT, readTelemetryConsent, writeTelemetryConsent } from "@/lib/consent";
+import { CONSENT_CHANGED_EVENT, readAdsConsent, readTelemetryConsent, writeConsent } from "@/lib/consent";
 
 const BANNER_DELAY_MS = 1500;
 
@@ -25,12 +25,14 @@ export function CookieConsent() {
     return () => clearTimeout(timer);
   }, []);
 
-  const saveConsent = (telemetry: boolean) => {
-    writeTelemetryConsent(telemetry);
+  const saveConsent = (telemetry: boolean, ads = false) => {
+    const reloadToStopAds = readAdsConsent() === true && !ads;
+    writeConsent(telemetry, ads);
     setTelemetryEnabled(telemetry);
     setIsVisible(false);
     setShowSettings(false);
     window.dispatchEvent(new CustomEvent(CONSENT_CHANGED_EVENT, { detail: { telemetry } }));
+    if (reloadToStopAds) window.location.reload();
   };
 
   return (
@@ -52,8 +54,8 @@ export function CookieConsent() {
                 <div className="flex-1 space-y-1 text-center md:text-left">
                   <h2 className="text-title">Respeitamos sua privacidade</h2>
                   <p className="text-body-sm text-ink-muted">
-                    Usamos cookies para melhorar sua experiência e entender como você usa o WorkLoad. Você pode optar
-                    por desativar a telemetria a qualquer momento.
+                    Ao aceitar tudo, você permite cookies de telemetria (Google Analytics) e de anúncios (Google
+                    AdSense). Em Configurar, você pode salvar suas preferências sem anúncios.
                   </p>
                 </div>
 
@@ -68,7 +70,7 @@ export function CookieConsent() {
                   <Button variant="outline" onClick={() => saveConsent(false)} className="w-full sm:w-auto">
                     Recusar
                   </Button>
-                  <Button onClick={() => saveConsent(true)} className="w-full sm:w-auto">
+                  <Button onClick={() => saveConsent(true, true)} className="w-full sm:w-auto">
                     Aceitar Tudo
                   </Button>
                 </div>
