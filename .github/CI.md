@@ -88,5 +88,15 @@ passed checks in 1m26s and Lighthouse in 2m04s. All 173 E2E tests passed in
 The aggregate correctly failed. The scoped reporter exception above was then
 reproduced locally: the same `git ls-files` fails with exit 128 without the
 exception and succeeds with exit zero when the exact mounted path is trusted.
-The reporter fix still requires a successful hosted rerun before declaring CI
-green.
+The reporter fix passed the complete hosted rerun
+[`44807517302`](https://github.com/devRMA/workload/actions/runs/44807517302)
+at `95bdb92`: checks in 1m27s, Lighthouse in 1m48s, Playwright including its
+reporter in 3m45s, and the aggregate check succeeded. That verified the fix on
+PR #41, not on its parent PR #40.
+
+The same validated workflow was then promoted to PR #40 in `c73025b`, and PR #41
+was rebased onto it. PR #41 now carries only CI documentation. This is necessary
+because every PR in the stack must pass its own required checks; a child PR's
+workflow changes do not affect its parent. No workflow or application bytes
+changed during the promotion. Both updated heads must pass their own hosted
+runs before the whole stack is declared ready.
