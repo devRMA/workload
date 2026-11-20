@@ -171,6 +171,17 @@ describe("CalculatorViews", () => {
     );
   });
 
+  it("mounts the consent surface after the footer inside the main content", () => {
+    render(<CalculatorViews activeView="work" />);
+
+    const consentRoot = screen.getByRole("button", { name: "Configurações de Privacidade" });
+    const footer = screen.getByText(/fica salvo apenas neste navegador/).closest("footer");
+    expect(footer).not.toBeNull();
+
+    const position = (footer as HTMLElement).compareDocumentPosition(consentRoot);
+    expect(position & Node.DOCUMENT_POSITION_FOLLOWING).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+  });
+
   it("carries the whole citation line", () => {
     render(<CalculatorViews activeView="work" />);
 

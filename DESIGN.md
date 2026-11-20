@@ -483,7 +483,7 @@ Two mechanisms apply to all of them:
 - **Ghost** — rest transparent, `--color-ink-muted`, no border. Hover `--color-surface-sunken` and the text resolves to `--color-ink`. Used for the theme toggle, modal close, and the inactive calculator tab.
 - **Danger** — rest `--color-negative-soft` with `--color-negative-ink`. Hover deepens the tint to 18%. Active adds the press. It is a tinted button, never a solid red one: a solid red destructive button on a screen full of red *numbers* would be indistinguishable from data.
 
-### Inputs — `components/atoms/input.tsx`, `masked-input.tsx`, `currency-input.tsx`
+### Inputs — `components/atoms/input.tsx`, `components/molecules/masked-input.tsx`, `components/molecules/currency-input.tsx`
 
 - **Shape:** `--radius-md` (16px), 56px tall, 16px horizontal padding (48px when an icon is present), `--text-input`.
 - **Rest:** `--color-surface` background, 1px `--color-line-strong` border, `--color-ink` text, `--color-ink-subtle` placeholder, icon in `--color-ink-muted`.
@@ -493,7 +493,7 @@ Two mechanisms apply to all of them:
 - **Disabled:** `--color-surface-sunken` fill, `--color-line` border, 60% opacity, `cursor: not-allowed`.
 - **Error:** border `--color-negative`, fill `--color-negative-soft`, focus ring becomes `--color-negative`, `aria-invalid="true"` and `aria-describedby` pointing at the banner that explains it. The colour never carries the error alone.
 
-### Fields — `form-field.tsx`, `currency-field.tsx`, `duration-field.tsx`, `date-time-input.tsx`
+### Fields — `components/molecules/field.tsx`, `components/molecules/currency-input.tsx`, `components/molecules/duration-field.tsx`, `components/molecules/date-time-input.tsx`
 
 Label (`--text-label`, `--color-ink-muted`) sits 8px (`space-y-2`) above its control; an optional hint (`text-caption text-ink-subtle`, the 8px offset coming from the wrapper's `space-y-2`) sits below: **4.75:1** on surface, **4.61:1** on sunken (light); **5.23:1** / **5.50:1** (dark). One hint style, defined once, used by `Field`, `DurationField`, the journey settings and the salary calculator. Fields in a group are separated by 24px (`gap-6`). A label icon is 16px in `--color-ink-muted` unless it is a data icon, in which case it takes that data hue's `-ink` token.
 
@@ -501,7 +501,7 @@ Label (`--text-label`, `--color-ink-muted`) sits 8px (`space-y-2`) above its con
 
 The journey settings panel is one `grid grid-cols-1 sm:grid-cols-2 gap-lg`: the two percentage fields are the pair that goes two-up at `sm`, and "Tempo de Trabalho Diário" — which has no pair of its own — spans both columns with `sm:col-span-2`, staying full width. This matches how `salary-calculator.tsx` already treats its own full-width salary field, and gives all three fields one 24px rhythm from a single grid instead of two nested containers with two gap sources.
 
-### Cards — `journey-form.tsx`, `day-summary.tsx`, `salary-calculator.tsx`
+### Cards — `components/organisms/journey-form.tsx`, `components/organisms/day-summary.tsx`, `components/organisms/salary-calculator.tsx`
 
 - **Corner:** `--radius-xl` (28px). **Background:** `--color-surface`. **Border:** 1px `--color-line`. **Shadow:** `--shadow-card` in light, none in dark. **Padding:** 24px below `sm`, 32px from `sm`.
 - Internal sections are separated by a 1px `--color-line-faint` rule with 24px (`space-y-6`) above and below. Recessed sub-panels (journey settings, tax details) are `--color-surface-sunken` at `--radius-lg`.
@@ -521,7 +521,7 @@ The signature component: a saturated plane carrying the single number the user c
 
 The centered ring surrounds the countdown above the larger exit time. Its diameter follows the mobile viewport height within 6–8rem, then becomes 9rem at `sm` and 11rem at `lg`. The dial has a `bg-scrim/25` base. Track: `--color-ink-onfill/16`; worked arc: `--color-ink-onfill`; overtime arc: `--color-overtime-arc`. CSS transitions the dash offset over `--duration-data` (600ms) with `--ease-out`; under reduced motion it jumps to its value. The visual dial is hidden from assistive technology; a separate polite live region announces the same status as text.
 
-### Segmented controls — `period-selector.tsx`, the AUTO/MANUAL switch in `journey-form.tsx`
+### Segmented controls — `components/molecules/period-selector.tsx`, the AUTO/MANUAL switch in `components/organisms/journey-form.tsx`
 
 - **Track:** `--color-surface-sunken`, `--radius-lg`, 6px padding, on a neutral card (the AUTO/MANUAL switch). Over a hero (`period-selector`), the track is `bg-scrim/25` (`--color-scrim`, theme-invariant, effective alpha 0.15) instead of a lightened surface — a lightened `--color-ink-onfill` track was tried and rejected: at 15% it measures **4.16:1** at rest over `--color-accent`, below 4.5:1, before any hover tint drops it further, and a lightened recessed plane also contradicts the Recession Rule (sunken must read darker, never lighter, in either theme). **Option:** `--radius-sm`, 44px minimum height, `--text-label`, `--color-ink-muted`.
 - **Selected:** `--color-surface` fill, `--color-accent-ink` text, `--shadow-press`. **Hover** on an unselected option tints the track 6% on a neutral card, or `--color-ink-onfill` at 10% over a hero. Over a hero the rest/hover pair measures:
@@ -535,7 +535,7 @@ The centered ring surrounds the countdown above the larger exit time. Its diamet
   **Focus-visible** draws the ring on the option, not the track — on a neutral card that is the default `--color-focus` ring; over a hero the ring's transparent offset would paint the hero fill instead of a neutral surface and vanish, so `period-selector` uses an explicit `outline-ink-onfill` there: **5.57:1** against `--color-accent`, higher against the other two fills. **Disabled** 40%. **Error** not applicable.
 - Built from real radio inputs with a `legend`, as it already is. The selected pill moves with a `layoutId` spring rather than a colour swap.
 
-### Stat tiles — `components/molecules/stat-box.tsx`
+### Stat tiles — `components/atoms/stat-box.tsx`
 
 `--color-surface-sunken` at `--radius-lg`, 16px padding, 1px `--color-line`. Overline label in `--color-ink-muted`, value in `--text-metric`. The *value* takes the data hue's `-ink` token (`--color-positive-ink` for gains, `--color-negative-ink` for deductions, `--color-ink` for the neutral default) — the tile background stays neutral. The predecessor tinted the whole tile; a wall of tinted boxes makes every number look equally urgent.
 
@@ -543,7 +543,7 @@ The centered ring surrounds the countdown above the larger exit time. Its diamet
 
 `--radius-lg`, 16px vertical and 12px horizontal padding, 1px border in the data hue at 30%, fill in the hue's `-soft`, text in its `-ink`, icon 20px in its `-ink` sharing the title's line, with the body text running the full width of the banner beneath it. The horizontal padding is one step tighter than the vertical on purpose: the body text column is measured against the banner's own root, and a banner may spend no more than 32 CSS px of border and horizontal padding between the two. Two tones: **warning** uses Overtime Amber (a CLT limit approached), **danger** uses Debit Red (an input the app cannot use). `role="alert"` for danger, `role="status"` for warning, as already implemented.
 
-### Navigation — `app-header.tsx`, the tab bar in `calculator-views.tsx`
+### Navigation — `components/organisms/app-header.tsx`, the tab bar in `components/organisms/calculator-views.tsx`
 
 - **Header:** a floating frame with a hairline and `--radius-xl`, aligned to the page gutters. Its 4rem height (5rem from `md`) still drives the content and sticky-aside offsets. The logo is a 40px accent tile; the live clock uses tabular digits in primary ink for contrast on glass.
 - **Dock:** a floating pill above the safe area, with Primary and Ghost links for active and inactive states. Labels sit beneath the icons on phones and beside them from `sm`. The active link carries `aria-current="page"`. The route changes without waiting for an exit animation; the links provide press feedback.
@@ -552,7 +552,7 @@ The centered ring surrounds the countdown above the larger exit time. Its diamet
 
 Native `<dialog>` with `showModal()`, wrapped in a plain `<div>` — not `AnimatePresence`. Inside a native `<dialog>`, `dialog.close()` is synchronous: the element goes `display: none` immediately, so a JS `exit` animation would play inside an already-hidden box while its children stayed mounted. Enter and exit are instead both handled by `@starting-style` plus `transition-behavior: allow-discrete`, declared once in `globals.css` for `dialog`, `dialog > div` and `dialog::backdrop` — no JS runs the transition, and the reduced-motion `transition-property` clamp already reduces it to a plain opacity fade. Backdrop `--color-scrim` + `--blur-scrim`. Surface `--color-surface-raised` at `--radius-2xl`, 32px padding, `--shadow-raised`. **Modals keep `transform-origin: center`** — they are not anchored to a trigger. Enter and exit both animate at `--duration-slow` with `--ease-out`, the panel scaling from `0.96` and translating 12px, never from `scale(0)`.
 
-### Collapsible panels — `components/molecules/collapsible-panel.tsx`
+### Collapsible panels — `components/atoms/collapsible-panel.tsx`
 
 Height and opacity animate together over `--duration-base` with `--ease-out`. The disclosure button carries `aria-expanded` and `aria-controls`, and its chevron rotates 180° over the same duration. The panel is always `overflow: hidden` during the transition and releases it on settle so a focus ring inside is never clipped.
 
@@ -595,6 +595,8 @@ Motion in WorkLoad exists to preserve continuity, never to decorate. The user op
 - **Anything triggered by a keystroke.** Typing into a field must never queue an animation.
 
 **Reduced motion.** `prefers-reduced-motion: reduce` does not mean *no feedback* — it means no vestibular motion. The CSS reset does **not** apply a universal `transform: none`: a blanket transform reset cannot distinguish *motion* from *layout*, and this product uses `transform` for both — `-translate-x-1/2` on the floating tab bar, `-translate-y-1/2` on the input icon, `-rotate-90` on the progress ring, `rotate-180` on every chevron. A universal reset would snap the tab bar to the wrong half of the viewport for exactly the users who asked for less motion, so **it is forbidden**. Instead, vestibular motion is suppressed per state, with the neutralizer bound to the same state — `active:scale-[0.97]` becomes `motion-reduce:active:scale-100` on `button.tsx` and `copy-button.tsx` — plus a scoped reset that zeroes `animation-duration` and `animation-iteration-count`, clamps every `transition-property` to `opacity, color, background-color, border-color, outline-color`, and shortens `transition-duration` to `--duration-fast`. That scoped reset is CSS-only, so it never reaches an animation driven by `motion`: `MotionConfig reducedMotion="user"` disables spring layout animations for those components,; the progress ring now transitions in CSS, so the same property clamp makes it update without a sweep. Opacity cross-fades are kept because they explain that something changed. The global `0.01ms` blanket reset the predecessor ships is replaced by this scoped version, which keeps comprehension aids alive.
+
+**Known residual — the `height: 0 → auto` expansion is not suppressed under reduced motion.** `MotionConfig reducedMotion="user"` disables *transform and layout* animations; it does not touch an explicit **value** animation on a non-transform property, and `components/atoms/collapsible-panel.tsx:18-20` animates `height` from `0` to `"auto"` over 220 ms on `initial`/`animate`/`exit`. The CSS-only scoped reset never reaches it either, for the reason stated above. So a user who asked for less motion still gets the panel's full height sweep — the one shape of animation this section's own rule exists to remove, arriving through the one gap in both mechanisms. Found by `product-designer` at `0008` G3, outside that spec's scope and outside every other open one, so it is recorded here rather than routed. **Owner:** `product-designer`, to specify the fallback (the `useReducedMotion` gate this paragraph already mandates for every Motion-driven animation, collapsing the panel to an opacity cross-fade at its settled height). **Trigger:** the next spec that opens `components/atoms/collapsible-panel.tsx`, that adds any Motion-driven animation on a non-transform property, or that takes a reduced-motion finding on a disclosure panel. The class is the trigger, not this one file: any `motion` value animation added anywhere carries the same gap until it is gated.
 
 ### Named Rules
 

@@ -168,7 +168,7 @@ export function JourneyForm({
           <Field
             id="extra-tier-rate"
             label="Adicional acima de 2h (%)"
-            hint="Não existe lei que dobre o adicional depois da 2ª hora: o piso continua sendo 50%. Só use 100% se a sua convenção coletiva previr esse degrau."
+            hint="O piso de 50% vale para toda hora extra, inclusive depois da 2ª (art. 7º, XVI, da CF; art. 59, §1º, da CLT). O degrau de 100% vem de convenção coletiva, não da lei."
             labelIcon={<IconPercentage className="w-4 h-4 text-overtime-ink" aria-hidden="true" />}
           >
             <Input

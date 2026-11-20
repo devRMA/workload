@@ -12,7 +12,7 @@ const BANNER_DELAY_MS = 1500;
 export function CookieConsent() {
   const [isVisible, setIsVisible] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [telemetryEnabled, setTelemetryEnabled] = useState(true);
+  const [telemetryEnabled, setTelemetryEnabled] = useState(false);
 
   useEffect(() => {
     const storedConsent = readTelemetryConsent();
@@ -40,13 +40,13 @@ export function CookieConsent() {
       <AnimatePresence>
         {isVisible && (
           <motion.div
-            initial={{ y: 100, opacity: 0 }}
+            initial={{ y: 12, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 100, opacity: 0 }}
-            className="fixed bottom-[max(calc(var(--spacing)*6),env(safe-area-inset-bottom))] left-6 right-6 z-60 mx-auto max-w-4xl"
+            exit={{ y: 12, opacity: 0 }}
+            className="mx-auto mt-12 mb-8 max-w-4xl"
           >
             <div className="overflow-hidden rounded-2xl border border-line bg-surface-raised shadow-raised edge-lit">
-              <div className="flex flex-col md:flex-row items-center gap-6 p-6 md:p-8">
+              <div className="flex flex-col md:flex-row items-center gap-6 px-3 py-6 md:p-8">
                 <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-md bg-accent-soft text-accent-ink">
                   <IconCookie size={32} aria-hidden="true" />
                 </div>
@@ -155,16 +155,14 @@ export function CookieConsent() {
         </div>
       </ModalDialog>
 
-      {!isVisible && (
-        <button
-          type="button"
-          onClick={() => setShowSettings(true)}
-          className="fixed bottom-[max(calc(var(--spacing)*4),env(safe-area-inset-bottom))] right-4 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-line bg-chrome text-ink-muted shadow-card backdrop-blur-chrome transition-colors duration-(--duration-fast) ease-standard hover:text-accent-ink ring-focus"
-          aria-label="Configurações de Privacidade"
-        >
-          <IconShield size={18} aria-hidden="true" />
-        </button>
-      )}
+      <button
+        type="button"
+        onClick={() => setShowSettings(true)}
+        className="fixed bottom-[max(calc(var(--spacing)*4),env(safe-area-inset-bottom))] right-4 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-line bg-chrome text-ink-muted shadow-card backdrop-blur-chrome transition-colors duration-(--duration-fast) ease-standard hover:text-accent-ink ring-focus"
+        aria-label="Configurações de Privacidade"
+      >
+        <IconShield size={18} aria-hidden="true" />
+      </button>
     </>
   );
 }

@@ -36,6 +36,15 @@ describe("RootLayout", () => {
       document.querySelector("link[rel='preconnect'][href*='pagead2.googlesyndication.com']"),
     ).not.toBeInTheDocument();
   });
+
+  it("does not mount the consent surface itself", () => {
+    render(
+      <RootLayout>
+        <div>layout child</div>
+      </RootLayout>,
+    );
+    expect(screen.queryByRole("button", { name: "Configurações de Privacidade" })).toBeNull();
+  });
 });
 
 describe("metadata", () => {

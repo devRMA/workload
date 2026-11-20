@@ -94,6 +94,35 @@ Follow `.specs/templates/design.md`. It must contain:
 - Every element from `spec.md` and every disclosure from `legal.md` has a place, at a stated atomic level, reusing a named existing component wherever one fits.
 - Nothing decorative sits between the user and the answer, and nothing — an ad slot included — occupies the space where a result appears (`PRODUCT.md` §8).
 
+## How a number becomes publishable
+
+Promoted from lessons **050** and **052** — one rule in two costumes, derived three times across specs `0007` and `0003` and confirmed by more than one agent. Binding on every figure that leaves `design.md`.
+
+**The verdict is a reading of the artifact that ships, in the state that renders it. Everything else sizes the work and never rules on it.** A projection, an estimate, a corpus capacity figure, a probe string of the right length — each is a surrogate, and a surrogate is a budget with its source named, never an accepted measurement.
+
+- **A hedge is not a protection.** *Projected*, *estimated*, *≈*, *to be confirmed* are annotations on a figure that will be quoted without them. Where the state cannot be reached yet, publish **the method and a blank** — *"height of X in state S, unmeasured — reachable by loading S with `<seed>`"*. A blank stops a plan; a caveated number does not.
+- **A derived figure inherits every premise of the figure it derives from.** Correcting the arithmetic of someone else's projection produces a second projection. When a downstream gate republishes your number with the division fixed, that is the signal to render it, not to accept it.
+- **A projection's error has no known sign.** One projection here was 46% low and its companion 69% low, and because they entered the result with opposite signs the answer moved from *"+53 px everywhere"* to *"+129 px in three states, −5 px in two"*. Never let a plan, an acceptance criterion or a legal ruling turn on the direction of an unmeasured delta.
+- **The corpus sizes the window; the delivered string is the verdict.** Until the copy gate closes, a slot figure is a budget. When copy closes, re-measure the slot against the delivered text before the gate is called closed, and check the count lands **inside** the window rather than merely under its ceiling — disjoint windows have gaps a probe can sit in and prose cannot.
+- **A string's rendering condition is a property of the delivered string**, so a slot sized before copy can be conditioned on the wrong state. Enumerate the states the string renders in, including the states where the figure it qualifies is absent or zero, and confirm the slot's condition matches the string's.
+- **A slot justified by a rule names the rule and the quantity that rule reads**, or the justification does not survive the first re-measurement that refutes it.
+
+Before any number leaves the artifact, grep your own draft for the hedges and for the arithmetic, and paste the output:
+
+```bash
+grep -nE '≈|~[0-9]|projec|estimat|assum|should be' .specs/NNNN-*/design.md
+grep -nE '[0-9]+ ?[÷/×x] ?[0-9]+|[0-9]{2,} (chars|caracteres)|corpus|probe' .specs/NNNN-*/design.md
+```
+
+Every hit is a measurement carrying the state it was read in, or it is deleted. For a layout figure, load the state deliberately in a real browser, apply the candidate markup to the live DOM, and read the box — counting **rendered line boxes**, never characters — then report the before markup and the after markup from the same page load:
+
+```js
+const r = document.createRange()
+r.selectNodeContents(el)
+new Set([...r.getClientRects()].map((c) => Math.round(c.top))).size // lines, measured
+el.getBoundingClientRect().height                                   // height, measured
+```
+
 ## On a bounce
 
 Rejections arrive through the `tech-lead`. Fix the design, write the lesson, update `STATUS.md`. Two bounces on this gate is the ceiling; on the third the `tech-lead` hands the impasse to the human. Never resolve a legal rejection by moving the disclosure somewhere quieter.

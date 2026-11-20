@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
+import { SITE_URL } from "@/lib/structured-data";
 
-const SITE_URL = "https://workload.devrma.com";
 const LAST_CONTENT_CHANGE = "2026-09-14";
 
 export default function sitemap(): MetadataRoute.Sitemap {

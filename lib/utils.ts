@@ -50,6 +50,10 @@ const AMOUNT_FORMATTER = new Intl.NumberFormat("pt-BR", {
   maximumFractionDigits: 2,
 });
 
+const HOURS_FORMATTER = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 2 });
+
+const PERCENT_FORMATTER = new Intl.NumberFormat("pt-BR", { style: "percent", maximumFractionDigits: 2 });
+
 const TIME_FORMATTER = new Intl.DateTimeFormat("pt-BR", { timeStyle: "medium" });
 
 export function formatCurrency(value: number): string {
@@ -58,6 +62,14 @@ export function formatCurrency(value: number): string {
 
 export function formatCurrencySimple(value: number): string {
   return AMOUNT_FORMATTER.format(value);
+}
+
+export function formatHours(value: number): string {
+  return HOURS_FORMATTER.format(value);
+}
+
+export function formatPercent(rate: number): string {
+  return PERCENT_FORMATTER.format(rate);
 }
 
 export function formatClockTime(date: Date): string {

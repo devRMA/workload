@@ -169,6 +169,21 @@ they join it whether or not they are broken today (lesson 006).
 **Binding, and it supersedes LR2 as written at `.specs/0005-…/legal.md` §3 for every surface,
 including DS1, DS2 and DS4.** LR1 and LR3 stand unchanged, word for word.
 
+> **⚠ Correction, 2026-09-16 — "LR3 stands unchanged" was the error of this gate, not of LR3.**
+> This section widened the disclosure domain to admit **DS5, DS6 and DS7** (§2.2) and then declared
+> LR3 unchanged **without re-executing its clauses against the members the widening newly admitted**.
+> LR3's first bullet — *present in the server-rendered DOM (not injected on an event)* — is false for
+> DS2, DS5, DS6 and DS7, and has been false from this spec onward; `curl` on the deployed head
+> returns **0 occurrences** of their text on either route
+> (`.specs/0008-intermittent-layout-shift-on-custo-da-hora/legal.md` §1.2). It is also
+> **unmeetable**: those four are conditional on `localStorage`, and server-rendering them would send
+> the user's salary to a server, which `PRODUCT.md` §5 forbids.
+>
+> The bullet is corrected at `0008` **§4.1** and its substance re-expressed as **LR6.1 — co-presence**
+> (`0008` §4.2). **The human confirmed this inversion of `AGENTS.md` §8's default direction on
+> 2026-09-16** (`0008` §8, Q2). LR1 and LR2-as-corrected here are unaffected, and nothing in this
+> spec's verdict changes. Lesson **038**.
+
 ### 3.1 — What was wrong with it
 
 LR2 read `chars / lineBoxes >= 40` with no statement of the font size it assumed. It was calibrated

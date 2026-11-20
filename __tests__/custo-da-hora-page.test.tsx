@@ -18,6 +18,12 @@ vi.mock("@/components/organisms/salary-calculator", () => ({
   SalaryCalculator: () => <p>Painel do custo da hora</p>,
 }));
 
+vi.mock("@/lib/og-image", () => ({
+  OG_IMAGE_SIZE: { width: 1200, height: 630 },
+  OG_IMAGE_CONTENT_TYPE: "image/png",
+  renderOgImage: (view: string) => ({ view }),
+}));
+
 describe("CostPerHour", () => {
   it("serves the salary panel on the very first frame", () => {
     const markup = renderToString(<CostPerHour />);
@@ -38,5 +44,28 @@ describe("metadata", () => {
       title: "Calculadora de Valor da Hora e Salário Líquido CLT",
       url: "/custo-da-hora",
     });
+  });
+
+  it("points the social card at the declared origin, not at the deployment host", async () => {
+    const openGraphImage = await import("@/app/custo-da-hora/opengraph-image");
+    const twitterImage = await import("@/app/custo-da-hora/twitter-image");
+
+    expect(metadata.openGraph?.images).toEqual([
+      {
+        url: "/custo-da-hora/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: openGraphImage.alt,
+        type: "image/png",
+      },
+    ]);
+    expect(metadata.twitter?.images).toEqual([
+      {
+        url: "/custo-da-hora/twitter-image",
+        width: 1200,
+        height: 630,
+        alt: twitterImage.alt,
+      },
+    ]);
   });
 });

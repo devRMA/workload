@@ -16,6 +16,9 @@ export interface SurfaceMeasurement {
 
 export const DS1_FOOTER_SELECTOR = "#main-content > footer";
 export const DS4_PANEL_SELECTOR = "dialog[aria-labelledby='privacy-settings-title'] > div";
+export const D3_LEGEND_SELECTOR = "#regime-federal-rpps-gap";
+export const D4_CAPTION_TEXT = "Os 20% do adicional noturno são o mínimo da CLT";
+export const D6_CAPTION_SELECTOR = "#annual-period-disclosure";
 
 export async function availableContentWidth(locator: Locator): Promise<number> {
   return locator.evaluate((element) => {

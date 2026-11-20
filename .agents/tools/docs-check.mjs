@@ -58,6 +58,16 @@ for (const a of squad) {
 	if (!body.includes('.agents/memory')) warn(`${a}: não instrui a consultar a memória da squad`)
 }
 
+const HTML_ELEMENTS = new Set([
+	'article', 'aside', 'button', 'caption', 'datalist', 'details', 'dialog', 'fieldset', 'figcaption',
+	'figure', 'footer', 'header', 'heading', 'iframe', 'legend', 'optgroup', 'picture', 'progress',
+	'section', 'select', 'summary', 'tbody', 'textarea', 'tfoot', 'thead',
+])
+
+const withoutCode = (body) => body.replace(/```[\s\S]*?```/g, '').replace(/`[^`\n]*`/g, '')
+const templatePlaceholders = (body) =>
+	[...body.matchAll(/<([a-z][a-z -]{6,})>/g)].map((m) => m[1]).filter((t) => !HTML_ELEMENTS.has(t))
+
 // 5. memória
 if (!existsSync(resolve(root, '.agents/memory/LESSONS.md'))) fail('.agents/memory/LESSONS.md ausente')
 else {
@@ -69,17 +79,12 @@ else {
 		for (const s of ['## What happened', '## Why it happened', '## The rule', '## How to verify']) {
 			if (!fm.includes(s)) fail(`lição ${f}: seção "${s}" não preenchida`)
 		}
-		if (/<[a-z ]+>/.test(fm.split('## What happened')[1] ?? '')) fail(`lição ${f}: placeholders do template não preenchidos`)
+		const leftovers = templatePlaceholders(withoutCode(fm.split('## What happened')[1] ?? ''))
+		if (leftovers.length) fail(`lição ${f}: placeholders do template não preenchidos (${leftovers[0]})`)
 	}
 	if (lessonFiles.length > 30) fail(`${lessonFiles.length} lições ativas — acima do teto de 30, promova ou aposente`)
 	pass(`memória íntegra (${lessonFiles.length} lições ativas)`)
 }
-
-const HTML_ELEMENTS = new Set([
-	'article', 'aside', 'button', 'caption', 'datalist', 'details', 'dialog', 'fieldset', 'figcaption',
-	'figure', 'footer', 'header', 'heading', 'iframe', 'legend', 'optgroup', 'picture', 'progress',
-	'section', 'select', 'summary', 'tbody', 'textarea', 'tfoot', 'thead',
-])
 
 // 6. specs
 const specFolders = existsSync(specsDir)
@@ -126,7 +131,7 @@ for (const folder of specFolders) {
 	if (isTarget) {
 		for (const f of ['spec.md', 'legal.md', 'design.md', 'copy.md', 'plan.md']) {
 			const body = read(resolve(specsDir, folder, f))
-			const leftovers = [...(body ?? '').matchAll(/<([a-z][a-z -]{6,})>/g)].map((m) => m[1]).filter((t) => !HTML_ELEMENTS.has(t))
+			const leftovers = templatePlaceholders(withoutCode(body ?? ''))
 			if (leftovers.length) warn(`spec ${folder}/${f}: ainda contém placeholders do template (${leftovers[0]})`)
 		}
 	}

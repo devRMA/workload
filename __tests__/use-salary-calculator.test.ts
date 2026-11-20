@@ -1,7 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useSalaryCalculator } from "@/hooks/use-salary-calculator";
-import { DAILY_MINUTES_KEY, GROSS_SALARY_KEY, MONTHLY_HOURS_KEY } from "@/lib/storage";
+import { DAILY_MINUTES_KEY, GROSS_SALARY_KEY, MONTHLY_HOURS_KEY, WORK_DAYS_PER_WEEK_KEY } from "@/lib/storage";
 
 describe("useSalaryCalculator", () => {
   beforeEach(() => {
@@ -232,6 +232,38 @@ describe("useSalaryCalculator", () => {
     expect(localStorage.getItem(DAILY_MINUTES_KEY)).toBe("480");
   });
 
+  it("starts with the default of five work days per week", () => {
+    const { result } = renderHook(() => useSalaryCalculator());
+
+    expect(result.current.workDaysPerWeek).toBe(5);
+  });
+
+  it("restores a stored work days per week", () => {
+    localStorage.setItem(WORK_DAYS_PER_WEEK_KEY, "6");
+
+    const { result } = renderHook(() => useSalaryCalculator());
+
+    expect(result.current.workDaysPerWeek).toBe(6);
+  });
+
+  it("persists a changed work days per week", () => {
+    const { result } = renderHook(() => useSalaryCalculator());
+
+    act(() => {
+      result.current.setWorkDaysPerWeek(6);
+    });
+
+    expect(localStorage.getItem(WORK_DAYS_PER_WEEK_KEY)).toBe("6");
+  });
+
+  it("restores a cleared work days per week as 0, not as the default of 5", () => {
+    localStorage.setItem(WORK_DAYS_PER_WEEK_KEY, "0");
+
+    const { result } = renderHook(() => useSalaryCalculator());
+
+    expect(result.current.workDaysPerWeek).toBe(0);
+  });
+
   it("publishes the gross salary and the divisor for the journey tab to price overtime with", () => {
     const { result } = renderHook(() => useSalaryCalculator(5000));
 
@@ -294,5 +326,30 @@ describe("useSalaryCalculator", () => {
 
     expect(localStorage.getItem("manualInss")).toBeNull();
     expect(localStorage.getItem("manualIrrf")).toBeNull();
+  });
+
+  it("never writes a default over a stored value before the restore completes", () => {
+    const storedValues: Record<string, string> = {
+      [GROSS_SALARY_KEY]: "4200",
+      [MONTHLY_HOURS_KEY]: "180",
+      [DAILY_MINUTES_KEY]: "480",
+      dependents: "2",
+      salaryPeriod: "month",
+      workRegime: "estatutario",
+    };
+    for (const [key, value] of Object.entries(storedValues)) {
+      localStorage.setItem(key, value);
+    }
+    const setItem = vi.spyOn(Storage.prototype, "setItem");
+
+    renderHook(() => useSalaryCalculator());
+
+    const writes = setItem.mock.calls as [string, string][];
+    for (const [key, seeded] of Object.entries(storedValues)) {
+      const firstWrite = writes.find(([writtenKey]) => writtenKey === key);
+      expect(firstWrite?.[1] ?? seeded, `${key} was written before the restore completed`).toBe(seeded);
+      expect(localStorage.getItem(key), `${key} did not survive the restore byte for byte`).toBe(seeded);
+    }
+    setItem.mockRestore();
   });
 });

@@ -9,18 +9,18 @@
 | | Text | Chars |
 |---|---|---|
 | pt-BR | <...> | <n> |
-| en | <...> | <n> |
 
 - **Constraint:** <from design.md, or none>
 - **Evidence:** <file backing any factual claim>
 
 ## Rejected phrasings
 
-| Considered | Language | Why it lost |
-|---|---|---|
+| Considered | Why it lost |
+|---|---|
 
-## Parity check
+## Checks
 
-- [ ] Every key exists in both `locales/en.ts` and `locales/pt-BR.ts`
-- [ ] Each version reads as a native original, not a translation
-- [ ] Every factual claim cited to `data/` or `PRODUCT.md`
+- [ ] Every string is pt-BR — there is no i18n layer and the strings live in the components
+- [ ] It reads as a native original, written for a worker who is not a lawyer
+- [ ] Every legal claim traces to a passage of `legal.md`; every other factual claim to `PRODUCT.md`
+- [ ] Every literal a test depends on verbatim is listed, with its `file:line`

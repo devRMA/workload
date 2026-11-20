@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   formatClock,
+  formatCompactDuration,
   formatHoursAndMinutes,
   formatPaddedDuration,
   formatSignedHoursAndMinutes,
@@ -62,6 +63,15 @@ describe("minutesToHours", () => {
   it("converts minutes to fractional hours", () => {
     expect(minutesToHours(0)).toBe(0);
     expect(minutesToHours(528)).toBeCloseTo(8.8, 10);
+  });
+});
+
+describe("formatCompactDuration", () => {
+  it("renders the hours and minutes without a separator or padded hours", () => {
+    expect(formatCompactDuration(528)).toBe("8h48");
+    expect(formatCompactDuration(720)).toBe("12h00");
+    expect(formatCompactDuration(440)).toBe("7h20");
+    expect(formatCompactDuration(480)).toBe("8h00");
   });
 });
 
