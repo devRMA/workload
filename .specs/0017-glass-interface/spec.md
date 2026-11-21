@@ -1,4 +1,4 @@
-# 0100 — Interface de vidro
+# 0017 — Interface de vidro
 
 Base: `61ae049`, ponta do PR #39. No preview, o anel aparece antes de 17:48 e ocupa mais espaço do que a resposta. Em 390 px, a navegação cobre o início do formulário. O objetivo é recuperar cor e dar acesso imediato à edição, sem trocar a identidade ou reabrir a stack.
 

@@ -1,4 +1,4 @@
-# 0100 — Direção visual
+# 0017 — Direção visual
 
 Modo Operate. Evolução da identidade Instrumento Honesto, com os dials existentes 3/2/5. O foco cromático é o resultado, com acabamento do tom semântico mais vivo ao tom original; sem tingir o canvas ou animar números. O anel secundário tem fundo próprio mais escuro para preservar a distinção visual do arco âmbar.
 

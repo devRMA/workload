@@ -3,8 +3,8 @@
 The request is to fix PR #42's failing checks and finish the reachability work already on the
 branch. The snapshot commit `262c9a0` brought in the reachability guards, the consent switch fix,
 and the bottom reserve. The existing plan leaves T5, T6, T4′, T7, and T8 open. The current result
-panel also inherits `0100`'s ring and answer layout, which postdate this spec's geometry baseline.
-[Build status](../STATUS.md) · [Build plan](../plan.md) · [Ring design status](../../0100-glass-interface/STATUS.md)
+panel also inherits `0017`'s ring and answer layout, which postdate this spec's geometry baseline.
+[Build status](../STATUS.md) · [Build plan](../plan.md) · [Ring design status](../../0017-glass-interface/STATUS.md)
 
 ## Failing baseline
 
@@ -20,7 +20,7 @@ focused browser run. The CI job timeout remains a separate delivery failure.
 ## Integration and verification
 
 1. Complete T4′ by moving the existing estimate disclosure beside the result on both routes and
-   preserving the `0100` ring. Apply the remaining T5/T6 layout requirements to the inherited
+   preserving the `0017` ring. Apply the remaining T5/T6 layout requirements to the inherited
    interface and verify first-screen disclosure reachability and answer occlusion independently.
    Check the disclosure's actual geometry, including its adjacency to the result, clearance from
    fixed controls, and the expected visible answer lines. Report any mismatch against the old

@@ -1389,7 +1389,7 @@ the exit time and the edit shortcut below. On Custo da Hora the amount, period c
 shortcut lead into the estimate notice. Keep the full DS1 P2 paragraph as one `p#estimate-notice`
 immediately after the hero in each result column. Its sole purpose is to qualify the displayed
 answer. The full sources remain available in the footer, including the separate night-overtime
-citation on Jornada. [Glass spec](../0100-glass-interface/spec.md) · [Estimate ruling](legal.md)
+citation on Jornada. [Glass spec](../0017-glass-interface/spec.md) · [Estimate ruling](legal.md)
 
 ### Placement and tokens
 

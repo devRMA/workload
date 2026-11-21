@@ -16,7 +16,7 @@ Compared the `feat/workload-glass` working tree with `61ae0497f187da532ae0a8f52d
 - `__tests__/progress-ring.test.tsx`
 - `tests/e2e/work-calculator.spec.ts`
 
-The documentation diff in `DESIGN.md` and `.specs/INDEX.md` and the artifacts in `.specs/0100-glass-interface/` supplied context. Application behavior outside the changed modules is out of scope. This was a static review.
+The documentation diff in `DESIGN.md` and `.specs/INDEX.md` and the artifacts in `.specs/0017-glass-interface/` supplied context. Application behavior outside the changed modules is out of scope. This was a static review.
 
 ## Findings
 
