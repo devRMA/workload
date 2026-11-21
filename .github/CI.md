@@ -65,6 +65,10 @@ against all 64 combinations of success, failure, cancelled and skipped results:
 only three successes pass. The image guard was checked with matching `1.63.0`
 and mismatched `1.64.0` versions.
 
+The checks job runs `node .agents/tools/docs-check.mjs` before dependency installation. Broken
+spec numbering, missing index rows, required project documents, agent symlinks, and memory
+integrity therefore fail the PR early instead of surviving until release.
+
 Local validation used the `b0925eb` application with this infrastructure diff:
 
 - `pnpm lint`, `pnpm typecheck` and `pnpm test:coverage` passed (536 tests).

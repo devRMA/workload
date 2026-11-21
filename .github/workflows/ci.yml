@@ -35,6 +35,9 @@ jobs:
           node-version: "24"
           cache: "pnpm"
 
+      - name: Validate specs and documentation
+        run: node .agents/tools/docs-check.mjs
+
       - name: Install dependencies
         timeout-minutes: 3
         run: pnpm install --frozen-lockfile

@@ -45,7 +45,7 @@ none
 | When | Agent | Decision |
 |---|---|---|
 | 2026-11-19 | product-manager | G1 foi produzido no snapshot isolado `/tmp/workload-stack-review.GANNze`, com lógica remota no topo `5c0c6fa` e ajustes locais da revisão que não alteram esta fórmula; o defeito foi reproduzido contra essa lógica-base. |
-| 2026-11-19 | product-manager | O número `0016` foi usado por solicitação explícita da orquestração, embora `.specs/README.md` reserve `0100+` para trabalho novo. A exceção fica registrada para não ser confundida com documentação puramente retrospectiva. |
+| 2026-11-19 | product-manager | O número `0016` segue a sequência canônica do repositório. Specs retrospectivas e trabalho novo usam a mesma ordem contínua. |
 | 2026-11-19 | product-manager | `.specs/0003-citation-registry/` detém a arquitetura de atribuição, `.specs/0007-sumula-431-citation-scope/` detém divisor/salário-hora e `.specs/0012-saturday-overtime-tier/` detém o roteamento de faixas; esta spec altera somente a integração do adicional noturno na hora extra noturna. |
 | 2026-11-19 | product-manager | Os controles discriminantes fixam A em R$ 68,00 e movem B de R$ 68,00 para R$ 72,00; igualdade dos totais impede soluções por agregados sem cronologia. |
 | 2026-11-19 | product-manager | G1 passa na execução 1 e entrega ao `labor-law-analyst`; nenhuma alteração de código-fonte foi autorizada neste gate. |

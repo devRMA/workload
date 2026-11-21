@@ -1,4 +1,4 @@
-# 0100 — Status
+# 0017 — Status
 
 **State:** in-progress
 **Next agent:** release-manager
@@ -22,6 +22,7 @@ Publicação autorizada; o preview remoto depende do deploy do PR.
 
 ## Decisions log
 
+- Em 2026-11-21, a spec foi normalizada de uma faixa reservada para `0017`, o próximo número da sequência real. `.specs/README.md`, `.specs/INDEX.md`, títulos, links e evidências foram reconciliados; o CI passou a executar o docs-check global antes de instalar dependências.
 - Evolução visual separada na branch `feat/workload-glass`, sobre `61ae049`; nenhum ajuste na stack publicada.
 - QA: ordem de Tab corrigida na coluna única; o Safari volta ao resultado ao trocar de calculadora depois de rolar até o formulário. Build, types, lint e cobertura validados. Playwright: 164 casos aprovados na suíte e três reaprovados isoladamente no mesmo build após normalizar a leitura do CSS.
 - Auditoria local das duas rotas em claro e escuro, com foco, preferências visuais e contraste do resultado. Sem mudança em regras de cálculo, tabelas legais ou dependências. Lighthouse e preview remoto não revalidados.

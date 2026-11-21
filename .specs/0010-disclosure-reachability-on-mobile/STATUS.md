@@ -7,7 +7,7 @@
 ## PR #42 integration — 2026-11-20
 
 **Current work:** fix the failing PR checks and finish the mobile reachability work already on the
-branch. Complete T4′ against the inherited `0100` result ring and retain T5/T6's reachability and
+branch. Complete T4′ against the inherited `0017` result ring and retain T5/T6's reachability and
 occlusion requirements. Repair the LR4 browser measurement, isolate third-party traffic in the
 affected tests, and shard the Playwright CI run. The isolated Chromium baseline at `262c9a0`
 reported **36 failed, 2 skipped, 19 passed (34.1 s)**. The completed integration now passes all
@@ -709,7 +709,7 @@ source.
 
 | When | Agent | Decision |
 |---|---|---|
-| 2026-11-20 | product-designer (G3 integration, run 3) | Preserve the approved `0100` ring and edit shortcuts. Move the whole DS1 P2 into the result column. Use the current result census and the native modal's paint order in the guards. The measured first-screen room removes T6's earlier geometry dependency for AC1. The separate AC15 first-field criterion stays open for `0008` and product triage. [Measurements](design.md#18-pr-42-integration-with-the-glass-results) |
+| 2026-11-20 | product-designer (G3 integration, run 3) | Preserve the approved `0017` ring and edit shortcuts. Move the whole DS1 P2 into the result column. Use the current result census and the native modal's paint order in the guards. The measured first-screen room removes T6's earlier geometry dependency for AC1. The separate AC15 first-field criterion stays open for `0008` and product triage. [Measurements](design.md#18-pr-42-integration-with-the-glass-results) |
 | 2026-11-20 | product-designer (G3 integration, F2c) | Include the consent action row in PR #42 to meet LR4.4 clause 2 on desktop. The grid gives refusal and acceptance equal tracks while leaving room for the informing paragraph. Re-enable the rendered area assertion at 1440 once the change is built. Keep the separately routed fill question. [Consent target evidence](design.md#equal-consent-targets) |
 | 2026-09-19 | labor-law-analyst (G2 run 4, `legal.md` **Addendum C**) | **LR3.5's subject is the document the reader's browser renders — neither of the two documents D-5 offered.** Both are proxies; where the product can ship more than one, **the clause binds in every one and is verified in the NARROWEST**, which is ads-off today only because the slot sits **below** every disclosure. Stated that way and not as *"ads off"* so it survives `<AdManager />` moving before `{children}` — **that is the state in which this ruling comes out the other way, and a rule with no such state was not ruled.** **Meaning: unchanged, word for word.** **Measurement: the ad-slot configuration is a cell axis**, beside route, viewport, theme, storage and consent, and it was missing from the enumeration — lesson **048**'s defect one level up. |
 | 2026-09-19 | labor-law-analyst (C2.3) | **The decisive reason is that the harness document has an operand this repository cannot bound.** `maxScroll = maxScroll_adsOff + 32 + adHeight`, verified against **three** measured points on one formula with no free parameter (0→2215, 100→2347, 390→2637). `adHeight` is chosen by **AdSense** — `data-ad-format="auto"`, `min-h-25` a **floor with no ceiling** — against a **placeholder publisher** (`ca-pub-0000000000000000`, not the product's `ca-pub-8745764662929625`). **A clause whose verdict moves with an ad auction is not falsifiable by anything this squad can run**, and a rule its own reviewer cannot falsify is not a rule. |

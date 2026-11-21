@@ -45,10 +45,8 @@ The test is mechanical. Read a spec and ask: could someone who has never seen th
 
 ## Numbering
 
-Four digits, assigned in order, never reused.
-
-- **`0001`–`0099` — baseline.** Specs that document the calculator as it already exists. They are written after the fact and exist so the rebuild contract holds for code that predates the pipeline.
-- **`0100`+ — new work.** Everything the squad specifies before building.
+Four digits, assigned in one continuous sequence, never reused. Baseline and new-work specs share
+the same ordering; the next spec always takes the highest existing number plus one.
 
 ```bash
 node .agents/tools/spec.mjs new "short change name"
@@ -60,7 +58,7 @@ The tool takes the highest existing folder number and adds one, scaffolds the fo
 cp .specs/templates/legal.md .specs/<NNNN-slug>/legal.md
 ```
 
-While the baseline range is still the highest numbering in the repo, the first new-work spec has to be moved into the `0100`+ range by hand: rename the folder and fix its `INDEX.md` row. After that the tool keeps counting from there on its own.
+Do not reserve ranges or renumber a spec by work type. The tool's sequential number is canonical.
 
 ## Where state lives
 
