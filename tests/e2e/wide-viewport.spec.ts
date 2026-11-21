@@ -1,4 +1,5 @@
-import { expect, test } from "@playwright/test";
+import { expect } from "@playwright/test";
+import { test } from "./support/fixtures";
 import { driveC5, driveUntil, expectLr2a, measureSurface, waitForStableBoundingBox } from "./support/legibility";
 
 const WIDE_VIEWPORTS = [

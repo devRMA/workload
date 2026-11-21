@@ -207,16 +207,44 @@ describe("JourneyForm", () => {
     expect(screen.queryByText("Resetar os horários?")).not.toBeInTheDocument();
   });
 
-  it("says the 100% step above two hours comes from the convenção coletiva, not from the law", async () => {
+  it("says the 100% step comes from the convenção coletiva, not from the law", async () => {
     const user = userEvent.setup();
     render(<JourneyHarness />);
 
     await user.click(screen.getByRole("button", { name: "Configurações da Jornada" }));
 
-    expect(screen.getByText(/Não existe lei que dobre o adicional depois da 2ª hora/)).toBeInTheDocument();
     expect(screen.getByLabelText("Adicional acima de 2h (%)")).toHaveAccessibleDescription(
-      /convenção coletiva previr esse degrau/,
+      /O piso de 50% vale para toda hora extra, inclusive depois da 2ª/,
+    );
+    expect(screen.getByLabelText("Adicional acima de 2h (%)")).toHaveAccessibleDescription(
+      /O degrau de 100% vem de convenção coletiva, não da lei/,
     );
     expect(screen.getByText(/O piso legal é 50% sobre a hora normal/)).toBeInTheDocument();
+  });
+
+  it("never claims that no law doubles the adicional", async () => {
+    const user = userEvent.setup();
+    render(<JourneyHarness />);
+
+    await user.click(screen.getByRole("button", { name: "Configurações da Jornada" }));
+
+    expect(screen.queryByText(/Não existe lei/)).toBeNull();
+    const hint = screen.getByLabelText("Adicional acima de 2h (%)").getAttribute("aria-describedby");
+    expect(hint).not.toBeNull();
+    expect(document.getElementById(hint ?? "")?.textContent ?? "").not.toMatch(
+      /não escalona|continua sendo 50%|nenhuma norma dobra/i,
+    );
+  });
+
+  it("opens the settings panel with the keyboard and reaches the hint as the field's description", async () => {
+    const user = userEvent.setup();
+    render(<JourneyHarness />);
+
+    screen.getByRole("button", { name: "Configurações da Jornada" }).focus();
+    await user.keyboard("{Enter}");
+
+    expect(screen.getByLabelText("Adicional acima de 2h (%)")).toHaveAccessibleDescription(
+      /O degrau de 100% vem de convenção coletiva, não da lei/,
+    );
   });
 });

@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import { Atkinson_Hyperlegible_Next } from "next/font/google";
 import { describe, expect, it } from "vitest";
 import RootLayout, { metadata, viewport } from "@/app/layout";
 
@@ -12,13 +13,16 @@ describe("RootLayout", () => {
     expect(screen.getByText("layout child")).toBeInTheDocument();
   });
 
-  it("loads the hyperlegible family on the body", () => {
+  it("puts the font object's own variable class on the body", () => {
+    const hyperlegible = Atkinson_Hyperlegible_Next({ subsets: ["latin"], variable: "--font-hyperlegible" });
+
     render(
       <RootLayout>
         <div>layout child</div>
       </RootLayout>,
     );
-    expect(document.body.className).toContain("font-hyperlegible");
+
+    expect(document.body.className).toContain(hyperlegible.variable);
   });
 
   it("does not preconnect to any third-party origin ahead of consent", () => {
@@ -31,6 +35,15 @@ describe("RootLayout", () => {
     expect(
       document.querySelector("link[rel='preconnect'][href*='pagead2.googlesyndication.com']"),
     ).not.toBeInTheDocument();
+  });
+
+  it("does not mount the consent surface itself", () => {
+    render(
+      <RootLayout>
+        <div>layout child</div>
+      </RootLayout>,
+    );
+    expect(screen.queryByRole("button", { name: "Configurações de Privacidade" })).toBeNull();
   });
 });
 

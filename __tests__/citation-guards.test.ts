@@ -75,4 +75,34 @@ describe("citation guards", () => {
 
     expect(offenders).toEqual([]);
   });
+
+  it("states no rate as a literal in lib/payroll.ts", () => {
+    const source = readFileSync(join(ROOT, "lib/payroll.ts"), "utf8");
+
+    expect(source.length).toBeGreaterThan(0);
+    expect(source.match(/[0-9]+([,.][0-9]+)?%/)).toBeNull();
+  });
+
+  it("carries the norm above every statutory constant in the module that defines it", () => {
+    const rows: { file: string; constant: string; norm: string }[] = [
+      { file: "lib/overtime-tiers.ts", constant: "DAILY_OVERTIME_LIMIT_MINUTES", norm: "CLT art. 59" },
+      { file: "lib/compliance.ts", constant: "SHORT_DAY_MINUTES", norm: "CLT art. 71" },
+      { file: "lib/compliance.ts", constant: "LONG_DAY_MINUTES", norm: "CLT art. 71" },
+      { file: "lib/compliance.ts", constant: "MINIMUM_SHORT_BREAK_MINUTES", norm: "CLT art. 71" },
+      { file: "lib/compliance.ts", constant: "MINIMUM_LUNCH_MINUTES", norm: "CLT art. 71" },
+      { file: "lib/compliance.ts", constant: "MINIMUM_REST_BETWEEN_SHIFTS_MINUTES", norm: "CLT art. 66" },
+      { file: "lib/salary-period.ts", constant: "PAID_MONTHS_PER_YEAR", norm: "Lei nº 4.090/1962" },
+    ];
+
+    expect(rows.length).toBe(7);
+    for (const { file, constant, norm } of rows) {
+      const lines = readFileSync(join(ROOT, file), "utf8").split("\n");
+      const declarationIndex = lines.findIndex((line) => line.includes(`const ${constant}`));
+
+      expect(declarationIndex).toBeGreaterThan(0);
+      const precedingLine = lines[declarationIndex - 1];
+      expect(precedingLine.trim().startsWith("//")).toBe(true);
+      expect(precedingLine).toContain(norm);
+    }
+  });
 });

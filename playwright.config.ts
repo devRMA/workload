@@ -15,6 +15,7 @@ export default defineConfig({
   reporter: [["html", { open: "never" }], ["list"], ["junit", { outputFile: "playwright-report/results.xml" }]],
   timeout: 60000,
   use: {
+    serviceWorkers: "block",
     baseURL: BASE_URL,
     trace: "on-first-retry",
     actionTimeout: 15000,

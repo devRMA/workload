@@ -4,6 +4,7 @@ import { IconClock, IconCurrencyDollar } from "@tabler/icons-react";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { buttonClasses } from "@/components/atoms/button";
+import { CookieConsent } from "@/components/organisms/cookie-consent";
 import { SalaryCalculator } from "@/components/organisms/salary-calculator";
 import { WorkCalculator } from "@/components/organisms/work-calculator";
 import { safeGAEvent } from "@/lib/analytics";
@@ -64,18 +65,14 @@ export function CalculatorViews({ activeView }: { activeView: CalculatorView }) 
         ref={mainRef}
         id="main-content"
         tabIndex={-1}
-        className="relative pt-[calc(var(--header-height)+var(--spacing)*8)] pb-[calc(6rem+env(safe-area-inset-bottom))] px-4 sm:px-6 lg:px-8 outline-none"
+        className="relative pt-[calc(var(--header-height)+var(--spacing)*4)] sm:pt-[calc(var(--header-height)+var(--spacing)*8)] pb-[calc(6rem+env(safe-area-inset-bottom))] px-4 sm:px-6 lg:px-8 outline-none"
       >
         {activeView === "work" ? <WorkCalculator /> : <SalaryCalculator />}
 
-        <footer className="mx-auto mt-12 max-w-3xl space-y-2 text-center text-caption text-ink-subtle text-pretty">
+        <footer className="mx-auto mt-12 mb-8 max-w-3xl space-y-2 text-center text-caption text-ink-subtle text-pretty">
           <p>
             Tudo o que você digita fica salvo apenas neste navegador. Nada é enviado para nenhum servidor, e ninguém
             além de você vê seus horários ou seu salário.
-          </p>
-          <p>
-            Os valores são uma estimativa para você se organizar. Não substituem seu holerite, não valem como registro
-            oficial de ponto e nada aqui é orientação jurídica ou contábil.
           </p>
           <p>
             Não entram na conta: FGTS, benefícios e adicionais da sua convenção coletiva, o 13º salário e o terço de
@@ -124,6 +121,8 @@ export function CalculatorViews({ activeView }: { activeView: CalculatorView }) 
             </p>
           ) : null}
         </footer>
+
+        <CookieConsent />
       </div>
     </>
   );

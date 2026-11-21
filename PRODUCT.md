@@ -72,7 +72,7 @@ Three commitments follow from it:
 
 - **Jornada** — entry, lunch out/in, exit projection, live elapsed time, overtime accrual.
 - **Adicional noturno** — CLT art. 73: the 20% premium and the 52min30s reduced hour, between 22:00 and 05:00.
-- **Horas extras** — configurable rates, defaulting to the statutory floor of 50% / 100%.
+- **Horas extras** — configurable rates, defaulting to 50% / 100%. **Only the 50% is a statutory floor** (CF art. 7º XVI). The 100% and the two-hour boundary that selects it are a **default, not a norm**: no rule fixes that step, the lawful figure for the same shift moves with the contract, and one category — the empregado advogado — carries a 100% floor from the first excess hour with no step at all (Lei nº 8.906/1994 art. 20 §2º).
 - **Limites da CLT** — warnings when the journey crosses a legal threshold.
 - **Regimes** — CLT, Empregado Público (RGPS with its ceiling) and Estatutário (federal RPPS ladder, 7.5%–22%, uncapped).
 - **Salário líquido** — INSS, IRRF, dependents, deductions, extra gains.

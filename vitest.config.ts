@@ -8,7 +8,7 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: ["./vitest.setup.ts"],
-    exclude: ["**/node_modules/**", "**/tests/e2e/**"],
+    exclude: ["**/node_modules/**", "**/tests/e2e/**", "**/.claude/**"],
     reporters: process.env.CI ? ["default", "junit"] : ["default"],
     outputFile: "./coverage/junit.xml",
     coverage: {

@@ -287,9 +287,34 @@ migration can accidentally satisfy.
 
 ### LR3 — no interaction, no assistive-only presence
 
+> **⚠ Superseded in part, 2026-09-16 — the first bullet below is wrong and was never met by four of
+> the six surfaces the rule's domain now contains.** The text is left standing as written, because a
+> superseded rule with a visible correction is honest and a silently edited one is not.
+>
+> - **What was refuted:** *"present in the server-rendered DOM (not injected on an event)"*. `curl`
+>   on the deployed head returns **0 occurrences** of `Súmula 172` (DS2), `Súmula 431` (DS6) and
+>   `art. 59 da CLT` (DS7) on either route; DS5 likewise. Measured at
+>   `.specs/0008-intermittent-layout-shift-on-custo-da-hora/legal.md` §1.2.
+> - **Why it is the rule that is wrong and not the code:** DS2, DS5, DS6 and DS7 are conditional on
+>   `localStorage`. Server-rendering them would require the user's salary and journey to reach a
+>   server, which `PRODUCT.md` §5 forbids as a principle that "is not a feature to be traded away
+>   later". The clause was not merely unmet; it was unmeetable.
+> - **What replaces it:** the corrected bullet at `0008` **§4.1**, plus **LR6.1 — co-presence**
+>   (`0008` §4.2), which carries the substance the refuted bullet was reaching for: a claim is never
+>   rendered without the disclosure that qualifies it, measured as
+>   `frameIndex(disclosure) − frameIndex(claim) ≤ 0`, calibrated at a frame delta of **0 in 6 of 6**
+>   observations on the deployed head.
+> - **The other four bullets stand, word for word**, and are unaffected.
+> - **Human confirmation.** This correction inverts `AGENTS.md` §8's default direction — the code is
+>   wrong until a human says otherwise. It was raised as `0008` §8 **Q2** and **the human confirmed
+>   the inversion on 2026-09-16**, on the stated ground that satisfying the clause literally would
+>   breach `PRODUCT.md` §5. No agent overruled the contract.
+> - **How long it stood false:** from `0006` §2, which widened the domain to DS5/DS6/DS7, through
+>   **DS2, DS5, DS6 and DS7** at every gate since. Lesson **038**.
+
 For every disclosure surface, on first paint, with no user interaction beyond scrolling:
 
-- present in the server-rendered DOM (not injected on an event);
+- present in the server-rendered DOM (not injected on an event); — **superseded, see the box above**
 - `visibility` is `visible`, `opacity` is not `0`, `display` is not `none`;
 - not inside a `[hidden]`, a `details:not([open])`, or a subtree whose owner has
   `aria-expanded="false"`;

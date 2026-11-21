@@ -55,7 +55,7 @@ Existem dezenas de calculadoras de hora extra em português. Quase nenhuma diz q
 
 **DSR sobre horas extras** — Lei 605/49 art. 7º, §2º e Súmula 172 do TST, com a premissa de feriados declarada na tela.
 
-**Limites da CLT** — o teto de 2h extras (art. 59), o intervalo intrajornada (art. 71 e §1º), o interregno de 11h entre jornadas (art. 66) e o divisor incoerente que a Súmula 431 do TST resolve.
+**Limites da CLT** — o teto de 2h extras (art. 59), o intervalo intrajornada (art. 71 e §1º), o interregno de 11h entre jornadas (art. 66) e a conferência do divisor mensal pelo art. 64 da CLT, com a Súmula 431 do TST na semana de 40 horas.
 
 **Regimes** — CLT e Empregado Público contribuem pelo RGPS com seu teto; Estatutário segue a escada do **RPPS federal** (7,5% a 22%, sem teto) — e o app avisa que estados e municípios têm alíquotas próprias.
 

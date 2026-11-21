@@ -4,10 +4,10 @@ import { useCurrentTime } from "@/hooks/use-current-time";
 import { buildDayBreakdown } from "@/lib/day-breakdown";
 import { findJourneyIssue } from "@/lib/journey";
 import { splitNightOvertimeByTier } from "@/lib/night-shift";
+import { splitOvertime } from "@/lib/overtime-tiers";
 import { DAILY_MINUTES_KEY, readStoredFlag, readStoredNumber } from "@/lib/storage";
 
 const MINUTES_PER_HOUR = 60;
-const FIRST_TIER_LIMIT_MINUTES = 120;
 const EXIT_REFINEMENT_PASSES = 6;
 
 const DEFAULT_WORK_MINUTES = 8 * MINUTES_PER_HOUR + 48;
@@ -39,20 +39,6 @@ export interface WorkStats {
   totalWorked: number;
 }
 
-function splitOvertime(
-  overtimeMinutes: number,
-  isWeekend: boolean,
-): Pick<WorkStats, "firstTierMinutes" | "extraTierMinutes"> {
-  if (isWeekend) {
-    return { firstTierMinutes: 0, extraTierMinutes: overtimeMinutes };
-  }
-
-  return {
-    firstTierMinutes: Math.min(overtimeMinutes, FIRST_TIER_LIMIT_MINUTES),
-    extraTierMinutes: Math.max(0, overtimeMinutes - FIRST_TIER_LIMIT_MINUTES),
-  };
-}
-
 function breakdownOf(entry: string, lunchStart: string, lunchEnd: string, exit: string, expectedMinutes: number) {
   return buildDayBreakdown({ entry, lunchStart, lunchEnd, exit, expectedMinutes, isManualExit: true, now: null });
 }
@@ -66,8 +52,7 @@ export function calculateWorkStats(
 ): WorkStats {
   const breakdown = breakdownOf(entry, lunchStart, lunchEnd, displayExit, workMinutes);
   const entryDate = new Date(entry);
-  const dayOfWeek = entryDate.getDay();
-  const tiers = splitOvertime(breakdown.overtimeMinutes, dayOfWeek === 0 || dayOfWeek === 6);
+  const tiers = splitOvertime(breakdown.overtimeMinutes);
   const nightTiers =
     breakdown.overtimeMinutes > 0
       ? splitNightOvertimeByTier({

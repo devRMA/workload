@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { CollapsiblePanel } from "../atoms/collapsible-panel";
 
 const OPTIONS_PANEL_ID = "regime-options";
+const REGIME_GAP_LEGEND_ID = "regime-federal-rpps-gap";
 
 interface RegimeFieldProps {
   value: WorkRegime;
@@ -18,6 +19,7 @@ interface RegimeFieldProps {
 export function RegimeField({ value, onChange, className }: RegimeFieldProps) {
   const [isOpen, setIsOpen] = useState(false);
   const selected = WORK_REGIME_INFO.find((regime) => regime.value === value) ?? WORK_REGIME_INFO[0];
+  const isFederalRppsRegime = selected.value === "estatutario";
 
   const handleChange = (regime: WorkRegime) => {
     onChange(regime);
@@ -25,7 +27,10 @@ export function RegimeField({ value, onChange, className }: RegimeFieldProps) {
   };
 
   return (
-    <fieldset className={cn("space-y-2", className)}>
+    <fieldset
+      className={cn("space-y-2", className)}
+      aria-describedby={isFederalRppsRegime ? REGIME_GAP_LEGEND_ID : undefined}
+    >
       <legend className={labelClasses}>
         <IconBriefcase className="w-4 h-4" aria-hidden="true" />
         Regime de Trabalho
@@ -84,6 +89,13 @@ export function RegimeField({ value, onChange, className }: RegimeFieldProps) {
           </p>
         </div>
       </CollapsiblePanel>
+
+      {isFederalRppsRegime ? (
+        <p id={REGIME_GAP_LEGEND_ID} className="text-caption text-ink-subtle text-pretty">
+          A tabela do RPPS federal não se aplica a servidor estadual ou municipal, cujo ente fixa a própria tabela (EC
+          nº 103/2019, art. 9º, §4º).
+        </p>
+      ) : null}
     </fieldset>
   );
 }

@@ -3,8 +3,8 @@ import { Atkinson_Hyperlegible_Next } from "next/font/google";
 import "./globals.css";
 import { AdManager } from "@/components/organisms/ad-manager";
 import { AnalyticsWrapper } from "@/components/organisms/analytics-wrapper";
-import { CookieConsent } from "@/components/organisms/cookie-consent";
 import { ThemeProvider } from "@/components/templates/theme-provider";
+import { SITE_URL } from "@/lib/structured-data";
 
 const hyperlegible = Atkinson_Hyperlegible_Next({
   subsets: ["latin"],
@@ -13,7 +13,7 @@ const hyperlegible = Atkinson_Hyperlegible_Next({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://workload.devrma.com"),
+  metadataBase: new URL(SITE_URL),
   verification: {
     google: "iUxNyN-K3GLaqGNs8tq2mnFfiKc9X0USiTnQP9nqOpg",
   },
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "WorkLoad | Calculadora Inteligente de Horas",
     description: "Calcule sua jornada de trabalho, horas extras e salário CLT de forma rápida.",
-    url: "https://workload.devrma.com",
+    url: SITE_URL,
     siteName: "WorkLoad",
     locale: "pt_BR",
     type: "website",
@@ -62,7 +62,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           {children}
           <AdManager />
-          <CookieConsent />
         </ThemeProvider>
         <AnalyticsWrapper />
       </body>

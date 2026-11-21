@@ -67,6 +67,36 @@ Write the pattern, not the incident. The test: could an agent that was not there
 8. Plan the tests to the actual bars: **100% in `lib/**` and `hooks/**`**, **90% statements/branches/functions/lines in `app/**` and `components/**`**. Never lower the `lib/` or `hooks/` bar — that is the money and the hours.
 9. Write `plan.md`, then update `STATUS.md`.
 
+### Before the plan accepts a numeric performance criterion
+
+Promoted from lesson **010** at three confirmations (specs `0002`, `0004`).
+
+Decompose the metric on the current build, record the breakdown in `plan.md`, and state for each planned lever **which term of that breakdown it reduces and by how much you expect**. A lever whose term measures near zero is not a lever — strike it from the plan, or say in writing why you are keeping it. The decomposition is a baseline measurement like any other: it belongs in the same task that takes the before-numbers, before any source file is edited.
+
+**Keep a component verdict and a system verdict in separate branches.** "This change made the metric worse" and "the metric is over target" are different findings, with different owners and different remedies. Write each as its own stop condition with its own destination — the case where one fires and the other does not is the case a fused branch gets backwards, and it is not rare, it is what happens every time a real improvement lands short.
+
+The corollary is about fallbacks. A fallback an upstream gate pre-analysed answers *which option if this component is the problem*. It never answers *is this component the problem*. A written-down fallback is the path of least argument at a blocker, so require the attribution before ordering it, every time.
+
+### Before the plan accepts any assertion about a rendered quantity
+
+Promoted from lesson **016** at three confirmations (specs `0002`, `0010`).
+
+**Bound the measured quantity on both sides, and implement the rule's predicate as the whole conjunction its text states.** "No horizontal overflow" is half a test — an element that collapses inward produces neither overflow nor an off-screen control, and every automated instrument reports success. "Nothing overlaps this surface" is the same half-test one level up: it is satisfied by a surface that is off-screen entirely. Read the binding rule's sentence, list its clauses, and write each clause into the task as its own assertion with its own failure message — a guard that implements one conjunct of two is green for exactly the reason the missing conjunct exists.
+
+Write the floor and the ceiling as computed-style or geometry reads in a real browser, never as a class-string assertion, and state the thresholds and the viewports in the task itself.
+
+**And require the check to fail against the build that carries the defect, before it is trusted green.** Where the tree has moved under you and that run is no longer available, the substitute is arithmetic, not optimism: calibrate the predicate against the gate's own published worked measurement — every row, including the row that was red — then disable one clause and require the red row to go green. A predicate that regenerates the gate's table is the gate's predicate, and it costs no browser, no port and no build.
+
+### Before you name a remedy that depends on a toolchain's resolution order
+
+Promoted from lesson **017** at three confirmations (specs `0002`, `0014`).
+
+**Compile it. Never read it off the defect.** When a fix turns on how a tool resolves competing inputs — token lookup, cascade precedence, config merge, plugin ordering, module or type resolution — the symptom tells you which value won once, not what the order is, and the documentation describes the intended lookup, not the precedence when two things define the same thing. Run the minimal case that pits the candidates against each other, read the output, and paste it into `plan.md`. **A remedy you cannot show changing that output is not the remedy**, however obvious it reads.
+
+Then prefer the remedy that **empties the colliding namespace** over the one that merely outranks it today, and leave behind a check that fails if the namespace is repopulated.
+
+The same reflex governs the shape you hand the developer. Where more than one shape compiles, the tie is not broken by taste: **prefer the shape that authors no contract.** A remedy that introduces a global declaration, a new shared type or a new module is a statement the whole tree inherits and the next spec is bound by — so it is a design decision, and if the surface belongs to another owner it is theirs, not yours. State the rejected shapes and the one sentence that rejects each, in the task itself.
+
 ## Output contract — `.specs/NNNN-slug/plan.md`
 
 Follow `.specs/templates/plan.md`. Start with an **Architecture** section: the approach, which `lib/` modules change and why, the hook boundary, the component tree with atomic-design levels, data flow, and any dependency decision with its justification.

@@ -6,7 +6,7 @@
  *   lesson.mjs confirm <id>      → +1 em confirmed; avisa quando atinge 3 (promover)
  *   lesson.mjs retire <id> "motivo"
  */
-import { mkdirSync, readFileSync, readdirSync, renameSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -17,16 +17,41 @@ const archiveDir = resolve(memDir, 'archive')
 const indexPath = resolve(memDir, 'LESSONS.md')
 const CAP = 30
 
-const files = () =>
-	readdirSync(lessonsDir)
-		.filter((f) => /^\d{3}-.*\.md$/.test(f))
+const ids = (dir) =>
+	readdirSync(dir, { withFileTypes: true })
+		.filter((f) => f.isFile() && /^\d{3}-.*\.md$/.test(f.name))
+		.map((f) => f.name)
 		.sort()
+
+const files = () => ids(lessonsDir)
+
+// O id nunca é reciclado: uma lição aposentada continua sendo citada pelo número, nas outras lições
+// e nos agentes que a promoveram, então o próximo vem do maior id nas duas pastas.
+const nextId = () => {
+	const archived = existsSync(archiveDir) ? ids(archiveDir) : []
+	const max = [...files(), ...archived].reduce((n, f) => Math.max(n, Number(f.slice(0, 3))), 0)
+	return String(max + 1).padStart(3, '0')
+}
 
 const parse = (file) => {
 	const body = readFileSync(resolve(lessonsDir, file), 'utf8')
 	const fm = body.match(/^---\n([\s\S]*?)\n---/)?.[1] ?? ''
 	const get = (k) => fm.match(new RegExp(`^${k}:\\s*(.*)$`, 'm'))?.[1].trim() ?? ''
-	return { file, body, id: get('id'), title: get('title'), agent: get('applies-to'), domain: get('domain'), spec: get('spec'), confirmed: Number(get('confirmed') || 0) }
+	return { file, body, id: get('id'), title: get('title'), agent: get('applies-to'), domain: get('domain'), spec: get('spec'), created: get('created'), confirmed: Number(get('confirmed') || 0) }
+}
+
+// O ext4 limita um nome de arquivo a 255 bytes; um título longo estourava o limite e quebrava a
+// escrita atômica. O slug é cortado na última palavra inteira que cabe — o título completo continua
+// no frontmatter, que é de onde o índice lê.
+const MAX_SLUG = 120
+const slugify = (title) => {
+	const slug = title
+		.toLowerCase()
+		.normalize('NFD')
+		.replace(/[̀-ͯ]/g, '')
+		.replace(/[^a-z0-9]+/g, '-')
+		.replace(/^-|-$/g, '')
+	return slug.length <= MAX_SLUG ? slug : slug.slice(0, slug.lastIndexOf('-', MAX_SLUG) + 1 || MAX_SLUG).replace(/-$/, '')
 }
 
 const rewriteIndex = () => {
@@ -56,12 +81,39 @@ if (cmd === 'new') {
 	}
 	const current = files()
 	if (current.length >= CAP) {
-		console.error(`limite de ${CAP} lições ativas atingido — promova (confirmed >= 3) ou aposente antes de criar outra.`)
+		const all = current.map(parse)
+		const ripe = all.filter((l) => l.confirmed >= 3)
+		const families = Object.entries(
+			all.reduce((acc, l) => {
+				acc[`${l.agent}/${l.domain}`] = [...(acc[`${l.agent}/${l.domain}`] ?? []), l.id]
+				return acc
+			}, {}),
+		).filter(([, ids]) => ids.length >= 3)
+		console.error(`limite de ${CAP} lições ativas atingido — promova ou aposente antes de criar outra.`)
+		console.error(
+			ripe.length
+				? `\nMaduras (confirmed >= 3), promova primeiro:\n${ripe.map((l) => `  ${l.id} → .agents/agents/${l.agent}.md — ${l.title}`).join('\n')}`
+				: '\nNenhuma lição com confirmed >= 3.',
+		)
+		if (families.length)
+			console.error(
+				`\nCandidatas a fusão (mesmo agente e domínio, 3+ lições — leia-as antes de escrever a sua, pode ser a mesma regra em outra redação):\n${families
+					.map(([k, ids]) => `  ${k}: ${ids.join(', ')}`)
+					.join('\n')}`,
+			)
+		console.error(
+			`\nMais antigas e nunca confirmadas:\n${all
+				.filter((l) => l.confirmed === 0)
+				.sort((a, b) => a.created.localeCompare(b.created))
+				.slice(0, 5)
+				.map((l) => `  ${l.id} (${l.created}) — ${l.title}`)
+				.join('\n')}`,
+		)
+		console.error(`\nAGENTS.md §6: promova a 3 confirmações, funda redações da mesma regra, aposente o que um documento já manda.`)
 		process.exit(1)
 	}
-	const id = String((current.length ? Number(parse(current.at(-1)).id) : 0) + 1).padStart(3, '0')
-	const slug = title.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
-	const file = `${id}-${slug}.md`
+	const id = nextId()
+	const file = `${id}-${slugify(title)}.md`
 
 	mkdirSync(lessonsDir, { recursive: true })
 	writeFileSync(

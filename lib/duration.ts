@@ -32,6 +32,11 @@ export function formatSignedHoursAndMinutes(minutes: number): string {
   return `${minutes < 0 ? "-" : "+"}${formatHoursAndMinutes(Math.abs(minutes))}`;
 }
 
+export function formatCompactDuration(minutes: number): string {
+  const parts = splitHoursAndMinutes(minutes);
+  return `${parts.hours}h${pad(parts.minutes)}`;
+}
+
 export function formatPaddedDuration(minutes: number): string {
   const parts = splitHoursAndMinutes(minutes);
   return `${pad(parts.hours)}:${pad(parts.minutes)}`;

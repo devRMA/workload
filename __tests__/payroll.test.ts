@@ -9,7 +9,7 @@ import {
   sanitizeAmount,
   WORK_REGIME_INFO,
 } from "@/lib/payroll";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatPercent } from "@/lib/utils";
 
 describe("sanitizeAmount", () => {
   it("keeps positive finite amounts untouched", () => {
@@ -86,6 +86,36 @@ describe("WORK_REGIME_INFO", () => {
     for (const { impact } of WORK_REGIME_INFO) {
       expect(impact).not.toContain("teto do INSS");
     }
+  });
+
+  it("derives the RGPS span from the table it ships", () => {
+    const clt = WORK_REGIME_INFO.find(({ value }) => value === "clt");
+    const first = formatPercent(CURRENT_LEGAL_YEAR.rgpsBrackets[0].rate);
+    const last = formatPercent(CURRENT_LEGAL_YEAR.rgpsBrackets.at(-1)?.rate ?? 0);
+
+    expect(clt?.impact).toContain(`de ${first} a ${last}`);
+    expect(clt?.impact).toContain("de 7,5% a 14%");
+    expect(clt?.impact.length).toBe(166);
+  });
+
+  it("derives the RPPS top rate from the ladder", () => {
+    const civilService = WORK_REGIME_INFO.find(({ value }) => value === "estatutario");
+    const topRate = formatPercent(CURRENT_LEGAL_YEAR.rppsFederalBrackets.at(-1)?.rate ?? 0);
+
+    expect(civilService?.impact).toContain("até 22%");
+    expect(civilService?.impact).toContain(`até ${topRate}`);
+    expect(civilService?.impact.length).toBe(463);
+  });
+
+  it("states the ente's floor instead of guessing its rate", () => {
+    const civilService = WORK_REGIME_INFO.find(({ value }) => value === "estatutario");
+
+    expect(civilService?.impact).toContain("não entra nesta tabela");
+    expect(civilService?.impact).toContain("EC nº 103/2019, art. 9º, §4º");
+    expect(civilService?.impact).toContain("déficit atuarial");
+    expect(civilService?.impact).not.toContain("14% linear");
+    expect(civilService?.impact).not.toContain("muitas vezes");
+    expect(civilService?.impact).not.toContain("este número não vale para ele");
   });
 });
 
