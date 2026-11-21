@@ -40,6 +40,8 @@ export function CookieConsent() {
       <AnimatePresence>
         {isVisible && (
           <motion.div
+            role="region"
+            aria-labelledby="cookie-consent-title"
             initial={{ y: 12, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 12, opacity: 0 }}
@@ -52,14 +54,16 @@ export function CookieConsent() {
                 </div>
 
                 <div className="flex-1 space-y-1 text-center md:text-left">
-                  <h2 className="text-title">Respeitamos sua privacidade</h2>
+                  <h2 id="cookie-consent-title" className="text-title">
+                    Respeitamos sua privacidade
+                  </h2>
                   <p className="text-body-sm text-ink-muted">
                     Ao aceitar tudo, você permite cookies de telemetria (Google Analytics) e de anúncios (Google
                     AdSense). Em Configurar, você pode salvar suas preferências sem anúncios.
                   </p>
                 </div>
 
-                <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+                <div className="flex flex-col sm:grid sm:grid-cols-[max-content_repeat(2,minmax(max-content,1fr))] items-center gap-3 w-full md:w-auto">
                   <button
                     type="button"
                     onClick={() => setShowSettings(true)}
@@ -67,10 +71,10 @@ export function CookieConsent() {
                   >
                     Configurar
                   </button>
-                  <Button variant="outline" onClick={() => saveConsent(false)} className="w-full sm:w-auto">
+                  <Button variant="outline" onClick={() => saveConsent(false)} className="w-full">
                     Recusar
                   </Button>
-                  <Button onClick={() => saveConsent(true, true)} className="w-full sm:w-auto">
+                  <Button onClick={() => saveConsent(true, true)} className="w-full">
                     Aceitar Tudo
                   </Button>
                 </div>

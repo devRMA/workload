@@ -3,7 +3,8 @@
 `.github/workflows/ci.yml` runs three independent jobs on Ubuntu 24.04:
 
 - `checks`: Biome, TypeScript, Vitest coverage, JUnit and Codecov.
-- `playwright`: ads-enabled production build and the complete browser suite.
+- `playwright`: three parallel shards, each with an ads-enabled production build
+  and its share of the complete browser suite (two workers per shard).
 - `lighthouse`: ads-free production build and Lighthouse's existing assertions.
 
 The final `E2E Tests` check requires all three jobs to succeed. This name is
@@ -39,6 +40,10 @@ Dependency installation is limited to three minutes, builds to five minutes,
 Playwright to ten minutes and Lighthouse to eight minutes. Browser jobs have
 fifteen-minute limits, checks ten minutes and the final gate one minute.
 These are failure bounds, not promised execution times.
+
+Each Playwright shard has its own compilation cache key, JUnit check and report
+artifact. `fail-fast: false` lets every shard report its failures; the aggregate
+requires the whole matrix to succeed. Sharding does not change test selection.
 
 Coverage, JUnit, Playwright and Lighthouse reports remain available as artifacts
 for fourteen days. Superseded workflow runs are cancelled by concurrency group.
@@ -76,10 +81,19 @@ Local validation used the `b0925eb` application with this infrastructure diff:
   documentation scan report missing specs. They were not deleted by this change.
 - Independent read-only review and `git diff --check` passed.
 
-Keep two Playwright workers until hosted timings show browser execution is the
-critical path. Shards would duplicate image pulls and builds; the failed run
-contains no test-execution timing to justify that cost. Hosted runtime must be
-measured after publication; local timings are not a GitHub runner benchmark.
+The original suite used two workers without shards. PR #42's run
+[`44820524320`](https://github.com/devRMA/workload/actions/runs/44820524320)
+attempted 797 tests and hit the ten-minute Playwright limit, including repeated
+reachability failures. The expanded suite now uses three shards with two workers
+each. This duplicates builds but bounds each test queue; hosted runtime must be
+measured after publication, not inferred from local timings.
+
+Browser requests to off-origin HTTP(S) hosts are fulfilled locally by
+`tests/e2e/support/fixtures.ts`; service workers are disabled so they cannot bypass
+that route. Attempted script requests remain observable for consent assertions,
+but no external script executes. The fixture contract uses a separate loopback
+server to assert it receives zero traffic while the app origin remains reachable.
+These tests verify script injection and consent, not Google's remote behavior.
 
 The first hosted run at commit `5157fd5`,
 [`44804529870`](https://github.com/devRMA/workload/actions/runs/44804529870),

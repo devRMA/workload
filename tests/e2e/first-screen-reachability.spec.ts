@@ -1,5 +1,6 @@
-import { type ElementHandle, expect, type Locator, type Page, test } from "@playwright/test";
+import { type ElementHandle, expect, type Locator, type Page } from "@playwright/test";
 import { CURRENT_LEGAL_YEAR } from "../../lib/legal-tables";
+import { test } from "./support/fixtures";
 import { DS4_PANEL_SELECTOR, waitForStableBoundingBox } from "./support/legibility";
 import {
   answerPanelLines,
@@ -10,6 +11,7 @@ import {
   EXPECTED_LINES_ON_FIRST_SCREEN,
   EXPECTED_LR35_SURFACE_COUNT,
   EXPECTED_LR42A_CONTROL_COUNT,
+  estimateNotice,
   type FixedBox,
   fixedBoxes,
   intersects,
@@ -62,11 +64,7 @@ function rectFromBoundingBox(box: { x: number; y: number; width: number; height:
 }
 
 function consentSurface(page: Page): Locator {
-  return page
-    .locator("div")
-    .filter({ has: page.getByRole("heading", { level: 2, name: "Respeitamos sua privacidade" }) })
-    .filter({ has: page.getByRole("button", { name: "Aceitar Tudo" }) })
-    .first();
+  return page.getByRole("region", { name: "Respeitamos sua privacidade" });
 }
 
 async function seedFullJourneyOvertime(page: Page): Promise<void> {
@@ -231,7 +229,13 @@ async function consentControlViolations(
     const scrollWidth = await control.evaluate((element) => element.scrollWidth);
     if (scrollWidth > Math.ceil(controlRect.width)) violations.push(`${name} text is clipped`);
 
-    if (fixed.some((box) => intersects(controlRect, box))) violations.push(`${name} intersects fixed chrome`);
+    const controlFixed = await fixedBoxes(control.page(), control);
+    if (controlFixed.some((box) => intersects(controlRect, box))) violations.push(`${name} intersects fixed chrome`);
+    const hitTarget = await control.evaluate((element) => {
+      const rect = element.getBoundingClientRect();
+      return element.contains(document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2));
+    });
+    if (!hitTarget) violations.push(`${name} is covered at its center`);
   }
 
   return violations;
@@ -261,7 +265,7 @@ async function findScrollYWithoutConsentViolations(
   for (const target of targets) {
     await page.evaluate((value) => window.scrollTo(0, value), target);
     await waitForStableBoundingBox(surface);
-    const fixed = await fixedBoxes(page);
+    const fixed = await fixedBoxes(page, surface);
     const violations = await consentControlViolations(surface, controls, fixed, viewport);
     const scrollY = await page.evaluate(() => window.scrollY);
     lastAttempt = { scrollY, violations };
@@ -271,51 +275,109 @@ async function findScrollYWithoutConsentViolations(
 }
 
 test.describe("AC1 / R — a disclosure surface is reachable on the first screen", () => {
-  for (const route of ROUTES) {
-    for (const state of STORAGE_STATES) {
-      for (const theme of THEMES) {
-        test(`the table citation is reachable at ${route} ${state} ${theme}`, async ({ page }) => {
-          await page.setViewportSize(REACHABILITY_VIEWPORT);
-          await page.emulateMedia({ colorScheme: theme });
-          await clearConsent(page);
-          await seedStorage(page, route, state);
+  for (const consent of ["pending", "answered"] as const) {
+    for (const route of ROUTES) {
+      for (const state of STORAGE_STATES) {
+        for (const theme of THEMES) {
+          test(`the estimate notice is reachable at ${route} ${state} ${theme}, consent ${consent}`, async ({
+            page,
+          }) => {
+            await page.setViewportSize(REACHABILITY_VIEWPORT);
+            await page.emulateMedia({ colorScheme: theme });
+            if (consent === "pending") {
+              await clearConsent(page);
+            } else {
+              await page.addInitScript(({ key, value }) => localStorage.setItem(key, value), {
+                key: CONSENT_STORAGE_KEY,
+                value: ANSWERED_CONSENT_RECORD,
+              });
+            }
+            await seedStorage(page, route, state);
 
-          const citation = citationParagraph(page);
-          await expect(citation).toHaveCount(1);
-          await waitForStableBoundingBox(citation);
+            const banner = consentSurface(page);
+            if (consent === "pending") {
+              await expect(banner).toBeVisible();
+              await waitForStableBoundingBox(banner);
+            } else {
+              await expect(banner).toHaveCount(0);
+            }
 
-          const citationBox = await citation.boundingBox();
-          if (!citationBox) throw new Error("citation has no bounding box");
-          const citationRect = rectFromBoundingBox(citationBox);
+            const notice = estimateNotice(page);
+            await expect(notice).toHaveCount(1);
+            await waitForStableBoundingBox(notice);
 
-          expect(citationRect.top, "clause 1 — citation top outside the first viewport").toBeGreaterThanOrEqual(0);
-          expect(citationRect.bottom, "clause 1 — citation bottom outside the first viewport").toBeLessThanOrEqual(
-            REACHABILITY_VIEWPORT.height,
-          );
-          expect(citationRect.left, "clause 1 — citation left outside the first viewport").toBeGreaterThanOrEqual(0);
-          expect(citationRect.right, "clause 1 — citation right outside the first viewport").toBeLessThanOrEqual(
-            REACHABILITY_VIEWPORT.width,
-          );
+            const geometry = await notice.evaluate((notice) => {
+              const hero = notice.previousElementSibling;
+              if (!hero) throw new Error("estimate notice has no preceding answer");
+              const navigation = document.querySelector('nav[aria-label="Calculadoras"]');
+              if (!navigation) throw new Error("calculator navigation is missing");
+              const heroBox = hero.getBoundingClientRect();
+              const noticeBox = notice.getBoundingClientRect();
+              const navigationBox = navigation.getBoundingClientRect();
+              const consentBox = document
+                .querySelector('[role="region"][aria-labelledby="cookie-consent-title"]')
+                ?.getBoundingClientRect();
+              const toBox = (box: DOMRect) => ({
+                top: box.top,
+                bottom: box.bottom,
+                left: box.left,
+                right: box.right,
+                width: box.width,
+                height: box.height,
+              });
+              return {
+                followsAnswer: hero.contains(document.querySelector('p[aria-live="polite"]:not(.sr-only)')),
+                heroBottom: heroBox.bottom,
+                gap: Number.parseFloat(getComputedStyle(notice).marginTop),
+                notice: toBox(noticeBox),
+                navigationTop: navigationBox.top,
+                consent: consentBox ? toBox(consentBox) : null,
+              };
+            });
+            expect(geometry.followsAnswer).toBe(true);
+            expect(Math.abs(geometry.heroBottom + geometry.gap - geometry.notice.top)).toBeLessThanOrEqual(0.5);
 
-          const fixed = await fixedBoxes(page);
-          const offenders = fixed.filter((box) => intersects(citationRect, box));
-          expect(offenders, `clause 2 — citation is concealed by: ${JSON.stringify(offenders)}`).toEqual([]);
+            expect(geometry.notice.top, "clause 1 — notice top outside the first viewport").toBeGreaterThanOrEqual(0);
+            expect(geometry.notice.bottom, "clause 1 — notice bottom outside the first viewport").toBeLessThanOrEqual(
+              REACHABILITY_VIEWPORT.height,
+            );
+            expect(geometry.notice.left, "clause 1 — notice left outside the first viewport").toBeGreaterThanOrEqual(0);
+            expect(geometry.notice.right, "clause 1 — notice right outside the first viewport").toBeLessThanOrEqual(
+              REACHABILITY_VIEWPORT.width,
+            );
 
-          const heroValue = page.locator('p[aria-live="polite"]:not(.sr-only)');
-          await expect(heroValue).toHaveCount(1);
-          const heroValueBox = await heroValue.boundingBox();
-          if (!heroValueBox) throw new Error("hero value has no bounding box");
-          const heroValueRect = rectFromBoundingBox(heroValueBox);
+            const fixed = await fixedBoxes(page);
+            const navigation = page.getByRole("navigation", { name: "Calculadoras" });
+            await expect(navigation).toHaveCount(1);
+            expect(
+              geometry.heroBottom + geometry.gap + geometry.notice.height,
+              `budget: hero ${geometry.heroBottom} + gap ${geometry.gap} + notice ${geometry.notice.height} <= nav ${geometry.navigationTop}`,
+            ).toBeLessThanOrEqual(geometry.navigationTop);
+            const offenders = fixed.filter((box) => intersects(geometry.notice, box));
+            expect(offenders, `clause 2 — notice is concealed by: ${JSON.stringify(offenders)}`).toEqual([]);
+            if (consent === "pending") {
+              if (!geometry.consent) throw new Error("pending consent banner is not rendered");
+              expect(intersects(geometry.notice, geometry.consent), "consent banner overlaps notice").toBe(false);
+            } else {
+              expect(geometry.consent, "answered consent still renders the banner").toBeNull();
+            }
 
-          expect(
-            heroValueRect.top,
-            "clause 3 — the claim the citation pairs with is off the first screen",
-          ).toBeGreaterThanOrEqual(0);
-          expect(
-            heroValueRect.bottom,
-            "clause 3 — the claim the citation pairs with is off the first screen",
-          ).toBeLessThanOrEqual(REACHABILITY_VIEWPORT.height);
-        });
+            const heroValue = page.locator('p[aria-live="polite"]:not(.sr-only)');
+            await expect(heroValue).toHaveCount(1);
+            const heroValueBox = await heroValue.boundingBox();
+            if (!heroValueBox) throw new Error("hero value has no bounding box");
+            const heroValueRect = rectFromBoundingBox(heroValueBox);
+
+            expect(
+              heroValueRect.top,
+              "clause 3 — the claim the notice pairs with is off the first screen",
+            ).toBeGreaterThanOrEqual(0);
+            expect(
+              heroValueRect.bottom,
+              "clause 3 — the claim the notice pairs with is off the first screen",
+            ).toBeLessThanOrEqual(REACHABILITY_VIEWPORT.height);
+          });
+        }
       }
     }
   }
@@ -330,7 +392,8 @@ test.describe("AC13 / O — no rendered line of the answer is occluded", () => {
           await page.emulateMedia({ colorScheme: theme });
           await clearConsent(page);
           await seedStorage(page, route, state);
-          await expect(citationParagraph(page)).toHaveCount(1);
+          await expect(consentSurface(page)).toBeVisible();
+          await expect(estimateNotice(page)).toHaveCount(1);
 
           const lines = await answerPanelLines(page, route);
           const expected = EXPECTED_LINES_ON_FIRST_SCREEN[route as (typeof ROUTES)[number]];
@@ -348,6 +411,10 @@ test.describe("AC13 / O — no rendered line of the answer is occluded", () => {
 
           const occluded = lines.filter((line) => line.occludedBy.length > 0);
           expect(occluded, `occluded lines: ${JSON.stringify(occluded)}`).toEqual([]);
+          for (const line of lines.filter((line) => !line.assistiveOnly)) {
+            expect(line.top, line.text).toBeGreaterThanOrEqual(0);
+            expect(line.bottom, line.text).toBeLessThanOrEqual(REACHABILITY_VIEWPORT.height);
+          }
         });
       }
     }
@@ -372,7 +439,12 @@ test.describe("LR3.5 — every disclosure surface has a scroll position clear of
           expect(Object.keys(markers)).toHaveLength(EXPECTED_LR35_SURFACE_COUNT[route]);
 
           for (const [surfaceName, marker] of Object.entries(markers)) {
-            const expectedSurface = surfaceName === "DS1 P4" ? await citationParagraph(page).elementHandle() : null;
+            const expectedSurface =
+              surfaceName === "DS1 P4"
+                ? await citationParagraph(page).elementHandle()
+                : surfaceName === "DS1 P2"
+                  ? await estimateNotice(page).elementHandle()
+                  : null;
             const result = await lr35Surface(page, marker, expectedSurface);
             expect(
               result.matchesExpectedSurface,
@@ -422,7 +494,12 @@ test.describe("LR3.5 — every disclosure surface has a scroll position clear of
           expect(Object.keys(markers)).toHaveLength(EXPECTED_LR35_SURFACE_COUNT[route]);
 
           for (const [surfaceName, marker] of Object.entries(markers)) {
-            const expectedSurface = surfaceName === "DS1 P4" ? await citationParagraph(page).elementHandle() : null;
+            const expectedSurface =
+              surfaceName === "DS1 P4"
+                ? await citationParagraph(page).elementHandle()
+                : surfaceName === "DS1 P2"
+                  ? await estimateNotice(page).elementHandle()
+                  : null;
             const result = await lr35Surface(page, marker, expectedSurface);
             expect(
               result.matchesExpectedSurface,
@@ -470,7 +547,12 @@ test.describe("LR3.5 — every disclosure surface has a scroll position clear of
     expect(Object.keys(FULL_JOURNEY_SURFACE_MARKERS)).toHaveLength(7);
 
     for (const [surfaceName, marker] of Object.entries(FULL_JOURNEY_SURFACE_MARKERS)) {
-      const expectedSurface = surfaceName === "DS1 P4" ? await citationParagraph(page).elementHandle() : null;
+      const expectedSurface =
+        surfaceName === "DS1 P4"
+          ? await citationParagraph(page).elementHandle()
+          : surfaceName === "DS1 P2"
+            ? await estimateNotice(page).elementHandle()
+            : null;
       const result = await lr35Surface(page, marker, expectedSurface);
       expect(
         result.matchesExpectedSurface,
@@ -522,6 +604,7 @@ test.describe("LR4.2a — one scroll position serves every consent control at on
           "Aceitar Tudo": page.getByRole("button", { name: "Aceitar Tudo" }),
         };
         for (const control of Object.values(firstLevelControls)) await expect(control).toHaveCount(1);
+        await expect(consentSurface(page).getByRole("button")).toHaveCount(3);
 
         await page.getByRole("button", { name: "Configurar" }).click();
         const dialog = page.locator(DS4_PANEL_SELECTOR);
@@ -535,6 +618,8 @@ test.describe("LR4.2a — one scroll position serves every consent control at on
           "Salvar Preferências": page.getByRole("button", { name: "Salvar Preferências" }),
         };
         for (const control of Object.values(secondLevelControls)) await expect(control).toHaveCount(1);
+        await expect(dialog.getByRole("button")).toHaveCount(2);
+        await expect(dialog.getByRole("switch")).toHaveCount(1);
 
         expect(Object.keys(firstLevelControls).length + Object.keys(secondLevelControls).length).toBe(
           EXPECTED_LR42A_CONTROL_COUNT,
@@ -542,6 +627,7 @@ test.describe("LR4.2a — one scroll position serves every consent control at on
 
         await page.getByRole("button", { name: "Fechar configurações de privacidade" }).click();
         await expect(dialog).not.toBeVisible();
+        await expect(page.locator('dialog[aria-labelledby="privacy-settings-title"]')).not.toBeVisible();
 
         const sampleCount = viewport.width === 1440 ? 21 : 1;
         const surface = consentSurface(page);
@@ -575,10 +661,7 @@ test.describe("LR4.2a — one scroll position serves every consent control at on
         ).toEqual([]);
       });
 
-      const isKnownFailing = viewport.width === 1440;
-      const lr44Clause2Title = isKnownFailing
-        ? `F2c — area(Recusar) is smaller than area(Aceitar Tudo) at ${viewport.width}x${viewport.height} ${theme}`
-        : `LR4.4 clause 2 — area(Recusar) matches area(Aceitar Tudo) at ${viewport.width}x${viewport.height} ${theme}`;
+      const lr44Clause2Title = `LR4.4 clause 2 — area(Recusar) matches area(Aceitar Tudo) at ${viewport.width}x${viewport.height} ${theme}`;
 
       test(lr44Clause2Title, async ({ page }, testInfo) => {
         await page.setViewportSize(viewport);
@@ -597,10 +680,6 @@ test.describe("LR4.2a — one scroll position serves every consent control at on
           type: "lr44-clause-2",
           description: `${viewport.width}x${viewport.height} ${theme} — area(Recusar) ${refuseArea} vs area(Aceitar Tudo) ${acceptArea}`,
         });
-
-        if (isKnownFailing) {
-          test.fixme(true, `F2c — area(Recusar) ${refuseArea} < area(Aceitar Tudo) ${acceptArea}`);
-        }
 
         expect(refuseArea).toBe(acceptArea);
       });

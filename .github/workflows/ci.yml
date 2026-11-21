@@ -74,6 +74,10 @@ jobs:
   playwright:
     name: Playwright
     runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
     container:
       image: mcr.microsoft.com/playwright:v1.63.0-noble
       options: --ipc=host
@@ -113,8 +117,9 @@ jobs:
         uses: actions/cache@v5
         with:
           path: .next/cache
-          key: ${{ runner.os }}-next-e2e-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.sha }}
+          key: ${{ runner.os }}-next-e2e-${{ hashFiles('pnpm-lock.yaml') }}-shard-${{ matrix.shard }}-${{ github.sha }}
           restore-keys: |
+            ${{ runner.os }}-next-e2e-${{ hashFiles('pnpm-lock.yaml') }}-shard-${{ matrix.shard }}-
             ${{ runner.os }}-next-e2e-${{ hashFiles('pnpm-lock.yaml') }}-
 
       - name: Build Next.js
@@ -123,7 +128,7 @@ jobs:
 
       - name: Run Playwright
         timeout-minutes: 10
-        run: pnpm e2e
+        run: pnpm e2e --shard=${{ matrix.shard }}/3
 
       - name: E2E Tests Report
         uses: dorny/test-reporter@1cc81a5edf733718d4850df304aaa21c05cd7280 # v3
@@ -133,7 +138,7 @@ jobs:
           GIT_CONFIG_KEY_0: safe.directory
           GIT_CONFIG_VALUE_0: ${{ github.workspace }}
         with:
-          name: E2E Tests Report
+          name: E2E Tests Report (shard ${{ matrix.shard }})
           path: playwright-report/results.xml
           reporter: java-junit
 
@@ -141,7 +146,7 @@ jobs:
         uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.shard }}
           path: playwright-report/
           retention-days: 14
 

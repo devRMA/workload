@@ -12,6 +12,14 @@ describe("SalaryCalculator", () => {
     localStorage.clear();
   });
 
+  it("renders exactly one estimate notice beside the answer", () => {
+    const { container } = render(<SalaryCalculator />);
+    const notices = container.querySelectorAll("p#estimate-notice");
+
+    expect(notices).toHaveLength(1);
+    expect(notices[0]).toHaveTextContent("Não substituem seu holerite");
+  });
+
   it("starts with an empty salary waiting to be filled in", () => {
     render(<SalaryCalculator />);
 

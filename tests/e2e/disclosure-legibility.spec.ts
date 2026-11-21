@@ -1,4 +1,5 @@
-import { expect, type Locator, test } from "@playwright/test";
+import { expect, type Locator } from "@playwright/test";
+import { test } from "./support/fixtures";
 import {
   assertLr1,
   assertLr2b,
@@ -13,6 +14,8 @@ import {
   DS4_EXPECTED_PARAGRAPHS,
   DS4_PANEL_SELECTOR,
   driveUntil,
+  expectLr2a,
+  measureSurface,
   openPrivacySettings,
   waitForStableBoundingBox,
 } from "./support/legibility";
@@ -23,6 +26,27 @@ const VIEWPORTS = [
   { width: 1440, height: 900 },
 ] as const;
 const THEMES = ["light", "dark"] as const;
+
+test.describe("Disclosure legibility — relocated estimate notice", () => {
+  for (const route of ROUTES) {
+    for (const viewport of VIEWPORTS) {
+      for (const theme of THEMES) {
+        test(`estimate stays legible at ${route} ${viewport.width}x${viewport.height} ${theme}`, async ({ page }) => {
+          await page.setViewportSize(viewport);
+          await page.emulateMedia({ colorScheme: theme });
+          await page.goto(route);
+          const notice = page.locator("#estimate-notice");
+          await expect(notice).toHaveCount(1);
+          await waitForStableBoundingBox(notice);
+          await assertLr1(notice);
+          expectLr2a(await measureSurface(notice, notice), "estimate notice");
+          expect(await assertLr2b(notice)).toBe("measured");
+          await assertLr3(page, route, notice, "Os valores são uma estimativa para você se organizar");
+        });
+      }
+    }
+  }
+});
 
 test.describe("Disclosure legibility — DS1, the legal footer", () => {
   for (const route of ROUTES) {
@@ -42,7 +66,7 @@ test.describe("Disclosure legibility — DS1, the legal footer", () => {
 
           await assertLr2bAcrossParagraphs(
             footer,
-            route === "/" ? 5 : DS1_EXPECTED_PARAGRAPHS,
+            route === "/" ? 4 : DS1_EXPECTED_PARAGRAPHS,
             `DS1 ${route} ${viewport.width}x${viewport.height} ${theme}`,
           );
         });

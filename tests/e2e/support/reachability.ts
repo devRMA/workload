@@ -35,8 +35,8 @@ export const STORAGE_SEEDS: Record<(typeof STORAGE_STATES)[number], Record<strin
 };
 
 export const EXPECTED_LINES_ON_FIRST_SCREEN: Record<(typeof ROUTES)[number], { sighted: number; assistive: number }> = {
-  "/": { sighted: 8, assistive: 1 },
-  "/custo-da-hora": { sighted: 9, assistive: 1 },
+  "/": { sighted: 9, assistive: 1 },
+  "/custo-da-hora": { sighted: 15, assistive: 1 },
 };
 
 export const EXPECTED_LR42A_CONTROL_COUNT = 6;
@@ -68,31 +68,38 @@ export async function clearConsent(page: Page): Promise<void> {
   await page.addInitScript((key) => localStorage.removeItem(key), CONSENT_STORAGE_KEY);
 }
 
-export async function fixedBoxes(page: Page): Promise<FixedBox[]> {
-  return page.evaluate(() => {
-    const elements = [...document.querySelectorAll("body *")];
-    return elements
-      .filter((element) => {
-        const style = getComputedStyle(element);
-        return (
-          (style.position === "fixed" || style.position === "sticky") && element.getBoundingClientRect().height > 0
-        );
-      })
-      .map((element) => {
-        const rect = element.getBoundingClientRect();
-        return {
-          tag: element.tagName.toLowerCase(),
-          position: getComputedStyle(element).position,
-          top: rect.top,
-          bottom: rect.bottom,
-          left: rect.left,
-          right: rect.right,
-          width: rect.width,
-          height: rect.height,
-          label: (element.textContent ?? "").trim().replace(/\s+/g, " ").slice(0, 30),
-        };
-      });
-  });
+export async function fixedBoxes(page: Page, surface?: Locator): Promise<FixedBox[]> {
+  return page.evaluate(
+    (subject) => {
+      const modal = subject?.closest("dialog:modal");
+      const elements = [...document.querySelectorAll("body *")];
+      return elements
+        .filter((element) => {
+          const style = getComputedStyle(element);
+          return (
+            (style.position === "fixed" || style.position === "sticky") &&
+            element.getBoundingClientRect().height > 0 &&
+            (!subject || (!element.contains(subject) && !subject.contains(element))) &&
+            (!modal || modal.contains(element))
+          );
+        })
+        .map((element) => {
+          const rect = element.getBoundingClientRect();
+          return {
+            tag: element.tagName.toLowerCase(),
+            position: getComputedStyle(element).position,
+            top: rect.top,
+            bottom: rect.bottom,
+            left: rect.left,
+            right: rect.right,
+            width: rect.width,
+            height: rect.height,
+            label: (element.textContent ?? "").trim().replace(/\s+/g, " ").slice(0, 30),
+          };
+        });
+    },
+    surface ? await surface.elementHandle() : null,
+  );
 }
 
 export function intersects(a: Box, b: Box): boolean {
@@ -164,14 +171,9 @@ export async function answerPanelLines(
     }
     if (!anchor) throw new Error(`no answer panel anchor found among: ${labels.join(", ")}`);
 
-    let host: Element = anchor;
-    while (host.parentElement && host.parentElement !== document.body) {
-      const parent = host.parentElement;
-      const parentPosition = getComputedStyle(parent).position;
-      if (parentPosition === "fixed" || parentPosition === "sticky") break;
-      if (parent.getBoundingClientRect().height > innerHeight * 1.2) break;
-      host = parent;
-    }
+    const notice = document.querySelector("#estimate-notice");
+    const host = notice?.parentElement;
+    if (!host || !notice.previousElementSibling?.contains(anchor)) throw new Error("answer must precede its notice");
 
     const fixed = all
       .filter((element) => {
@@ -210,7 +212,9 @@ export async function answerPanelLines(
     };
 
     return [...host.querySelectorAll("*")]
-      .filter((element) => element.children.length === 0 && (element.textContent ?? "").trim())
+      .filter((element) =>
+        [...element.childNodes].some((node) => node.nodeType === Node.TEXT_NODE && node.textContent?.trim()),
+      )
       .map((element) => {
         const rect = element.getBoundingClientRect();
         return {
@@ -220,8 +224,7 @@ export async function answerPanelLines(
           occludedBy: occludingLabels(rect),
           assistiveOnly: isAssistiveOnly(element),
         };
-      })
-      .filter((line) => line.top < innerHeight && line.bottom > 0);
+      });
   }, anchorLabels);
 }
 
@@ -229,4 +232,8 @@ export function citationParagraph(page: Page): Locator {
   return page
     .locator("p")
     .filter({ has: page.getByRole("link", { name: CURRENT_LEGAL_YEAR.sources.rgpsBrackets[0].norm }) });
+}
+
+export function estimateNotice(page: Page): Locator {
+  return page.locator("#estimate-notice");
 }
