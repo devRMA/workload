@@ -1,8 +1,9 @@
-import { expect, type Locator, type Page, test } from "@playwright/test";
+import { expect, type Locator, type Page } from "@playwright/test";
+import { test } from "./fixtures";
 
 export const LR2A_CHROME_BUDGET_PX = 32;
 export const LR2B_MEASURE_FLOOR_CPL = 40;
-export const DS1_EXPECTED_PARAGRAPHS = 4;
+export const DS1_EXPECTED_PARAGRAPHS = 3;
 export const DS4_EXPECTED_PARAGRAPHS = 5;
 
 export interface SurfaceMeasurement {
@@ -115,17 +116,24 @@ export async function waitForStableBoundingBox(locator: Locator) {
   const POLL_INTERVAL_MS = 40;
   const MAX_POLLS = 25;
 
-  let previousWidth: number | null = null;
+  let previous: Awaited<ReturnType<Locator["boundingBox"]>> = null;
   let stableReads = 0;
 
   for (let poll = 0; poll < MAX_POLLS && stableReads < STABLE_READS_REQUIRED; poll += 1) {
-    const width = (await locator.boundingBox())?.width ?? 0;
-    if (previousWidth !== null && Math.abs(width - previousWidth) < 0.01) {
+    const current = await locator.boundingBox();
+    if (
+      previous &&
+      current &&
+      Math.abs(current.x - previous.x) < 0.01 &&
+      Math.abs(current.y - previous.y) < 0.01 &&
+      Math.abs(current.width - previous.width) < 0.01 &&
+      Math.abs(current.height - previous.height) < 0.01
+    ) {
       stableReads += 1;
     } else {
       stableReads = 0;
     }
-    previousWidth = width;
+    previous = current;
     await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
   }
 }

@@ -1,4 +1,5 @@
-import { expect, type Page, test } from "@playwright/test";
+import { expect, type Page } from "@playwright/test";
+import { test } from "./support/fixtures";
 import { assertLr1 } from "./support/legibility";
 
 const VIEWPORTS = [

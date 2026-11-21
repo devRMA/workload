@@ -1,5 +1,6 @@
-import { expect, type Page, test } from "@playwright/test";
+import { expect, type Page } from "@playwright/test";
 import { DAILY_MINUTES_KEY, GROSS_SALARY_KEY, MONTHLY_HOURS_KEY } from "@/lib/storage";
+import { test } from "./support/fixtures";
 import { assertLr1, assertLr2b, driveC5, driveUntil, lineBoxesAndCharacters } from "./support/legibility";
 
 const VIEWPORTS = [

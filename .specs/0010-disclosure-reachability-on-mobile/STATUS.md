@@ -3,6 +3,38 @@
 <!-- State: draft | in-progress | blocked | done | rejected -->
 
 **State:** in-progress
+
+## PR #42 integration — 2026-11-20
+
+**Current work:** fix the failing PR checks and finish the mobile reachability work already on the
+branch. Complete T4′ against the inherited `0100` result ring and retain T5/T6's reachability and
+occlusion requirements. Repair the LR4 browser measurement, isolate third-party traffic in the
+affected tests, and shard the Playwright CI run. The isolated Chromium baseline at `262c9a0`
+reported **36 failed, 2 skipped, 19 passed (34.1 s)**. The completed integration now passes all
+local delivery evidence: 872 browser entries across three isolated shards with zero failures,
+focused reachability `366/366`, coverage, build, Lighthouse, preview/Axe, lint and typecheck. The
+PR integration is ready for hosted CI; 0010 remains in progress because AC15 is still incompatible
+with the inherited Glass salary layout. [PR #42 integration record](reports/pr42-integration.md)
+
+**G3 integration addendum (product-designer, run 3):** T4′ fits the inherited Glass result
+with the centered ring and the native edit shortcuts. The first-screen predicate uses
+the complete estimate paragraph beside the result. AC13 now counts all text-bearing
+elements in that result area. LR4.2a measures the consent region and the top-layer
+dialog separately. This integration includes F2c's decision area check and uses
+equal-width choice tracks from `sm`. The same-document browser measurements are recorded in
+`design.md` §18. **AC15 remains open.** The historical first-field ceiling is already
+exceeded by Glass and the move adds stacked flow. Route the criterion to `tech-lead`
+and `product-manager` with `0008` at the next mobile salary layout pass. Next for this
+integration are build and review verification. [G3 addendum](design.md#18-pr-42-integration-with-the-glass-results)
+
+`0015` owns suite-wide egress verification. `0011` still needs the controller's publishable
+details. `0014` remains a separately staged removal with its own consent, residue, and notice
+requirements. [Egress spec](../0015-test-suite-egress-to-third-party-hosts/spec.md)
+[Privacy status](../0011-privacy-policy-and-lgpd-information-duty/STATUS.md)
+[Analytics removal plan](../0014-remove-google-analytics/plan.md)
+
+## Prior gate routing
+
 **Next agents:** **`tech-lead`** — record branch **(a)** and route **F5**; then `frontend-dev` resumes
 **`T5 → T6 → T4′ → T7 → T8`**. **`legal.md` **Addendum C** (G2 run 4, verdict `pass`) answers
 `plan.md` §3E A5.5's **D-5** and closes it on both halves. **LR3.5's subject is the document the
@@ -677,6 +709,8 @@ source.
 
 | When | Agent | Decision |
 |---|---|---|
+| 2026-11-20 | product-designer (G3 integration, run 3) | Preserve the approved `0100` ring and edit shortcuts. Move the whole DS1 P2 into the result column. Use the current result census and the native modal's paint order in the guards. The measured first-screen room removes T6's earlier geometry dependency for AC1. The separate AC15 first-field criterion stays open for `0008` and product triage. [Measurements](design.md#18-pr-42-integration-with-the-glass-results) |
+| 2026-11-20 | product-designer (G3 integration, F2c) | Include the consent action row in PR #42 to meet LR4.4 clause 2 on desktop. The grid gives refusal and acceptance equal tracks while leaving room for the informing paragraph. Re-enable the rendered area assertion at 1440 once the change is built. Keep the separately routed fill question. [Consent target evidence](design.md#equal-consent-targets) |
 | 2026-09-19 | labor-law-analyst (G2 run 4, `legal.md` **Addendum C**) | **LR3.5's subject is the document the reader's browser renders — neither of the two documents D-5 offered.** Both are proxies; where the product can ship more than one, **the clause binds in every one and is verified in the NARROWEST**, which is ads-off today only because the slot sits **below** every disclosure. Stated that way and not as *"ads off"* so it survives `<AdManager />` moving before `{children}` — **that is the state in which this ruling comes out the other way, and a rule with no such state was not ruled.** **Meaning: unchanged, word for word.** **Measurement: the ad-slot configuration is a cell axis**, beside route, viewport, theme, storage and consent, and it was missing from the enumeration — lesson **048**'s defect one level up. |
 | 2026-09-19 | labor-law-analyst (C2.3) | **The decisive reason is that the harness document has an operand this repository cannot bound.** `maxScroll = maxScroll_adsOff + 32 + adHeight`, verified against **three** measured points on one formula with no free parameter (0→2215, 100→2347, 390→2637). `adHeight` is chosen by **AdSense** — `data-ad-format="auto"`, `min-h-25` a **floor with no ceiling** — against a **placeholder publisher** (`ca-pub-0000000000000000`, not the product's `ca-pub-8745764662929625`). **A clause whose verdict moves with an ad auction is not falsifiable by anything this squad can run**, and a rule its own reviewer cannot falsify is not a rule. |
 | 2026-09-19 | labor-law-analyst (C1) | **Two of `plan.md` §3E A5.2's five premise rows are wrong, and A5.3's mechanism is half-stated — all three corrections strengthen `tech-lead`'s conclusion, and a ruling adopted on a premise is a ruling about the premise.** (1) **`.env` is NOT committed** — `.gitignore:20`, `git ls-files` returns only `.env.example`; **nobody has read the production environment** (**Q8**). (2) The harness's publisher is a placeholder, so **there are three documents, not two**, and the real ads-on page has never been measured. (3) Ads-on is more permissive in **width** and **not monotone in LR3.5a tier**: above `adHeight` **529,4 px** on `/`, DS1 P4 un-anchors from `maxScroll` and becomes **Tier 2**. A mechanism, **not** a finding — unmeasured, and 579,3 px wide at the crossing (lesson **050**). |
@@ -782,3 +816,17 @@ source.
 | 2026-09-16 | content-writer (G3) | **§8's LR3.5 checked against §6 clause by clause — no conflict, nothing routed back to `labor-law-analyst`.** LR3.5's every operand is `getBoundingClientRect()`, border box; no clause reads a character, a word or a line count, so a surface breaches or satisfies it with its text unchanged. Its one live failing subject, **F1 / DS1 P4**, is short by **14.2 px** (`/`) and **13.6 px** (`/custo-da-hora`) of *scroll*, and `legal.md` §12 names its remedy as **flow height below the footer**. Trimming DS1 P4 to buy those pixels is forbidden twice (`legal.md` §6; `spec.md` § Non-goals, lesson **002**) and it is the line that carries the table year (`PRODUCT.md` §4) — the string least eligible for a trim, not the most. |
 | 2026-09-16 | content-writer (G3) | **One placement constraint issued, from lesson 049's deixis test run over all nineteen frozen strings: DS2 may not be separated from the *DSR sobre os extras* row it says *estes extras* about.** A spec whose whole content is *moving surfaces* is the spec that turns a latent deictic reference into a broken one, and this one breaks **silently** — DS2 still renders, still reads as Portuguese, and is simply about a row that is no longer there. Fixing it afterwards would need a rewording § Out of scope 2 forbids, so it is a placement constraint rather than a copy fallback. Every other frozen string names its own subject and relocates freely. |
 | 2026-09-16 | content-writer (G3) | **Two conditional triggers recorded before `design.md` closes, neither a blocker today.** **T1** — **LR4.4 clause 4**'s art. 9º / art. 18 information link does **not exist in the app** (finding **F3**), and a link needs a **label**, which is a new pt-BR string § Non-goals forbids by name; F3 is routed out of this spec, so a remedy that adds the link here has created copy work this gate may not do — it is a **G1 amendment**, not a string request. **T2** — a remedy needing a **shorter** string routes through `tech-lead` into `0003` (`spec.md` § Boundaries); this gate shortens nothing, and §6 already named the alternative that fits. |
+
+## PR #42 integration QA — G6 run 1
+
+**Pass for PR #42 integration; reject only 0010 closure.** AC15's measured flow cost exceeds all
+three established ceilings and remains routed to `tech-lead` and the spec owners. T4′'s answered
+and pending consent budgets, same-frame geometry, in-flow banner intersection and red controls are
+now covered. The fixed-descendant overlap gap is closed. The final census contains 872 browser
+entries split 291/291/290 with no missing, extra or duplicate descriptors. Isolated execution
+passed shard 1 (`291 passed`), shard 2 (`290 passed, 1 informational skip`) and shard 3
+(`289 passed, 1 informational skip`) with zero failures; the focused matrix passed `366/366`.
+Lighthouse passed at 96–97 performance and 100 in accessibility, best practices and SEO; eight
+preview cells had zero Axe violations and zero console errors. `EstimateNotice` contrast measured
+5.62:1 light and 8.19:1 dark. Hosted CI is the remaining release confirmation after push. Next
+agent for the spec itself is **tech-lead** for AC15 only. [QA review](reports/qa-pr42.md)

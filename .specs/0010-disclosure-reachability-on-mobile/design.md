@@ -1381,3 +1381,148 @@ gate reads the other's number as its own:
   **before** the run rather than after.
 
 ---
+
+## 18. PR #42 integration with the glass results
+
+The phone opens on the answer. On Jornada the countdown remains inside its progress ring, with
+the exit time and the edit shortcut below. On Custo da Hora the amount, period controls and edit
+shortcut lead into the estimate notice. Keep the full DS1 P2 paragraph as one `p#estimate-notice`
+immediately after the hero in each result column. Its sole purpose is to qualify the displayed
+answer. The full sources remain available in the footer, including the separate night-overtime
+citation on Jornada. [Glass spec](../0100-glass-interface/spec.md) · [Estimate ruling](legal.md)
+
+### Placement and tokens
+
+- At 390 the result and notice use the full width inside the page gutters. The native edit link
+  in the hero uses its existing 44 px minimum height and takes focus to the form heading below
+  the fixed header. At 1440 the notice follows the hero inside the existing sticky right column.
+  At 2560 and 3840 the same composition scales with the root font. [Layout system](../../DESIGN.md#layout)
+- `components/atoms/estimate-notice.tsx` uses `--text-caption` with its existing weight, line
+  height and tracking, `--color-ink-muted` on `--color-canvas` and
+  `calc(var(--spacing) * 2)` above. This integration overrides §17.8's historical
+  `--color-ink-subtle` ruling. Axe's `color-contrast` rule on the integrated 390×844 build,
+  scoped to `#estimate-notice`, measured **5.62:1 light** and **8.19:1 dark** on both routes at
+  12 px, against the **4.5:1** floor. The notice has
+  static paragraph semantics, no tab stop, no automatic announcement and no motion. The
+  shipped paragraph is the copy slot from §17.11.
+- The footer in `components/organisms/calculator-views.tsx` has the three common disclosure
+  paragraphs (storage, calculation exclusions and the four-link table citation). Jornada has a
+  fourth with its separate night-overtime source. The footer passage and the relocated passage
+  each keep their independent LR3.5 witness. [T4′ plan](plan.md#t4--m-r-ds1-p2-leaves-the-footer-and-renders-under-the-answer-as-estimatenotice)
+
+### Browser evidence
+
+Playwright Chromium, isolated production snapshot of `262c9a0`, with the test publisher and
+analytics IDs present in the served JavaScript. The served Jornada HTML contains the glass ring
+size and edit link. Consent was pending and the banner was mounted. In each of the 16 cells
+(390×844, both routes and themes, the four `STORAGE_SEEDS`, reduced motion), the same document
+supplied both readings. Before, the footer owned `<p>{DS1 P2}</p>`. The browser then moved that
+same element immediately after the hero as
+`<p class="mt-2 text-caption text-ink-muted text-pretty">{DS1 P2}</p>`. The braces denote
+the original text node in both readings. The live substitution tested placement before the
+integrated build. Read `getBoundingClientRect()`, computed margin and the distinct vertical
+positions from `Range.getClientRects()` over the paragraph's text. [State definitions](../../tests/e2e/support/reachability.ts)
+
+| Route and storage | Footer P2 top before move | Hero bottom | Gap | P2 height after move | P2 bottom after move | Dock top |
+|---|---:|---:|---:|---:|---:|---:|
+| Jornada, empty or `monthlyHours=0` | 2499.09 | 619.39 | 8 | 52.17 | 679.56 | 766 |
+| Jornada, seeded or incoherent | 2701.78 | 619.39 | 8 | 52.17 | 679.56 | 766 |
+| Custo da Hora, empty | 2102.39 | 594.09 | 8 | 52.17 | 654.27 | 766 |
+| Custo da Hora, seeded | 1938.13 | 576.83 | 8 | 52.17 | 637.00 | 766 |
+| Custo da Hora, `monthlyHours=0` | 2140.03 | 510.73 | 8 | 52.17 | 570.91 | 766 |
+| Custo da Hora, incoherent | 2247.13 | 576.83 | 8 | 52.17 | 637.00 | 766 |
+
+The two themes gave the same boxes within each row. The paragraph occupied three rendered
+lines in every cell. The tightest clearance was **86.44 CSS px** on Jornada
+(`766 − 619.39 − 8 − 52.17`). The glass result already leaves room for the notice with its
+ring and edit shortcut. This replaces the older T6 prerequisite for **AC1 geometry** in §17.15.
+The test reads the full notice box, measures the gap from the preceding hero, checks fixed
+chrome clearance and confirms the value is on screen in the same frame.
+[Reachability guard](../../tests/e2e/first-screen-reachability.spec.ts)
+
+The same substitution at 1440×900, 2560×1440 and 3840×2160, empty storage and light theme,
+kept the notice in the sticky aside and returned zero horizontal overflow on both routes. The
+notice bottoms on Jornada were 750.17, 843.81 and 843.81. On Custo da Hora they were 682.72,
+764.92 and 764.92. [Sticky result composition](../../components/templates/calculator-layout.tsx)
+
+### Answer and consent coverage
+
+- AC13's census is over the answer and its sibling notice, before any viewport check.
+  At 390×844 the answer area contains **9 sighted text-bearing elements plus 1 assistive-only
+  element** on Jornada and **15 plus 1** on Custo da Hora. The visible census includes the
+  edit links and the five salary period labels, which have icon or input children. The
+  paragraph's three rendered lines count as one text-bearing element. The full border box
+  of each sighted element must fit the viewport and every measured element must clear
+  fixed chrome. The older §17.15 counts described different markup and missed text in
+  elements with children. [Answer census](../../tests/e2e/support/reachability.ts)
+- The first-level consent card follows the footer in document flow. Its heading names
+  the region. The privacy shield remains available with or without a pending choice.
+  Measure the named region and its three controls at one attainable scroll position.
+  For settings, measure the panel inside the native modal and its three controls in one
+  frame. The dialog is the panel's fixed ancestor and belongs to the top layer. Document
+  chrome behind it cannot occlude the panel. An independent fixed element in the modal
+  can still obstruct a control. [LR4.2a](legal.md#a16--the-ruling)
+- On the same isolated build at document end in light theme, reduced motion, empty storage
+  and consent pending on Jornada, the actual banner was at **249.52..715.52** at 390×844
+  and **587.83..771.83** at 1440×900. All three controls passed a center-point hit test
+  in each frame. Opening settings from the banner put its panel at **162.81..681.19**
+  and **240.81..659.19**, respectively. Its three controls also passed the hit test at
+  each size. At 1440 the refusal measured 102.81×48 versus 131.17×48 for acceptance.
+  This is the F2c baseline. [F2c ruling](legal.md)
+
+### Equal consent targets
+
+PR #42 includes the first-level action row within scope to resolve F2c's area disparity.
+Below `sm`, keep the stacked choices at full width. From `sm`, replace the row's
+`sm:flex-row` with `sm:grid sm:grid-cols-[max-content_repeat(2,minmax(max-content,1fr))]`.
+Both binary choice buttons use `w-full`. The settings button keeps its intrinsic width,
+the other two tracks share the width of the longer label, and `gap-3` keeps its existing
+spacing. Their order, button variants, focus, pressed and disabled states follow the
+existing controls. This is a scoped amendment to T5's action row exclusion. The separate
+fill question remains with the analyst. [Consent action plan](plan.md#t5--m-o-the-consent-surface-leaves-the-overlay-and-the-privacy-shield-becomes-unconditional) · [F2c legal disposition](legal.md)
+
+On the same isolated `262c9a0` build, Chromium loaded Jornada with pending consent and
+empty storage in both themes. Third-party requests were blocked, and the browser read
+the controls at document end before and after substituting the grid and two full-width
+declarations on the actual row. The narrow and wide `sm` and `md` boundaries were
+included. Values are browser border boxes in CSS px.
+
+| Viewport | Refuse and accept widths before | Refuse and accept widths after | Common height |
+|---|---:|---:|---:|
+| 390×844 | 332 / 332 | 332 / 332 | 48 |
+| 639×900 | 581 / 581 | 581 / 581 | 48 |
+| 640×900 | 102.81 / 131.17 | 219.25 / 219.25 | 48 |
+| 767×900 | 102.81 / 131.17 | 282.75 / 282.75 | 48 |
+| 768×900 | 102.81 / 131.17 | 131.17 / 131.17 | 48 |
+| 1024×900 | 102.81 / 131.17 | 131.17 / 131.17 | 48 |
+| 1440×900 | 102.81 / 131.17 | 131.17 / 131.17 | 48 |
+| 2560×900 and 3840×900 | 115.42 / 147.56 | 147.56 / 147.56 | 54 |
+
+Every sampled row kept its three targets hittable together with unclipped labels and zero
+horizontal overflow. At 1440 the card grew from 184 to 214 CSS px and still ended at
+771.83. The informing paragraph retained four line boxes and 166 normalized characters
+in the separate 1440 light-theme read of both states. The executable criterion compares
+rendered choice areas in both themes at 390×844 and 1440×900. The failing 1440 baseline
+uses the same button boxes that the equal-track candidate corrects.
+[Consent geometry guard](../../tests/e2e/first-screen-reachability.spec.ts)
+
+### Open mobile form geometry
+
+The approved Glass hierarchy preserves the countdown ring and provides direct focus to
+editing. The link serves access to the form and the following measurements keep the existing
+AC15 question open. In Playwright Chromium at 390×844 on Custo da Hora, light theme and
+pending consent, `#salario-bruto` bottom read as follows on the same snapshot before and
+after moving the paragraph in the live DOM.
+
+| State | Historical AC15 ceiling | Glass before move | After move |
+|---|---:|---:|---:|
+| Empty | 880.50 | 920.59 | 980.77 |
+| 0010 seeded | 864.10 | 903.33 | 963.50 |
+| 0008 seeded, `grossSalary=4200` and `salaryPeriod=month` | 832.80 | 870.38 | 930.55 |
+
+Glass already moved the field below that calibration. The estimate notice adds its gap and
+height to stacked flow. Route AC15 to `tech-lead` and `product-manager` with `0008` for a
+joint decision on the first field criterion when that spec next takes the mobile salary
+layout. The approved ring and focus shortcut govern this integration. AC15 stays open
+pending that decision. The integration adds no design token, type step or motion curve.
+[AC15](spec.md#acceptance-criteria) · [First-input budget](../0008-intermittent-layout-shift-on-custo-da-hora/design.md#c3-the-price-in-phone-pixels)

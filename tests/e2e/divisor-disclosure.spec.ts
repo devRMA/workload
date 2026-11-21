@@ -1,7 +1,8 @@
 import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { expect, type Page, test } from "@playwright/test";
+import { expect, type Page } from "@playwright/test";
 import { DAILY_MINUTES_KEY, GROSS_SALARY_KEY, MONTHLY_HOURS_KEY } from "@/lib/storage";
+import { installExternalNetworkRoute, test } from "./support/fixtures";
 import { driveUntil } from "./support/legibility";
 
 const VIEWPORTS = [
@@ -219,6 +220,8 @@ test.describe("clause 2d — calibration, recorded rather than asserted as a bar
 
     for (const row of rows) {
       const context = await browser.newContext({
+        baseURL,
+        serviceWorkers: "block",
         viewport: { width: 390, height: 844 },
         colorScheme: row.theme,
         storageState: {
@@ -231,6 +234,7 @@ test.describe("clause 2d — calibration, recorded rather than asserted as a bar
           ],
         },
       });
+      await installExternalNetworkRoute(context, baseURL);
       const page = await context.newPage();
       await page.goto("/custo-da-hora");
       await row.state.drive(page);

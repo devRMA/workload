@@ -512,7 +512,7 @@ The signature component: a saturated plane carrying the single number the user c
 
 - **Corner** `--radius-2xl` (32px). **Padding** 24px, 32px from `sm`, 48px from `lg`. **Shadow** `--shadow-accent`. **Text** `--color-ink-onfill` throughout, with supporting text at 90% opacity.
 - **Fill** is opaque and semantic: a local enamel gradient joins `--color-result-positive` to `--color-result-positive-base` for jornada, `--color-result-negative` to `--color-negative-deep` for time debt, and `--color-result-accent` to `--color-accent` for salary.
-- On stacked layouts, “Editar horários” and “Editar salário” take keyboard focus to the corresponding form heading, below the floating header.
+- On stacked layouts, “Editar horários” and “Editar salário” have a 44px minimum target height and take focus to the corresponding form heading below the floating header.
 - The value is `--text-numeral`, container-query sized against the panel, tabular and slashed-zero.
 - A value with no digit renders instead at `--text-title`, wrapping to at most two lines, without the `numeric` utility — the statement mode for a legally bound sentence like "Sem carga horária" (`legal.md` S6).
 - The two decorative blurred circles the predecessor layered inside it are removed. A gauge does not have bokeh.
@@ -520,6 +520,15 @@ The signature component: a saturated plane carrying the single number the user c
 ### Progress ring — `components/atoms/progress-ring.tsx`
 
 The centered ring surrounds the countdown above the larger exit time. Its diameter follows the mobile viewport height within 6–8rem, then becomes 9rem at `sm` and 11rem at `lg`. The dial has a `bg-scrim/25` base. Track: `--color-ink-onfill/16`; worked arc: `--color-ink-onfill`; overtime arc: `--color-overtime-arc`. CSS transitions the dash offset over `--duration-data` (600ms) with `--ease-out`; under reduced motion it jumps to its value. The visual dial is hidden from assistive technology; a separate polite live region announces the same status as text.
+
+### Estimate notice — `components/atoms/estimate-notice.tsx`
+
+One static paragraph follows each hero in its result column, with `calc(var(--spacing) * 2)`
+above it. It uses `--text-caption` and `--color-ink-muted` on `--color-canvas`: **5.62:1**
+in light and **8.19:1** in dark at 12px. In the 390×844 reference states the paragraph sits inside the first viewport alongside the result and
+follows the hero in the sticky column from `lg`. It has no focus stop, motion or live
+announcement. The footer carries the table citations and the other common disclosures.
+[Placement and measurements](.specs/0010-disclosure-reachability-on-mobile/design.md#18-pr-42-integration-with-the-glass-results)
 
 ### Segmented controls — `components/molecules/period-selector.tsx`, the AUTO/MANUAL switch in `components/organisms/journey-form.tsx`
 
@@ -547,6 +556,18 @@ The centered ring surrounds the countdown above the larger exit time. Its diamet
 
 - **Header:** a floating frame with a hairline and `--radius-xl`, aligned to the page gutters. Its 4rem height (5rem from `md`) still drives the content and sticky-aside offsets. The logo is a 40px accent tile; the live clock uses tabular digits in primary ink for contrast on glass.
 - **Dock:** a floating pill above the safe area, with Primary and Ghost links for active and inactive states. Labels sit beneath the icons on phones and beside them from `sm`. The active link carries `aria-current="page"`. The route changes without waiting for an exit animation; the links provide press feedback.
+
+### Consent — `components/organisms/cookie-consent.tsx`
+
+The first-level consent card is a region named by its heading. It follows the footer in
+document flow and shares the page's bottom reserve, so its three controls can be reached
+together above the dock. The two decision targets have equal area. They fill the available
+width when stacked, then share equal grid tracks from `sm` alongside the intrinsic settings
+target. The fixed privacy shield stays available before and after the
+choice. The in-flow card enters and exits locally with the default UI spring, opacity and
+the approved 12 CSS px vertical offset. Reduced motion retains the fade.
+Settings open in the native dialog's top layer, above the document's fixed chrome.
+[Consent reachability](.specs/0010-disclosure-reachability-on-mobile/design.md#answer-and-consent-coverage)
 
 ### Modals — `components/atoms/modal-dialog.tsx`
 
@@ -606,7 +627,7 @@ Motion in WorkLoad exists to preserve continuity, never to decorate. The user op
 
 **The Interruptible Rule.** Anything the user can trigger twice in a second is a spring or a CSS transition, never a keyframe. It must reverse from where it is, not from where it started.
 
-**The Same-Path Rule.** What enters from a direction exits to that direction. The tab bar, the cookie banner and the ad-block notice enter from the bottom and leave to the bottom.
+**The Same-Path Rule.** What enters from a direction exits to that direction. The cookie card enters from a local offset below its resting position and exits toward that offset.
 
 ## Accessibility
 

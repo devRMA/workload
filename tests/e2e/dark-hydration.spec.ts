@@ -1,4 +1,5 @@
-import { expect, type Page, test } from "@playwright/test";
+import { expect, type Page } from "@playwright/test";
+import { test } from "./support/fixtures";
 
 const ROUTES = ["/", "/custo-da-hora"] as const;
 const HEADER_LAYOUT_SHIFT_MARK = "workload-test:header-layout-shift";

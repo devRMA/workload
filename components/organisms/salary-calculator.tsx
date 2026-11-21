@@ -20,6 +20,7 @@ import { checkDivisor, type DivisorCheck, type DivisorNorm, SALARY_PERIOD_LABELS
 import { formatCurrency, formatCurrencySimple, formatHours, parseCurrency } from "@/lib/utils";
 import { AlertBanner } from "../atoms/alert-banner";
 import { CollapsiblePanel } from "../atoms/collapsible-panel";
+import { EstimateNotice } from "../atoms/estimate-notice";
 import { Input } from "../atoms/input";
 import { StatBox } from "../atoms/stat-box";
 import { CurrencyInput } from "../molecules/currency-input";
@@ -409,45 +410,48 @@ export function SalaryCalculator() {
         </>
       }
       aside={
-        <HeroPanel
-          icon={IconClock}
-          label={`Valor por ${SALARY_PERIOD_LABELS[period]}`}
-          value={hasMonthlyHours ? formatCurrency(stats.periodValue) : MISSING_VALUE}
-          tone="blue"
-          editLink={{ href: "#editar-salario", label: "Editar salário" }}
-          footer={
-            <>
-              <p className="text-body-sm mb-2">Resumo Financeiro</p>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-overline uppercase">Bruto</p>
-                  <p className="text-heading numeric">{formatCurrency(grossSalary)}</p>
+        <>
+          <HeroPanel
+            icon={IconClock}
+            label={`Valor por ${SALARY_PERIOD_LABELS[period]}`}
+            value={hasMonthlyHours ? formatCurrency(stats.periodValue) : MISSING_VALUE}
+            tone="blue"
+            editLink={{ href: "#editar-salario", label: "Editar salário" }}
+            footer={
+              <>
+                <p className="text-body-sm mb-2">Resumo Financeiro</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-overline uppercase">Bruto</p>
+                    <p className="text-heading numeric">{formatCurrency(grossSalary)}</p>
+                  </div>
+                  <div>
+                    <p className="text-overline uppercase">Ganhos Extras</p>
+                    <p className="text-heading numeric">+{formatCurrency(stats.totalExtraGains)}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-overline uppercase">Ganhos Extras</p>
-                  <p className="text-heading numeric">+{formatCurrency(stats.totalExtraGains)}</p>
-                </div>
-              </div>
-            </>
-          }
-        >
-          <p className="mt-4 text-body font-medium text-ink-onfill/90">
-            {hasMonthlyHours ? supportingRate : "Informe a carga horária mensal para calcular"}
-          </p>
-          <div className="mt-6">
-            <PeriodSelector
-              value={period}
-              onChange={setPeriod}
-              describedById={period === "year" ? ANNUAL_PERIOD_DISCLOSURE_ID : undefined}
-            />
-          </div>
-          {period === "year" ? (
-            <p id={ANNUAL_PERIOD_DISCLOSURE_ID} className="mt-3 text-caption text-ink-onfill/90 text-pretty">
-              O valor do Ano soma 12 meses mais o 13º salário (art. 7º, VIII, da CF; Lei nº 4.090/1962). É uma
-              aproximação: o 13º tem INSS e IRRF próprios, descontados à parte.
+              </>
+            }
+          >
+            <p className="mt-4 text-body font-medium text-ink-onfill/90">
+              {hasMonthlyHours ? supportingRate : "Informe a carga horária mensal para calcular"}
             </p>
-          ) : null}
-        </HeroPanel>
+            <div className="mt-6">
+              <PeriodSelector
+                value={period}
+                onChange={setPeriod}
+                describedById={period === "year" ? ANNUAL_PERIOD_DISCLOSURE_ID : undefined}
+              />
+            </div>
+            {period === "year" ? (
+              <p id={ANNUAL_PERIOD_DISCLOSURE_ID} className="mt-3 text-caption text-ink-onfill/90 text-pretty">
+                O valor do Ano soma 12 meses mais o 13º salário (art. 7º, VIII, da CF; Lei nº 4.090/1962). É uma
+                aproximação: o 13º tem INSS e IRRF próprios, descontados à parte.
+              </p>
+            ) : null}
+          </HeroPanel>
+          <EstimateNotice />
+        </>
       }
     />
   );

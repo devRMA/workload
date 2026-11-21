@@ -9,6 +9,7 @@ import { findComplianceWarnings } from "@/lib/compliance";
 import { buildDayBreakdown } from "@/lib/day-breakdown";
 import { formatClock, formatHoursAndMinutes, formatSignedHoursAndMinutes } from "@/lib/duration";
 import { formatClockTime, formatTimeLabel, PLACEHOLDER_CLOCK } from "@/lib/utils";
+import { EstimateNotice } from "../atoms/estimate-notice";
 import { ProgressRing } from "../atoms/progress-ring";
 import { CopyButton } from "../molecules/copy-button";
 import { HeroPanel } from "../organisms/hero-panel";
@@ -208,56 +209,65 @@ export function WorkCalculator() {
         </>
       }
       aside={
-        <HeroPanel
-          icon={IconClock}
-          label={isManualExit ? "Saída Real" : "Saída Prevista"}
-          value={exitLabel}
-          tone={isInDebt ? "rose" : "emerald"}
-          editLink={{ href: "#editar-horarios", label: "Editar horários" }}
-          badge={
-            <span aria-hidden="true" className="bg-scrim/35 px-3 py-1 rounded-full text-caption font-semibold numeric">
-              {currentTime === null ? PLACEHOLDER_CLOCK : formatClockTime(currentTime)}
-            </span>
-          }
-          media={
-            <>
-              <div
+        <>
+          <HeroPanel
+            icon={IconClock}
+            label={isManualExit ? "Saída Real" : "Saída Prevista"}
+            value={exitLabel}
+            tone={isInDebt ? "rose" : "emerald"}
+            editLink={{ href: "#editar-horarios", label: "Editar horários" }}
+            badge={
+              <span
                 aria-hidden="true"
-                className="relative mx-auto mb-4 grid size-[clamp(6rem,22svh,8rem)] place-items-center rounded-full bg-scrim/25 sm:size-36 lg:size-44"
+                className="bg-scrim/35 px-3 py-1 rounded-full text-caption font-semibold numeric"
               >
-                <ProgressRing progressPercent={breakdown.progressPercent} overtimePercent={breakdown.overtimePercent} />
-                <div className="relative max-w-[76%]">
-                  <span className="block text-caption font-semibold text-ink-onfill/90">{timerData.statusLabel}</span>
-                  <span className="block text-label sm:text-heading font-bold numeric whitespace-nowrap">
-                    {timerData.statusTime}
-                  </span>
+                {currentTime === null ? PLACEHOLDER_CLOCK : formatClockTime(currentTime)}
+              </span>
+            }
+            media={
+              <>
+                <div
+                  aria-hidden="true"
+                  className="relative mx-auto mb-4 grid size-[clamp(6rem,22svh,8rem)] place-items-center rounded-full bg-scrim/25 sm:size-36 lg:size-44"
+                >
+                  <ProgressRing
+                    progressPercent={breakdown.progressPercent}
+                    overtimePercent={breakdown.overtimePercent}
+                  />
+                  <div className="relative max-w-[76%]">
+                    <span className="block text-caption font-semibold text-ink-onfill/90">{timerData.statusLabel}</span>
+                    <span className="block text-label sm:text-heading font-bold numeric whitespace-nowrap">
+                      {timerData.statusTime}
+                    </span>
+                  </div>
                 </div>
+                <p className="sr-only" aria-live="polite" aria-atomic="true">
+                  {timerData.statusAnnouncement}
+                </p>
+              </>
+            }
+            footer={
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-2">
+                  <IconLogin className="w-4 h-4" aria-hidden="true" />
+                  <span className="text-caption font-semibold numeric">Entrada às {formatTimeLabel(entry)}</span>
+                </div>
+                <CopyButton
+                  value={exitLabel}
+                  label="Copiar horário de saída"
+                  onCopied={() =>
+                    safeGAEvent("copy_to_clipboard", {
+                      value: exitLabel,
+                    })
+                  }
+                />
               </div>
-              <p className="sr-only" aria-live="polite" aria-atomic="true">
-                {timerData.statusAnnouncement}
-              </p>
-            </>
-          }
-          footer={
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-2">
-                <IconLogin className="w-4 h-4" aria-hidden="true" />
-                <span className="text-caption font-semibold numeric">Entrada às {formatTimeLabel(entry)}</span>
-              </div>
-              <CopyButton
-                value={exitLabel}
-                label="Copiar horário de saída"
-                onCopied={() =>
-                  safeGAEvent("copy_to_clipboard", {
-                    value: exitLabel,
-                  })
-                }
-              />
-            </div>
-          }
-        >
-          <p className="text-body-sm font-medium text-ink-onfill/90">{exitDescription}</p>
-        </HeroPanel>
+            }
+          >
+            <p className="text-body-sm font-medium text-ink-onfill/90">{exitDescription}</p>
+          </HeroPanel>
+          <EstimateNotice />
+        </>
       }
     />
   );
