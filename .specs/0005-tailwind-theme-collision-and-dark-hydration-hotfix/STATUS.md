@@ -334,6 +334,7 @@ none
 
 | When | Agent | Decision |
 |---|---|---|
+| 2026-09-16, after close | labor-law-analyst | **`legal.md` §3 LR3's first bullet is superseded — recorded here because this spec is `done` and its ruling must not read as though it had always said this.** *"Present in the server-rendered DOM (not injected on an event)"* is refuted by `curl` on the deployed head (`0008` `legal.md` §1.2) and is **unmeetable** for DS2/DS5/DS6/DS7 without sending the user's inputs to a server, against `PRODUCT.md` §5. Corrected at `0008` §4.1 and replaced by **LR6.1 — co-presence** (`0008` §4.2). **The human confirmed this inversion of `AGENTS.md` §8's default direction on 2026-09-16** (`0008` §8, Q2). The original bullet is left standing in `legal.md` under a supersession box; LR3's other four bullets, LR1, LR2 and this spec's verdict are all unchanged. Lesson **038**. |
 | G6 triage of 0002 | tech-lead | Both criticals land here, in one spec, not folded into 0002 (complete, four gates passed) and not amended into PR #35 (six-branch rebase, no behavioural gain). |
 | G6 triage of 0002 | tech-lead | Declaring `--container-*` explicitly is **rejected** as the fix for D1: compiled against Tailwind 4.3.3, `--spacing-<name>` wins anyway. The named spacing scale is deleted instead, and a test keeps it deleted. |
 | G6 triage of 0002 | tech-lead | The token rename is architecture, not design: every value maps to an exact 4px multiple, so zero pixels move. `product-designer` ratifies and reconciles `DESIGN.md`; `design.md` is not re-opened. |

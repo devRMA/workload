@@ -1,4 +1,5 @@
-import { expect, test } from "@playwright/test";
+import { expect } from "@playwright/test";
+import { test } from "./support/fixtures";
 
 const MAX_HEADING_FONT_SIZE_PX = 40;
 const D3_VIEWPORTS = [

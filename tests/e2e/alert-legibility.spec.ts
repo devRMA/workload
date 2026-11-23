@@ -1,4 +1,5 @@
-import { expect, type Page, test } from "@playwright/test";
+import { expect, type Page } from "@playwright/test";
+import { test } from "./support/fixtures";
 import {
   assertLr1,
   assertLr2b,
@@ -45,7 +46,7 @@ const CONSUMERS: readonly Consumer[] = [
     id: "C3",
     route: "/custo-da-hora",
     role: "status",
-    title: "A carga mensal não combina com a jornada diária",
+    title: "A carga mensal não combina com a sua semana",
     drive: async (page) => {
       await page.getByLabel("Carga Horária Mensal").fill("200");
     },

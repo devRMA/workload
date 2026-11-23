@@ -80,24 +80,37 @@ describe("CalculatorViews", () => {
     expect(container.querySelector("#main-content")).toHaveFocus();
   });
 
-  it("promises that nothing leaves the browser and that the numbers are an estimate", () => {
+  it("promises that nothing leaves the browser", () => {
     render(<CalculatorViews activeView="work" />);
 
     expect(screen.getByText(/fica salvo apenas neste navegador/)).toBeInTheDocument();
-    expect(screen.getByText(/Não substituem seu holerite/)).toBeInTheDocument();
-    expect(screen.getByText(/orientação jurídica ou contábil/)).toBeInTheDocument();
+    expect(screen.queryByText(/Não substituem seu holerite/)).toBeNull();
   });
 
-  it("keeps every disclaimer clause in the same footer paragraph", () => {
-    render(<CalculatorViews activeView="work" />);
+  it.each([
+    {
+      view: "work",
+      markers: [
+        /fica salvo apenas neste navegador/,
+        /Não entram na conta/,
+        /Tabelas usadas nos cálculos/,
+        /Horas extras noturnas/,
+      ],
+    },
+    {
+      view: "salary",
+      markers: [/fica salvo apenas neste navegador/, /Não entram na conta/, /Tabelas usadas nos cálculos/],
+    },
+  ] as const)("keeps the expected footer paragraphs in order for $view", ({ view, markers }) => {
+    render(<CalculatorViews activeView={view} />);
 
-    const disclaimer = screen.getByText(/Não substituem seu holerite/);
-    expect(disclaimer).toHaveTextContent("estimativa");
-    expect(disclaimer).toHaveTextContent("Não substituem seu holerite");
-    expect(disclaimer).toHaveTextContent("não valem como registro oficial de ponto");
-    expect(disclaimer).toHaveTextContent("orientação jurídica ou contábil");
+    const footer = screen.getByText(/fica salvo apenas neste navegador/).closest("footer");
+    const paragraphs = footer?.querySelectorAll("p");
 
-    expect(screen.getByText(/prorrogação da jornada noturna depois das 5h/)).toHaveTextContent("Súmula 60, II, do TST");
+    expect(paragraphs).toHaveLength(markers.length);
+    for (const [index, marker] of markers.entries()) {
+      expect(paragraphs?.[index]).toHaveTextContent(marker);
+    }
   });
 
   it("names what the calculation leaves out", () => {
@@ -110,6 +123,7 @@ describe("CalculatorViews", () => {
     expect(omissions).toHaveTextContent("13º salário");
     expect(omissions).toHaveTextContent("Súmula 60, II, do TST");
     expect(omissions).toHaveTextContent("RPPS federal");
+    expect(screen.getByText(/prorrogação da jornada noturna depois das 5h/)).toHaveTextContent("Súmula 60, II, do TST");
   });
 
   it("names the norm behind each table and links it to an official host", () => {
@@ -169,6 +183,17 @@ describe("CalculatorViews", () => {
     expect(paragraph.textContent).not.toContain(
       "Lei nº 11.482/2007, art. 1º, XII, na redação da Lei nº 15.191/2025, em vigor desde 01/01/2026",
     );
+  });
+
+  it("mounts the consent surface after the footer inside the main content", () => {
+    render(<CalculatorViews activeView="work" />);
+
+    const consentRoot = screen.getByRole("button", { name: "Configurações de Privacidade" });
+    const footer = screen.getByText(/fica salvo apenas neste navegador/).closest("footer");
+    expect(footer).not.toBeNull();
+
+    const position = (footer as HTMLElement).compareDocumentPosition(consentRoot);
+    expect(position & Node.DOCUMENT_POSITION_FOLLOWING).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
   });
 
   it("carries the whole citation line", () => {

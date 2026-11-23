@@ -92,18 +92,37 @@ describe("calculateWorkStats", () => {
     expect(stats.extraTierMinutes).toBe(12);
   });
 
-  it("pays all weekend overtime at the higher tier", () => {
-    const stats = calculateWorkStats(
-      `${SATURDAY}T08:00`,
-      `${SATURDAY}T12:00`,
-      `${SATURDAY}T13:00`,
-      `${SATURDAY}T20:00`,
-      FULL_DAY_MINUTES,
-    );
+  const WEEKDAY_CLASS_DATES = [
+    "2025-01-05",
+    MONDAY,
+    "2025-01-07",
+    "2025-01-08",
+    "2025-01-09",
+    "2025-01-10",
+    SATURDAY,
+  ] as const;
 
-    expect(stats.firstTierMinutes).toBe(0);
-    expect(stats.extraTierMinutes).toBe(132);
+  it("sweeps all seven weekday classes exactly once", () => {
+    expect(WEEKDAY_CLASS_DATES).toHaveLength(7);
+    expect(new Set(WEEKDAY_CLASS_DATES.map((date) => new Date(`${date}T08:00`).getDay()))).toEqual(
+      new Set([0, 1, 2, 3, 4, 5, 6]),
+    );
   });
+
+  for (const date of WEEKDAY_CLASS_DATES) {
+    it(`splits the same overtime the same way on ${date}`, () => {
+      const stats = calculateWorkStats(
+        `${date}T08:00`,
+        `${date}T12:00`,
+        `${date}T13:00`,
+        `${date}T20:00`,
+        FULL_DAY_MINUTES,
+      );
+
+      expect(stats.firstTierMinutes).toBe(120);
+      expect(stats.extraTierMinutes).toBe(12);
+    });
+  }
 
   it("converts night minutes with the reduced night hour", () => {
     const stats = calculateWorkStats(
@@ -163,7 +182,7 @@ describe("calculateWorkStats", () => {
     expect(duringOvertime.extraTierNightMinutes).toBe(0);
   });
 
-  it("allocates night overtime to the tier selected for the entry day", () => {
+  it("allocates night overtime to the same tiers on weekends", () => {
     const stats = calculateWorkStats(
       `${SATURDAY}T13:00`,
       `${SATURDAY}T21:00`,
@@ -174,10 +193,10 @@ describe("calculateWorkStats", () => {
     expect(stats).toEqual({
       balance: 120,
       nightMinutes: 120,
-      firstTierMinutes: 0,
-      extraTierMinutes: 120,
-      firstTierNightMinutes: 0,
-      extraTierNightMinutes: 120,
+      firstTierMinutes: 120,
+      extraTierMinutes: 0,
+      firstTierNightMinutes: 120,
+      extraTierNightMinutes: 0,
       totalWorked: 600,
     });
   });
@@ -455,7 +474,7 @@ describe("useWorkCalculator", () => {
     const { rerender } = render(summary());
     expect(screen.getByText("Extra 50%").parentElement).toHaveTextContent(/R\$\s64,00$/);
     expect(screen.getByText("Adicional noturno 20%").parentElement).toHaveTextContent(/R\$\s8,00$/);
-    expect(screen.getByText("DSR sobre os extras").parentElement).toHaveTextContent(/R\$\s10,67$/);
+    expect(screen.getByText("DSR de extras e noturno").parentElement).toHaveTextContent(/R\$\s10,67$/);
 
     act(() => result.current.recordExit(exit));
     expect(result.current.isManualExit).toBe(true);
@@ -464,7 +483,7 @@ describe("useWorkCalculator", () => {
     rerender(summary());
     expect(screen.getByText("Extra 50%").parentElement).toHaveTextContent(/R\$\s64,00$/);
     expect(screen.getByText("Adicional noturno 20%").parentElement).toHaveTextContent(/R\$\s8,00$/);
-    expect(screen.getByText("DSR sobre os extras").parentElement).toHaveTextContent(/R\$\s10,67$/);
+    expect(screen.getByText("DSR de extras e noturno").parentElement).toHaveTextContent(/R\$\s10,67$/);
   });
 
   it("stops counting at the registered exit in manual mode, whatever the clock says", () => {
@@ -500,5 +519,35 @@ describe("useWorkCalculator", () => {
     expect(result.current.entry).toBe(`${MONDAY}T08:00`);
     expect(result.current.lunchStart).toBe(`${MONDAY}T12:00`);
     expect(result.current.lunchEnd).toBe(`${MONDAY}T13:00`);
+  });
+
+  it("never writes a default over a stored value before the restore completes", () => {
+    const storedValues: Record<string, string> = {
+      workMinutes: "480",
+      firstTierRate: "60",
+      extraTierRate: "110",
+      entry: `${MONDAY}T07:30`,
+      lunchStart: `${MONDAY}T11:30`,
+      lunchEnd: `${MONDAY}T12:30`,
+      isManualExit: "true",
+      exitOverride: `${MONDAY}T16:18`,
+      enteredExit: `${MONDAY}T16:18`,
+      previousEnteredExit: `${SATURDAY}T16:18`,
+      lastExit: `${MONDAY}T16:18`,
+    };
+    for (const [key, value] of Object.entries(storedValues)) {
+      localStorage.setItem(key, value);
+    }
+    const setItem = vi.spyOn(Storage.prototype, "setItem");
+
+    renderHook(() => useWorkCalculator());
+
+    const writes = setItem.mock.calls as [string, string][];
+    for (const [key, seeded] of Object.entries(storedValues)) {
+      const firstWrite = writes.find(([writtenKey]) => writtenKey === key);
+      expect(firstWrite?.[1] ?? seeded, `${key} was written before the restore completed`).toBe(seeded);
+      expect(localStorage.getItem(key), `${key} did not survive the restore byte for byte`).toBe(seeded);
+    }
+    setItem.mockRestore();
   });
 });

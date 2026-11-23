@@ -48,10 +48,10 @@ describe("AlertBanner", () => {
 
   it("merges custom className", () => {
     const { container } = render(
-      <AlertBanner icon={IconAlertTriangle} tone="danger" title="Confira seus horários" className="mb-6" />,
+      <AlertBanner icon={IconAlertTriangle} tone="danger" title="Confira seus horários" className="my-custom" />,
     );
 
-    expect(container.firstElementChild?.className).toContain("mb-6");
+    expect(container.firstElementChild?.className).toContain("my-custom");
   });
 
   it("keeps the body text out of the icon's row", () => {

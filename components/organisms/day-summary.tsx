@@ -238,7 +238,7 @@ export function DaySummary({
           {restDayPay > 0 ? (
             <div className="flex items-center gap-3 text-body-sm">
               <IconCalendarMonth className="w-4 h-4 shrink-0 text-positive-ink" aria-hidden="true" />
-              <span>DSR sobre os extras</span>
+              <span>DSR de extras e noturno</span>
               <span className="ml-auto w-24 text-right numeric font-semibold text-positive-ink">
                 {formatCurrency(restDayPay)}
               </span>
@@ -246,12 +246,27 @@ export function DaySummary({
           ) : null}
         </div>
 
+        <p className="text-caption text-ink-subtle text-pretty">
+          Os 20% do adicional noturno são o mínimo da CLT (art. 73, caput). A sua convenção coletiva pode prever um
+          adicional maior.
+        </p>
+
         {restDayPay > 0 ? (
           <p className="text-caption text-ink-subtle text-pretty">
-            O DSR (Súmula 172 do TST) supõe que estes extras se repitam em todos os dias úteis do mês e conta só os
-            domingos. Feriados não entram.
+            O DSR sobre os extras e sobre o adicional noturno vem da Lei nº 605/1949, art. 7º, alínea "a", da Súmula 172
+            e da Súmula 60, I, do TST. O cálculo supõe que estes valores se repitam em todos os dias úteis do mês e
+            conta só os domingos. Feriados não entram.
           </p>
         ) : null}
+
+        {grossHourlyRate === null ? null : (
+          <p id="weekday-tier-disclosure" className="text-caption text-ink-subtle hyphens-auto">
+            As horas extras desta tela valem o mesmo em qualquer dia da semana: sábado, domingo ou dia útil. Por lei,
+            domingo ou feriado não compensado por folga é pago em dobro (Súmula 146 do TST; art. 9º da Lei 605/49), mas
+            esta tela não calcula essa dobra: ela não pergunta se houve folga compensatória e não tem calendário de
+            feriados.
+          </p>
+        )}
 
         {grossHourlyRate === null ? (
           <Link

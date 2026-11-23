@@ -68,9 +68,19 @@ describe("HeroPanel", () => {
     expect(valueElement).toHaveAttribute("aria-live", "polite");
   });
 
-  it("omits the footer separator when there is no footer", () => {
-    render(<HeroPanel icon={IconClock} label="HORA EXTRA" value="00:10:00" tone="rose" />);
+  it("adds no separated block to the panel when there is no footer", () => {
+    const { container, rerender } = render(
+      <HeroPanel icon={IconClock} label="HORA EXTRA" value="00:10:00" tone="rose" />,
+    );
+    const content = container.firstElementChild?.firstElementChild as HTMLElement;
 
-    expect(document.querySelector(".border-t")).toBeNull();
+    expect(content.children).toHaveLength(2);
+
+    rerender(
+      <HeroPanel icon={IconClock} label="HORA EXTRA" value="00:10:00" tone="rose" footer={<p>Resumo Financeiro</p>} />,
+    );
+
+    expect(content.children).toHaveLength(3);
+    expect(content.lastElementChild).toContainElement(screen.getByText("Resumo Financeiro"));
   });
 });

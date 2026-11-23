@@ -111,6 +111,14 @@ describe("WorkCalculator", () => {
     vi.useRealTimers();
   });
 
+  it("renders exactly one estimate notice beside the answer", () => {
+    const { container } = render(<WorkCalculator />);
+    const notices = container.querySelectorAll("p#estimate-notice");
+
+    expect(notices).toHaveLength(1);
+    expect(notices[0]).toHaveTextContent("Não substituem seu holerite");
+  });
+
   it("renders the journey form, the countdown and the day summary side by side", () => {
     render(<WorkCalculator />);
 
@@ -265,5 +273,25 @@ describe("WorkCalculator", () => {
     await user.click(screen.getByRole("button", { name: "Resetar horários" }));
 
     expect(safeGAEvent).toHaveBeenCalledWith("reset_defaults");
+  });
+
+  it("prices a Saturday's overtime exactly as it prices a weekday's, DSR included", () => {
+    vi.setSystemTime(new Date("2026-09-19T23:00:00"));
+    localStorage.setItem("entry", "2026-09-19T08:00");
+    localStorage.setItem("lunchStart", "2026-09-19T12:00");
+    localStorage.setItem("lunchEnd", "2026-09-19T13:00");
+    localStorage.setItem("exitOverride", "2026-09-19T22:00");
+    localStorage.setItem("isManualExit", "true");
+    localStorage.setItem("workMinutes", "528");
+    localStorage.setItem("firstTierRate", "50");
+    localStorage.setItem("extraTierRate", "100");
+    localStorage.setItem("grossSalary", "15000");
+    localStorage.setItem("monthlyHours", "220");
+
+    render(<WorkCalculator />);
+
+    expect(screen.getByText("R$ 204,55")).toBeInTheDocument();
+    expect(screen.getByText("R$ 300,00")).toBeInTheDocument();
+    expect(screen.getByText("R$ 77,62")).toBeInTheDocument();
   });
 });

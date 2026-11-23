@@ -2,8 +2,22 @@
 
 <!-- State: draft | in-progress | blocked | done | rejected -->
 
-**State:** in-progress
-**Next agent:** human — **G8 (release) PARTIAL, run 1, by `release-manager`: committed, push
+**State:** done
+**Next agent:** — **closed at G10** (`tech-lead`, run 1, 2026-09-15). Every gate is closed;
+**G9 is closed by coverage, not by a re-run** — `.specs/0005-…/reports/audit-preview.md`,
+`.specs/0005-…/reports/legal.md` §8 and `.specs/0006-…/reports/audit-preview.md` measured this
+spec's own criteria on the deployed artifact of this spec's own branch (PR #39,
+`mergeStateStatus: CLEAN`), twice, and every criterion of this spec that a deployment can move was
+re-confirmed there. The four debts this spec carried are handed forward with owners and triggers,
+three of them still open and verified still open today rather than assumed
+(§ *G10 — the close*). The stack merge is the only work left and `release-manager` owns it under
+`0005`'s merge condition — **the stack merges whole, with PR #39 at its tip.** Nothing waits on any
+agent of this spec.
+
+<details>
+<summary>The G8 header as `release-manager` left it, run 1 (superseded by the close above)</summary>
+
+**G8 (release) PARTIAL, run 1, by `release-manager`: committed, push
 pending human approval.** Nine commits on `fix/design-taste-preflight`, grouped by coherent idea
 (typeface, icons, legal-string rewrites + hero statement mode, banco de horas retirement,
 cold-load path, permanent copy-guards test, `DESIGN.md` reconciliation, tooling repairs, spec +
@@ -162,6 +176,123 @@ work that did not bounce.
 
 **Previous line:** 1 of 2 on G2, **closed**. G1 amended twice (run 2, run 3); neither is a bounce — both were routed corrections, not rejections. Triaged by `tech-lead`, routed G2 -> G1, amended by `product-manager` at run 2, re-passed by `labor-law-analyst` at run 2. No bounce remains open.
 
+</details>
+
+**Bounces (final):** **1, on G2, closed at run 1.** No gate reached its ceiling. Everything else
+that cost a round trip is recorded as what it was and not as a bounce: G1 was amended three times by
+routed correction rather than rejection; B3/B4/B5/B6 were blocker escalations under `AGENTS.md` §4
+rule 7, and all four were defects in `plan.md`, i.e. mine — `frontend-dev` produced no rejected
+artifact and refused to paper over any of them, which is the behaviour rule 7 exists to produce.
+Recorded precisely so the two-bounce ceiling is never consumed by work that did not bounce.
+
+**The push did happen.** The G8 header above was written before human approval and is superseded:
+`release-manager` pushed this branch and opened PR #39, and the human's approval for that push is
+recorded at `0006`'s G7/G8. CI is green and `gh pr view 39` reads `mergeStateStatus: CLEAN`,
+`mergeable: MERGEABLE`.
+
+## G10 — the close
+
+`tech-lead`, run 1, 2026-09-15. This spec shipped, was verified twice on a deployment, and then sat
+`in-progress` for four specs. The close has four parts: the G9 that does not need to run, the
+criteria that do not need a deployment to be true, the four debts re-measured rather than re-read,
+and what moved in the memory.
+
+### 1 — G9 is closed by coverage. Here is the coverage, and it is cited.
+
+This spec's changes shipped on `fix/design-taste-preflight`, and **two later specs ran their G9
+against the deployed artifact of that same branch.** Everything this spec did was already on the
+wire when they measured. Re-running a G9 for `0002` would point the same tools at the same
+deployment for the third time.
+
+| This spec's criterion | Where it was measured **on the deployment** | Result |
+|---|---|---|
+| **AC12** — zero axe-core violations at `critical`/`serious`, **both themes** | `.specs/0005-…/reports/audit-preview.md`; `.specs/0006-…/reports/audit-preview.md` § *Accessibility* | 0 violations at **every** severity, 8/8 route × viewport × theme in both reports; Lighthouse `accessibility` **1.00 on 6/6 runs** at `0006` |
+| **AC13** — WCAG 2.2 AA contrast in both themes after the type swap | `.specs/0006-…/reports/audit-preview.md` § *Contrast* — `lab()` computed colour resolved to sRGB in a real browser, both themes, 390 and 1440 | **5.05–7.22:1**, all pass; `0005` G9 confirms contrast unchanged from its own G6 |
+| **AC14** — no overflow, no control off-viewport at 390/1440/2560/3840, both themes | both G9s' layout sweeps (`0005`: four widths × two themes; `0006`: a 16-case overflow/reachability pass × 2 routes × 4 widths × 2 themes) | clean at all four widths, both themes, both routes |
+| **AC15** — every number identical after the change | `.specs/0005-…/reports/legal.md` (*"the deployment serves the values verified at 0002 … **No number changed**"*); `.specs/0006-…/reports/legal.md` § G9 | INSS **R$ 501,51**, IRRF **R$ 0,00**, líquido **R$ 4.498,49**, **R$ 20,45**/hora, and the 2026 portaria line — identical in both themes, on the deployment |
+| **AC19–AC23, AC25, AC26** — the retired "banco de horas" claim and the rewritten `lib/` legal strings | `.specs/0005-…/reports/legal.md` **§8 — *"S3, S4 and S5 of `.specs/0002` — satisfied in substance now"***, read on the rendered deployed page (`visibility: visible`, `opacity: 1`), not from source | satisfied in full; `0006` G9 further confirms a disclosure string byte-identical to `lib/compliance.ts:65` on the deployment |
+
+`labor-law-analyst` — the second half of G9 — passed on this deployment twice, at `0005` and at
+`0006`, and in both cases explicitly re-confirmed this spec's rules rather than only its own.
+
+### 2 — AC7, said plainly, because it must not be rediscovered
+
+**AC7 is satisfied and stays satisfied.** It was ruled at G5 run 5 against the run set its own
+verification cell names, six of six clauses on both routes, and `product-manager` had already
+**relocated the absolute 2,500 ms target to `.specs/0004-lcp-render-delay/`** at run 4 (§ *Ruled by
+`product-manager` (G5 run 4)*, item 1). AC7 as it stands is a *relative* improvement criterion, and
+nothing since has touched it.
+
+**And the absolute target fails on the deployment.** `0006`'s G9 measured LCP **5.5–6.1 s** and
+`categories:performance` **0.74–0.76** against the 0.93 budget, on both routes, every run — and
+**production fails the same budget with the same shape** (`workload.devrma.com`, 0.91 · 0.76 · 0.75).
+That is `0004`'s **F1**, already routed there with its instrument, already in `0004`'s `INDEX.md`
+row, and already traced to a cause this spec was forbidden to touch: `hooks/use-current-time.ts`
+returns `null` on first render, so `hero-panel.tsx`'s numeric `<p>` ships with no server-rendered
+text and `largest-contentful-paint` equals `interactive` to the millisecond. **`0002` closing does
+not close that**, and the record says so here rather than leaving a reader to infer that a `done`
+spec means a passing budget.
+
+### 3 — The four carried debts, **re-measured today**, not re-read
+
+Each row below was checked by running the search that defines it, against the tree at `5c0c6fa`.
+Three are still open; the fourth is **wider than it was recorded**, and the record was misleading in
+a way worth naming. This is what lesson **035** is for.
+
+| Debt | Owner | State today, and the command that establishes it | Trigger |
+|---|---|---|---|
+| **F5** — `PRODUCT.md` §9's Evidence cell cites only `components/organisms/day-summary.tsx`, a render site that receives `balanceMinutes` as a prop; `legal.md` §14.5 made it binding that it also cite `hooks/use-work-calculator.ts:67`, the line that proves the single-day scope | `product-manager` | **still open.** `grep -n "use-work-calculator" PRODUCT.md` → nothing; `PRODUCT.md:116` still cites the render site alone. One-line edit | the next spec that touches §9's register, **or** the next spec that opens `day-summary.tsx` — an evidence column pointing at a display is one refactor from pointing at nothing, and two specs in flight read that file |
+| **F6a** — `__tests__/copy-guards.test.ts`'s banned-term regex omits a bare `ponto` | `qa-engineer` | **still open.** The regex at `copy-guards.test.ts:36-37` catches `registro/controle/folha/espelho de ponto`; a naked `ponto` in a future descriptor is not caught, and disclosure D3 makes that the sharpest available contradiction | the next spec that adds or edits a descriptor string in any of the five `DESCRIPTOR_SOURCES` |
+| **F6b** — S9.4's *"C5 is a strict subset of C3/C4"* is asserted nowhere, so `lib/og-image.tsx:14` can broaden later without failing a test | `qa-engineer` | **still open.** `copy-guards.test.ts:58` pins the two root `alt` exports to `WorkLoad: ${VIEW_HEADINGS.work}`; nothing constrains `lib/og-image.tsx` | the next spec that edits `lib/og-image.tsx` or `lib/calculator-view.ts` |
+| **the class-string assertion** — recorded by `qa-engineer` at G6 as *"a pre-existing Tailwind class assertion at `__tests__/hero-panel.test.tsx:58`"* | `qa-engineer` | **still open, and nine times wider than recorded.** Read as written the debt looks fixed — line 58 now holds an inline-style assertion. The offending line is untouched at **`hero-panel.test.tsx:72`**; the file grew fourteen lines above it. `grep -rnE 'querySelector\("\.\|\.className' __tests__/` returns **nine assertions in eight files**: `stat-box:31`, `day-summary:96`, `hero-panel:72`, `alert-banner:54`, `duration-field:60`, `regime-field:47`, `layout:21`, `modal-dialog:96` and `:97`. **One of the nine is dead:** `day-summary.test.tsx:96` asserts `.rounded-full.bg-neutral-100` is `toBeNull()`, and `bg-neutral-100` exists nowhere in `components/` or `app/` since the token migration — the selector can never match, so the assertion passes against any markup at all. A green test asserting nothing is not a smaller defect than a red one, it is an invisible one | the next spec that opens any of the eight files, **and** `day-summary.test.tsx:96` immediately, because it is a dead guard rather than a stylistic one — routed as a finding to `qa-engineer`, not carried |
+
+**Why the fourth row matters beyond itself.** `AGENTS.md` §5 already forbids stating a prohibition
+as a file and a line rather than as the search over its whole boundary — for *criteria*. Nobody had
+applied it to *carried debt*, which is the same object one gate later and the more dangerous case: a
+criterion is checked at the next gate, a debt is checked only when someone remembers it. Four specs
+ran over this ground and the record pointed at the wrong line the whole time while eight siblings
+accumulated outside it. **Lesson 035** generalises it and is the one lesson this close wrote.
+
+### 4 — Memory: what moved
+
+Active set **26 → 25**, under the cap of thirty, with two promotions and one new lesson.
+
+**Promoted at three confirmations, retired to `archive/`:**
+
+- **023** → `.agents/agents/labor-law-analyst.md`, appended to the § *Output contract* as the
+  numeric-threshold bullet. `applies-to` was `labor-law-analyst` alone and the rule is about what a
+  `legal.md` must contain, so the agent definition is the right home and `AGENTS.md` stays the home
+  of the rules that bind everyone. It generalises past pixels: a geometric floor with no box model is
+  the same defect as a rate with no base — the table can be right to the centavo and the number still
+  comes out wrong, because the quantity was never pinned.
+- **029** → `AGENTS.md` §4, as a second paragraph of gate rule 6. `applies-to: all` and it is
+  inseparable from rule 6's subject — the shared tree during a parallel gate — so splitting it across
+  four agent definitions would have produced four copies that drift. It also completes rule 6 in the
+  direction rule 6 was missing: rule 6 forbade *you* mutating the shared tree, and said nothing about
+  a **sibling agent's live `pnpm build`** racing your `.next`, which no `git worktree` protects
+  against because the racing writer is not a stale process to kill.
+
+**Written:** **035** (`tech-lead`, plan) — re-measure a carried debt by the search that defines its
+boundary, never by the coordinate that reported it. Bought by item 3 above, at the cost of four
+specs' worth of a debt reading as fixed while it grew.
+
+**Deliberately not confirmed:** **005** and **015**. Item 1 of this close *relies* on both being
+already-internalised — the fonts question (005) was settled by `next/font/google` self-hosting and
+the dark-production question (015) by `0005`'s and `0006`'s dark-context G9 runs — but neither
+prevented a repeat in this session, and a promotion bought by an inflated count is worth less than a
+lesson left where it is.
+
+**Every bounce this cycle has its lesson**, all written by the rejected agent and none by me on
+another's behalf: G2 run 1 → **002**, **003**, **004**, **007**; the B3/B4 plan defects → **010**,
+**011**, **016**, **017** (mine); B5/B6 → **013**, **014**; G6's tooling blind spot → **015**. The
+AC18 lesson (**012**) was promoted into `AGENTS.md` §5 at `0005`'s G10 and is now the rule that
+would have prevented this spec's own worst finding.
+
+### 5 — The gate that checks the close
+
+`node .agents/tools/docs-check.mjs 0002-design-taste-preflight` — **0 failures, 0 warnings**, with
+this spec at `done`.
+
 ## Gates
 
 | Gate | Agent | State | Run | Artifact |
@@ -177,8 +308,9 @@ work that did not bounce.
 | audit | web-standards-auditor | **done** | 1 | `reports/audit.md` — **pass**, with two critical pre-existing (not 0002) findings routed for an urgent follow-up spec |
 | ponytail | refactor-scout | **done** | 1 | `reports/ponytail.md` — **pass**, zero findings, dependencies verified against `plan.md` |
 | docs (G7) | release-manager | **pass** | 1 | `reports/release.md` — three documentation defects found and fixed (duplicate `T13` row, stale `recruiter` row in this file and the template, `design.md` §5.3 left open); F5/F6 confirmed still open, correctly recorded; nothing committed |
-| release | release-manager | **partial** | 1 | `reports/release.md` — nine commits made, push pending human approval |
-| preview | web-standards-auditor | pending | 0 | `reports/audit-preview.md` |
+| release | release-manager | **done** | 1 | `reports/release.md` — nine commits; pushed as PR #39 with the human's approval recorded at `0006` G7/G8, CI green, `mergeStateStatus: CLEAN` |
+| preview | web-standards-auditor + labor-law-analyst | **covered** | 0 | **no artifact of its own, by ruling** — `.specs/0005-…/reports/audit-preview.md`, `.specs/0005-…/reports/legal.md` §8 and `.specs/0006-…/reports/audit-preview.md` measured this spec's criteria on the deployed artifact of this spec's own branch, twice. Criterion-by-criterion mapping in § *G10 — the close*, item 1 |
+| compound (G10) | tech-lead | **done** | 1 | § *G10 — the close*, below |
 
 ## Tasks
 
@@ -208,7 +340,14 @@ not measurable retroactively.
 (`PRODUCT.md` §5). The defaults it sets are for downstream agents and are listed in the
 spec's own defaults table.
 
-## Blockers
+## Blocker history — B1 through B6, all closed
+
+**Nothing here is open; § Blockers below reads `none`.** Kept in full rather than collapsed: four of
+the six were defects in `plan.md`, and the rulings that closed them are the part of this spec a
+future tech-lead will actually need. **F5 and F6 are the two rows that were still open at G7. Both
+were re-measured at the G10 close — both still open — and both are handed forward with an owner and
+a trigger in § *G10 — the close*, item 3**, which is where this spec's carried debt lives: outside
+its reach, not unfinished inside it.
 
 | # | Raised by | Blocker |
 |---|---|---|
@@ -838,10 +977,18 @@ place to say so is there, with the criterion still open and waiting for its run.
 
 Active lessons: **12 / 30.**
 
+## Blockers
+
+none
+
 ## Decisions log
 
 | When | Agent | Decision |
 |---|---|---|
+| 2026-09-15 | tech-lead | **G10 — closed, and G9 is closed by citation rather than by a re-run.** This spec's changes shipped on `fix/design-taste-preflight`, and **two later specs ran their G9 against the deployed artifact of that same branch** — `0005` and `0006`, PR #39, `mergeStateStatus: CLEAN`. Every criterion of this spec that a deployment can move was re-confirmed there, and the mapping is cited criterion by criterion in § *G10 — the close*, item 1: AC12 (0 axe violations at every severity, 8/8 route × viewport × theme, both reports, Lighthouse `accessibility` 1.00 on 6/6 runs), AC13 (5.05–7.22:1, `lab()` resolved to sRGB in a real browser, both themes), AC14 (clean at 390/1440/2560/3840, both themes, both routes), AC15 (INSS R$ 501,51 · IRRF R$ 0,00 · líquido R$ 4.498,49 · R$ 20,45/hora — *"No number changed"*), and AC19–AC23/AC25/AC26 via `0005`'s `reports/legal.md` **§8**, which is titled for this spec and read on the rendered deployed page rather than from source. **Pointing three tools at the same deployment a third time buys nothing a citation does not.** The criteria a deployment cannot move — AC1–AC6, AC9–AC11, AC16–AC18, AC24 — were verified at G6 on the commits that deployed; **AC5/AC6 were checked specifically for the CDN risk lesson 005 names** and are safe by construction, because `next/font/google` self-hosts (the subsetted woff2 is emitted into `.next/static/media` by the build and served from the app's own origin, so the file on the edge is the file G6 inspected) and because `git log -- app/layout.tsx` shows the last commit touching the font config is `4b9572d`, this spec's own T4. |
+| 2026-09-15 | tech-lead | **The four carried debts were re-measured, not re-read, and that is what the close bought.** Three are still open with owners and triggers (F5 → `product-manager`; F6a and F6b → `qa-engineer`). The fourth — *"a pre-existing Tailwind class assertion at `__tests__/hero-panel.test.tsx:58`"* — **read as fixed and was not**: line 58 now holds an inline-style assertion while the offending line sits untouched at **:72**, the file having grown fourteen lines above it. Measured by the search the rule actually names instead of by the coordinate, the debt is **nine assertions across eight files**, not one. **One of the nine is dead:** `day-summary.test.tsx:96` asserts `.rounded-full.bg-neutral-100` is `toBeNull()` and `bg-neutral-100` exists nowhere in `components/` or `app/` since the token migration, so the selector can never match and the assertion passes against any markup at all — routed to `qa-engineer` as a finding, not carried, because a green test asserting nothing is not a smaller defect than a red one, it is an invisible one. `AGENTS.md` §5 already forbade this shape for a *criterion*; nobody had applied it to *carried debt*, which is the same object one gate later and the worse case, since a criterion is checked at the next gate and a debt only when someone remembers it. **Lesson 035** written for it, tagged `tech-lead`/`plan`. |
+| 2026-09-15 | tech-lead | **AC7 is satisfied and the product still fails its performance budget — both, and the record says so here.** AC7 was ruled at G5 run 5 against the run set its own verification cell names, and `product-manager` had already relocated the absolute 2,500 ms target to `0004` at run 4; AC7 as it stands is a relative improvement criterion and nothing since has touched it. Meanwhile `0006`'s G9 measured LCP **5.5–6.1 s** and `performance` **0.74–0.76** against the 0.93 budget on this very deployment, and **production fails the same budget with the same shape** (0.91 · 0.76 · 0.75) — `0004`'s F1, already routed with its instrument and traced to `hooks/use-current-time.ts` returning `null` on first render, which this spec was forbidden to touch. **A `done` spec here does not mean a passing budget**, and stating that is cheaper than letting the next reader infer it from a green row. |
+| 2026-09-15 | tech-lead | **Memory: 26 → 25 active, two promotions.** **023** → `.agents/agents/labor-law-analyst.md` § *Output contract*, as the numeric-threshold bullet: it is a `labor-law-analyst`-only rule about what a `legal.md` must contain, so the agent definition is its home and `AGENTS.md` stays the home of the rules that bind everyone. **029** → `AGENTS.md` §4 as a second paragraph of **gate rule 6**, because `applies-to: all` and because it completes rule 6 in the direction rule 6 was missing: rule 6 forbade *you* mutating the shared tree and said nothing about a **sibling agent's live `pnpm build`** racing your `.next` — which no `git worktree` protects against, the racing writer being a live build rather than a stale process to kill. Splitting it across four agent definitions would have produced four copies that drift. **Not confirmed on purpose: 005 and 015.** Item 1 of the close *relies* on both being internalised, but neither prevented a repeat in this session, and a promotion bought by an inflated count is worth less than a lesson left at two. |
 | Run 4 | product-manager | **AC7 restated from an absolute 2,500 ms lab median to three relative, instrument-aware clauses per route**, and the absolute target **relocated** to the new `.specs/0004-lcp-render-delay/` rather than retired. The criterion was defective on three counts — imported from a skill written for marketing pages, decided at ~31 ms inside a ~106 ms instrument spread, and satisfiable only by the client-gated hero numeral that the same spec forbids. The restatement is falsifiable three ways and adds a rule the original lacked (the margin must exceed the run set's spread). Lesson **011**. |
 | Run 4 | product-manager | **AC10's verification cell corrected to `node .agents/tools/route-js.mjs`** — the gzipped `<script src>` set of the pre-rendered HTML, excluding the `noModule` tag, baseline 228,446 B over 9 chunks — with the threshold spelled in bytes. Quantity and threshold unchanged, so this is a correction and not a scope change. **R2 corrected with it**, because a risk row still naming the removed `pnpm build` printout would have shipped the same defect twice. |
 | Run 4 | product-manager | **`.specs/0001-foundation`'s AC18 is recorded as open, not re-opened, and does not go to the human.** It was never closed — T28 and G6 audit are both `pending` there — so nothing false is on the record; the defect is a criterion whose only evidence path was inoperable. Recorded in that spec's § Blockers and decisions log for `release-manager` at G7. `0002`'s clean `preview.mjs` run is not a retroactive pass: different tree, and AC18 asks for both themes at `0001`'s own G6. Lesson **012**. |

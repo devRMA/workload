@@ -1,6 +1,10 @@
 import { expect, type Locator, type Page } from "@playwright/test";
+import { test } from "./fixtures";
 
 export const LR2A_CHROME_BUDGET_PX = 32;
+export const LR2B_MEASURE_FLOOR_CPL = 40;
+export const DS1_EXPECTED_PARAGRAPHS = 3;
+export const DS4_EXPECTED_PARAGRAPHS = 5;
 
 export interface SurfaceMeasurement {
   surfaceRootWidth: number;
@@ -13,6 +17,9 @@ export interface SurfaceMeasurement {
 
 export const DS1_FOOTER_SELECTOR = "#main-content > footer";
 export const DS4_PANEL_SELECTOR = "dialog[aria-labelledby='privacy-settings-title'] > div";
+export const D3_LEGEND_SELECTOR = "#regime-federal-rpps-gap";
+export const D4_CAPTION_TEXT = "Os 20% do adicional noturno são o mínimo da CLT";
+export const D6_CAPTION_SELECTOR = "#annual-period-disclosure";
 
 export async function availableContentWidth(locator: Locator): Promise<number> {
   return locator.evaluate((element) => {
@@ -32,11 +39,35 @@ export async function lineBoxesAndCharacters(locator: Locator): Promise<{ lineBo
   });
 }
 
-export async function assertLr2b(locator: Locator) {
+export async function assertLr2b(locator: Locator): Promise<"measured" | "exempt"> {
   const { lineBoxes, characters } = await lineBoxesAndCharacters(locator);
-  if (lineBoxes > 1) {
-    expect(characters / lineBoxes).toBeGreaterThanOrEqual(40);
+  if (lineBoxes === 1) return "exempt";
+
+  expect(characters / lineBoxes).toBeGreaterThanOrEqual(LR2B_MEASURE_FLOOR_CPL);
+  return "measured";
+}
+
+export async function assertLr2bAcrossParagraphs(surface: Locator, expectedParagraphs: number, label: string) {
+  const paragraphs = await surface.locator("p").all();
+  expect(
+    paragraphs,
+    `${label} — LG1.2: the surface rendered ${paragraphs.length} paragraphs, expected ${expectedParagraphs}`,
+  ).toHaveLength(expectedParagraphs);
+
+  let measured = 0;
+  let exempt = 0;
+  for (const paragraph of paragraphs) {
+    if ((await assertLr2b(paragraph)) === "measured") {
+      measured += 1;
+    } else {
+      exempt += 1;
+    }
   }
+
+  test.info().annotations.push({
+    type: "lr2b-coverage",
+    description: `${label} — measured ${measured} + exempt ${exempt} = ${expectedParagraphs}`,
+  });
 }
 
 export async function assertLr1(locator: Locator) {
@@ -85,17 +116,24 @@ export async function waitForStableBoundingBox(locator: Locator) {
   const POLL_INTERVAL_MS = 40;
   const MAX_POLLS = 25;
 
-  let previousWidth: number | null = null;
+  let previous: Awaited<ReturnType<Locator["boundingBox"]>> = null;
   let stableReads = 0;
 
   for (let poll = 0; poll < MAX_POLLS && stableReads < STABLE_READS_REQUIRED; poll += 1) {
-    const width = (await locator.boundingBox())?.width ?? 0;
-    if (previousWidth !== null && Math.abs(width - previousWidth) < 0.01) {
+    const current = await locator.boundingBox();
+    if (
+      previous &&
+      current &&
+      Math.abs(current.x - previous.x) < 0.01 &&
+      Math.abs(current.y - previous.y) < 0.01 &&
+      Math.abs(current.width - previous.width) < 0.01 &&
+      Math.abs(current.height - previous.height) < 0.01
+    ) {
       stableReads += 1;
     } else {
       stableReads = 0;
     }
-    previousWidth = width;
+    previous = current;
     await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
   }
 }

@@ -58,7 +58,7 @@ describe("findComplianceWarnings", () => {
   it("allocates the irregularity to the employer without an em-dash", () => {
     const [overtime] = warnings({ overtimeMinutes: 180, workedMinutes: 700, lunchMinutes: 0 });
 
-    expect(overtime.detail).toContain("Súmula 376 do TST");
+    expect(overtime.detail).toContain("Súmula 376, I, do TST");
     expect(overtime.detail).toContain("a sanção recai sobre o empregador");
     expect(overtime.detail).not.toContain("—");
   });
@@ -91,5 +91,38 @@ describe("findComplianceWarnings", () => {
 
     expect(rest.id).toBe("rest-between-shifts");
     expect(rest.detail).toContain("art. 66");
+  });
+
+  it("names the norm that lets a norma coletiva cut the interval to 30 minutes", () => {
+    const [lunch] = warnings({ workedMinutes: 361, lunchMinutes: 59 });
+
+    expect(lunch.id).toBe("minimum-lunch-break");
+    expect(lunch.detail).toContain("art. 611-A, III, da CLT");
+  });
+
+  it("cites the paragraph the 50% indemnity comes from", () => {
+    const [shortBreak] = warnings({ workedMinutes: 241, lunchMinutes: 14 });
+    const [lunch] = warnings({ workedMinutes: 361, lunchMinutes: 59 });
+
+    expect(shortBreak.detail).toContain("art. 71, §4º, da CLT");
+    expect(lunch.detail).toContain("art. 71, §4º, da CLT");
+  });
+
+  it("sources the interjornada payment instead of hedging it", () => {
+    const [rest] = warnings({ minutesSincePreviousShift: 659 });
+
+    expect(rest.detail).toContain("Orientação Jurisprudencial nº 355 da SBDI-1 do TST");
+    expect(rest.detail).toContain("por analogia");
+  });
+
+  it("carries every warning detail without an em-dash", () => {
+    const [overtime] = warnings({ overtimeMinutes: 180, workedMinutes: 700, lunchMinutes: 0 });
+    const [shortBreak] = warnings({ workedMinutes: 241, lunchMinutes: 14 });
+    const [lunch] = warnings({ workedMinutes: 361, lunchMinutes: 59 });
+    const [rest] = warnings({ minutesSincePreviousShift: 659 });
+
+    for (const warning of [overtime, shortBreak, lunch, rest]) {
+      expect(warning.detail).not.toContain("—");
+    }
   });
 });

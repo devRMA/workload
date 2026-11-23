@@ -9,7 +9,7 @@ const ROOT_CONFIG_FILES = ["playwright.config.ts", "vitest.config.ts", "vitest.s
 const SOURCE_EXTENSIONS = new Set([".ts", ".tsx", ".mjs"]);
 
 const TOOLING_DIRECTIVE = /^(biome-ignore|@ts-expect-error|eslint-disable|v8 ignore|c8 ignore)/;
-const NORM_CITATION = /\b(CLT|Lei|Decreto|Portaria|Súmula|OJ|IN RFB|CF\/88)\b/;
+const NORM_CITATION = /\b(CLT|Lei|Decreto|Portaria|Súmula|OJ|IN RFB|CF)\b/;
 const NORM_CITATION_DIRECTORIES = ["lib"];
 
 type Comment = { file: string; line: number; text: string };

@@ -4,7 +4,9 @@ import {
   formatClockTime,
   formatCurrency,
   formatCurrencySimple,
+  formatHours,
   formatIsoDate,
+  formatPercent,
   formatTimeLabel,
   parseCurrency,
 } from "@/lib/utils";
@@ -49,6 +51,20 @@ describe("formatCurrencySimple", () => {
 
   it("formats zero", () => {
     expect(formatCurrencySimple(0)).toBe("0,00");
+  });
+});
+
+describe("formatHours", () => {
+  it("renders a whole number of weekly hours with no decimals (E5, 12h00 × 5)", () => {
+    expect(formatHours(60)).toBe("60");
+  });
+
+  it("renders a single decimal without a trailing zero (R7a, 8h48 × 6)", () => {
+    expect(formatHours(8.8 * 6)).toBe("52,8");
+  });
+
+  it("caps at two decimals instead of a three-decimal render (E4's weekly hours)", () => {
+    expect(formatHours(2200 / 60)).toBe("36,67");
   });
 });
 
@@ -102,5 +118,14 @@ describe("formatTimeLabel", () => {
 describe("formatIsoDate", () => {
   it("reads an ISO date the Brazilian way", () => {
     expect(formatIsoDate("2026-01-01")).toBe("01/01/2026");
+  });
+});
+
+describe("formatPercent", () => {
+  it("writes a rate the way a Brazilian payslip does", () => {
+    expect(formatPercent(0.075)).toBe("7,5%");
+    expect(formatPercent(0.14)).toBe("14%");
+    expect(formatPercent(0.22)).toBe("22%");
+    expect(formatPercent(0.165)).toBe("16,5%");
   });
 });

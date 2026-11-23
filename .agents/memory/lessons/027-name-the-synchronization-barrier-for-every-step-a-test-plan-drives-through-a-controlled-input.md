@@ -5,7 +5,7 @@ applies-to: tech-lead
 domain: plan
 spec: 0006
 created: 2026-09-15
-confirmed: 0
+confirmed: 2
 ---
 
 ## What happened
@@ -53,6 +53,25 @@ into the task, in the same clause as the step:
 
 A flaky measurement instrument that reports a pass is worse than one that fails: it retires the
 only guard that can see the defect return.
+
+### The second axis: the state the drive starts from (0007, G5)
+
+A barrier says **when** the drive finished. It never says **what the surface was before it began**,
+and a geometry is a reading of a state, not of a viewport. The same rule therefore binds on the
+starting state, and it binds hardest on any task that compares a live reading against a number an
+upstream gate calibrated:
+
+- **Write the calibrated number's own state into the task, in the same clause as the number** — the
+  persisted keys and their values, the inputs that are filled, and every conditional sibling that
+  does or does not render there. "390×844, both themes, 129.0 px" names an instrument and a target
+  and omits the subject.
+- **A task that names only the viewport drives the app's default state**, which is the empty one:
+  no persisted input, every "you have not filled this in" surface rendered, and every distance
+  between two elements inflated by the ones in between. That is a legitimate state and a real
+  measurement — of a different quantity than the one the calibration is a calibration of.
+- **When the two disagree, re-measure both states in one run before anyone reconciles them.** Two
+  correct readings of two states look exactly like one regression, and the arithmetic that closes
+  the gap will always be available and is always the wrong tool.
 
 ## How to verify
 

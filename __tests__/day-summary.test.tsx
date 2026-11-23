@@ -69,8 +69,9 @@ function pricedJourney(times: DaySummaryProps["times"]) {
 
 describe("DaySummary", () => {
   it("lists every stretch of a finished day", () => {
-    renderSummary();
+    const { container } = renderSummary();
 
+    expect(container.querySelectorAll("[style*='width']")).toHaveLength(3);
     expect(screen.getByRole("heading", { name: "Seu Dia" })).toBeInTheDocument();
     expect(screen.getByText("Manhã")).toBeInTheDocument();
     expect(screen.getByText("08:00 → 12:00")).toBeInTheDocument();
@@ -108,7 +109,9 @@ describe("DaySummary", () => {
       },
     });
 
-    expect(container.querySelector(".rounded-full.bg-neutral-100")).toBeNull();
+    expect(container.querySelectorAll("[style*='width']")).toHaveLength(0);
+    expect(screen.queryByText("08:00")).toBeNull();
+    expect(screen.queryByText("17:48")).toBeNull();
     expect(screen.queryByText("Manhã")).toBeNull();
   });
 
@@ -224,14 +227,14 @@ describe("DaySummary", () => {
 
     expect(screen.getByText("Extra 50%").parentElement).toHaveTextContent(/2h 0mR\$\s60,00$/);
     expect(screen.getByText("Adicional noturno 20%").parentElement).toHaveTextContent(/2h 0mR\$\s8,00$/);
-    expect(screen.getByText("DSR sobre os extras").parentElement).toHaveTextContent(/R\$\s10,07$/);
+    expect(screen.getByText("DSR de extras e noturno").parentElement).toHaveTextContent(/R\$\s10,07$/);
     expect(screen.queryByText(NIGHT_OVERTIME_NOTE)).toBeNull();
 
     rerender(<DaySummary {...BASE_PROPS} {...nightExtra} />);
 
     expect(screen.getByText("Extra 50%").parentElement).toHaveTextContent(/2h 0mR\$\s64,00$/);
     expect(screen.getByText("Adicional noturno 20%").parentElement).toHaveTextContent(/2h 0mR\$\s8,00$/);
-    expect(screen.getByText("DSR sobre os extras").parentElement).toHaveTextContent(/R\$\s10,67$/);
+    expect(screen.getByText("DSR de extras e noturno").parentElement).toHaveTextContent(/R\$\s10,67$/);
     expect(screen.getAllByText(NIGHT_OVERTIME_NOTE)).toHaveLength(1);
   });
 
@@ -280,7 +283,7 @@ describe("DaySummary", () => {
     expect(screen.getByText("Extra 50%").parentElement).toHaveTextContent(/R\$\s64,00$/);
     expect(screen.getByText("Extra 100%").parentElement).toHaveTextContent(/R\$\s22,00$/);
     expect(screen.getByText("Adicional noturno 20%").parentElement).toHaveTextContent(/R\$\s10,00$/);
-    expect(screen.getByText("DSR sobre os extras").parentElement).toHaveTextContent(/R\$\s14,22$/);
+    expect(screen.getByText("DSR de extras e noturno").parentElement).toHaveTextContent(/R\$\s14,22$/);
     expect(screen.getAllByText(NIGHT_OVERTIME_NOTE)).toHaveLength(1);
   });
 
@@ -289,29 +292,104 @@ describe("DaySummary", () => {
 
     expect(screen.getByText("Extra 50%").parentElement).toHaveTextContent(/R\$\s0,57$/);
     expect(screen.getByText("Adicional noturno 20%").parentElement).toHaveTextContent(/R\$\s0,07$/);
-    expect(screen.getByText("DSR sobre os extras").parentElement).toHaveTextContent(/R\$\s0,10$/);
+    expect(screen.getByText("DSR de extras e noturno").parentElement).toHaveTextContent(/R\$\s0,10$/);
   });
 
   it("adds the DSR over the habitual overtime and says what it assumes", () => {
     renderSummary({ firstTierMinutes: 120, grossHourlyRate: 13.6364 });
 
-    expect(screen.getByText("DSR sobre os extras")).toBeInTheDocument();
-    expect(screen.getByText(/Súmula 172 do TST/)).toBeInTheDocument();
+    expect(screen.getByText("DSR de extras e noturno")).toBeInTheDocument();
+    expect(screen.getByText(/Súmula 172/)).toBeInTheDocument();
     expect(screen.getByText(/Feriados não entram/)).toBeInTheDocument();
   });
 
   it("keeps the DSR assumption and its holiday gap in the same caption", () => {
     renderSummary({ firstTierMinutes: 120, grossHourlyRate: 13.6364 });
 
-    const caption = screen.getByText(/Súmula 172 do TST/);
-    expect(caption).toHaveTextContent("Súmula 172 do TST");
+    const caption = screen.getByText(/Súmula 172/);
+    expect(caption).toHaveTextContent("Súmula 172");
     expect(caption).toHaveTextContent("Feriados não entram");
   });
 
   it("leaves the DSR out of a day without any variable pay", () => {
     renderSummary({ grossHourlyRate: 20 });
 
-    expect(screen.queryByText("DSR sobre os extras")).toBeNull();
+    expect(screen.queryByText("DSR de extras e noturno")).toBeNull();
+  });
+
+  it("names both parcelas the DSR base carries", () => {
+    renderSummary({ firstTierMinutes: 120, grossHourlyRate: 13.6364 });
+
+    expect(screen.getByText("DSR de extras e noturno")).toBeInTheDocument();
+    const caption = screen.getByText(/vem da Lei nº 605\/1949/);
+    expect(caption).toHaveTextContent("Lei nº 605/1949");
+    expect(caption).toHaveTextContent("Súmula 172");
+    expect(caption).toHaveTextContent("Súmula 60, I");
+  });
+
+  it("qualifies the night premium on a day with no night minutes", () => {
+    renderSummary({ nightMinutes: 0, grossHourlyRate: 13.6364 });
+
+    expect(screen.getByText("Adicional noturno 20%")).toBeInTheDocument();
+    expect(screen.getByText(/Os 20% do adicional noturno são o mínimo da CLT/)).toBeInTheDocument();
+  });
+
+  it("keeps qualifying the night premium on a day that has night minutes", () => {
+    renderSummary({ nightMinutes: 480, grossHourlyRate: 13.6364 });
+
+    expect(screen.getByText(/Os 20% do adicional noturno são o mínimo da CLT/)).toBeInTheDocument();
+  });
+
+  it("keeps the floor disclosure out of the footer and beside its own row", () => {
+    renderSummary({ nightMinutes: 0, grossHourlyRate: 13.6364 });
+
+    const caption = screen.getByText(/Os 20% do adicional noturno são o mínimo da CLT/);
+    expect(caption.previousElementSibling).toHaveTextContent("Adicional noturno 20%");
+  });
+
+  it("states that the weekday does not change what the overtime is worth", () => {
+    renderSummary({ firstTierMinutes: 120, extraTierMinutes: 12, grossHourlyRate: 13.6364 });
+
+    const disclosure = screen.getByText(/valem o mesmo em qualquer dia da semana/);
+    expect(disclosure).toBeInTheDocument();
+    expect(disclosure).toHaveTextContent("sábado, domingo ou dia útil");
+    expect(disclosure).toHaveTextContent("não compensado por folga é pago em dobro");
+    expect(disclosure).toHaveTextContent("Súmula 146 do TST");
+    expect(disclosure).toHaveTextContent("art. 9º da Lei 605/49");
+    expect(disclosure).toHaveTextContent("esta tela não calcula essa dobra");
+    expect(disclosure).toHaveTextContent("folga compensatória");
+    expect(disclosure).toHaveTextContent("calendário de feriados");
+  });
+
+  it("keeps the weekday disclosure on a day with no overtime at all", () => {
+    renderSummary({ firstTierMinutes: 0, extraTierMinutes: 0, nightMinutes: 0, grossHourlyRate: 20 });
+
+    expect(screen.getByText(/valem o mesmo em qualquer dia da semana/)).toBeInTheDocument();
+    expect(screen.queryByText("DSR de extras e noturno")).toBeNull();
+  });
+
+  it("leaves the weekday disclosure out when no money is on screen", () => {
+    renderSummary({ grossHourlyRate: null });
+
+    expect(screen.queryByText(/valem o mesmo em qualquer dia da semana/)).toBeNull();
+    expect(screen.getByRole("link", { name: /Calcule o valor da sua hora/ })).toBeInTheDocument();
+  });
+
+  it("puts the weekday disclosure after the DSR caption and before the salary link", () => {
+    renderSummary({ firstTierMinutes: 120, grossHourlyRate: 13.6364 });
+
+    const disclosure = screen.getByText(/valem o mesmo em qualquer dia da semana/);
+    expect(disclosure.previousElementSibling).toHaveTextContent("Feriados não entram");
+    expect(disclosure.nextElementSibling).toBeNull();
+  });
+
+  it("carries no control and no aria override on the weekday disclosure", () => {
+    renderSummary({ firstTierMinutes: 120, grossHourlyRate: 13.6364 });
+
+    const disclosure = screen.getByText(/valem o mesmo em qualquer dia da semana/);
+    expect(disclosure.tagName).toBe("P");
+    expect(disclosure.querySelector("button, a, details, summary, [role], [aria-label], [title]")).toBeNull();
+    expect(disclosure.hasAttribute("tabindex")).toBe(false);
   });
 
   it("renders the compliance warnings it is given", () => {

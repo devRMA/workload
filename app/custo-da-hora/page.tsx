@@ -11,6 +11,25 @@ export const metadata: Metadata = {
     title: "Calculadora de Valor da Hora e Salário Líquido CLT",
     description: "Descubra quanto vale a sua hora de trabalho, já com INSS, IRRF e dependentes.",
     url: "/custo-da-hora",
+    images: [
+      {
+        url: "/custo-da-hora/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "WorkLoad: Calculadora de valor da hora e salário líquido CLT",
+        type: "image/png",
+      },
+    ],
+  },
+  twitter: {
+    images: [
+      {
+        url: "/custo-da-hora/twitter-image",
+        width: 1200,
+        height: 630,
+        alt: "WorkLoad: Calculadora de valor da hora e salário líquido CLT",
+      },
+    ],
   },
 };
 
