@@ -1,4 +1,4 @@
-import { writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { expect, type Page } from "@playwright/test";
 import { DAILY_MINUTES_KEY, GROSS_SALARY_KEY, MONTHLY_HOURS_KEY } from "@/lib/storage";
@@ -281,10 +281,8 @@ test.describe("clause 2d — calibration, recorded rather than asserted as a bar
       await context.close();
     }
 
-    await writeFile(
-      join(process.cwd(), ".specs/0007-sumula-431-citation-scope/evidence/clause-2d.txt"),
-      `${lines.join("\n")}\n`,
-      "utf8",
-    );
+    const evidenceDirectory = join(process.cwd(), ".specs/0007-sumula-431-citation-scope/evidence");
+    await mkdir(evidenceDirectory, { recursive: true });
+    await writeFile(join(evidenceDirectory, "clause-2d.txt"), `${lines.join("\n")}\n`, "utf8");
   });
 });
